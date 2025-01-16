@@ -138,7 +138,7 @@
                     ["--illegal-access=deny"]))
 
 (defproject puppetlabs/puppetdb pdb-version
-  :description "Puppet-integrated catalog and fact storage"
+  :description "OpenVox-integrated catalog and fact storage"
 
   :license {:name "Apache License, Version 2.0"
             :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
@@ -239,11 +239,12 @@
   :lein-ezbake {:vars {:user "puppetdb"
                        :group "puppetdb"
                        :build-type "foss"
+                       :package-name "openvoxdb"
                        :puppet-platform-version 7
                        :main-namespace "puppetlabs.puppetdb.cli.services"
                        :start-timeout 14400
-                       :repo-target "puppet7"
-                       :nonfinal-repo-target "puppet7-nightly"
+                       :repo-target "openvox7"
+                       :nonfinal-repo-target "openvox7-nightly"
                        :logrotate-enabled false
                        :java-args ~(str "-Xmx192m "
                                         "-Djdk.tls.ephemeralDHKeySize=2048")}
@@ -313,7 +314,7 @@
                                                ;; in the final package.
                                                [puppetlabs/puppetdb ~pdb-version :exclusions [com.zaxxer/HikariCP]]]
                       :name "puppetdb"
-                      :plugins [[puppetlabs/lein-ezbake "2.6.2"]]}
+                      :plugins [[puppetlabs/lein-ezbake "2.6.3-SNAPSHOT-openvox"]]}
              :testutils {:source-paths ^:replace ["test"]
                          :resource-paths ^:replace []
                          ;; Something else may need adjustment, but

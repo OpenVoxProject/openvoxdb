@@ -1,5 +1,22 @@
 require 'rake'
+require 'open3'
 
+def run_command(cmd, silent = false)
+  output = ''
+  Open3.popen2e(cmd) do |_stdin, stdout_stderr, thread|
+    stdout_stderr.each do |line|
+      puts line unless silent
+      output += line
+    end
+    exitcode = thread.value.exitstatus
+    abort "Command failed!" unless exitcode.zero?
+  end
+  output.chomp
+end
+
+Dir.glob(File.join('tasks/**/*.rake')).each { |file| load file }
+
+### puppetlabs stuff ###
 def run_beaker(test_files)
   config = ENV["BEAKER_CONFIG"] || "acceptance/config/vmpooler.cfg"
   options = ENV["BEAKER_OPTIONS"] || "acceptance/options/postgres.rb"
