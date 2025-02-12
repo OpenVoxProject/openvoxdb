@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'tmpdir'
 
 @image = 'ezbake-builder'
 @container = 'openvoxdb-builder'
@@ -11,10 +12,10 @@ require 'fileutils'
 # To be fixed one of these days. Relevant stuff:
 #   https://github.com/puppetlabs/ezbake/blob/aeb7735a16d2eecd389a6bd9e5c0cfc7c62e61a5/resources/puppetlabs/lein-ezbake/template/global/tasks/build.rake
 #   https://github.com/puppetlabs/ezbake/blob/aeb7735a16d2eecd389a6bd9e5c0cfc7c62e61a5/resources/puppetlabs/lein-ezbake/template/global/ext/fpm.rb
-# Also, these probably shouldn't live here long-term and be passed in so a GitHub Action can
-# determine which platforms to build packages for.
-@debs = "base-ubuntu18.04-i386.cow base-ubuntu20.04-i386.cow base-ubuntu22.04-i386.cow base-ubuntu24.04-i386.cow base-debian10-i386.cow base-debian11-i386.cow base-debian12-i386.cow"
-@rpms = "pl-el-7-x86_64 pl-el-8-x86_64 pl-el-9-x86_64 pl-el-10-x86_64 pl-sles-15-x86_64 pl-amazon-2023-x86_64"
+deb_platforms = ENV['DEB_PLATFORMS'] || 'ubuntu-18.04,ubuntu-20.04,ubuntu-22.04,ubuntu-24.04,debian-10,debian-11,debian-12'
+rpm_platforms = ENV['RPM_PLATFORMS'] || 'el-7,el-8,el-9,el-10,sles-15,amazon-2023'
+@debs = deb_platforms.split(',').map{ |p| "base-#{p.split('-').join}-i386.cow" }.join(' ')
+@rpms = rpm_platforms.split(',').map{ |p| "pl-#{p}-x86_64" }.join(' ')
 
 def image_exists
   !`docker images -q #{@image}`.strip.empty?
@@ -46,7 +47,7 @@ namespace :vox do
   task :build, [:tag] do |_, args|
     begin
       abort 'You must provide a tag.' if args[:tag].nil? || args[:tag].empty?
-      run_command("git checkout #{args[:tag]}")
+      run_command("git fetch --tags && git checkout #{args[:tag]}")
       
       # If the Dockerfile has changed since this was last built,
       # delete all containers and do `docker rmi ezbake-builder`
@@ -68,9 +69,10 @@ namespace :vox do
       puts "Installing ezbake from source"
       run("cd /ezbake && lein install")
 
-      puts "Building openvox-server"
+      puts "Building openvoxdb"
       run("cd /code && rm -rf ruby && rm -rf output && bundle install --without test && lein install")
       run("cd /code && COW=\"#{@debs}\" MOCK=\"#{@rpms}\" GEM_SOURCE='https://rubygems.org' EZBAKE_ALLOW_UNREPRODUCIBLE_BUILDS=true EZBAKE_NODEPLOY=true LEIN_PROFILES=ezbake lein with-profile user,ezbake,provided,internal ezbake local-build")
+      run_command("sudo chown -R $USER:$USER output")
       Dir.glob('output/*i386*').each { |f| FileUtils.rm_rf(f) }
       Dir.glob('output/puppetdb-*.tar.gz').each { |f| FileUtils.mv(f, f.sub('puppetdb','openvoxdb'))}
     ensure
