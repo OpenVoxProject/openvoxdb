@@ -219,6 +219,7 @@
                        :repo-target "openvox8"
                        :nonfinal-repo-target "openvox8-nightly"
                        :logrotate-enabled false
+                       :replaces-pkgs [{:package "puppetdb" :version ""}]
                        :java-args ~(str "-Xmx192m "
                                         "-Djdk.tls.ephemeralDHKeySize=2048")}
                 :config-dir "ext/config/foss"}
