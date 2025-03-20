@@ -28,18 +28,17 @@ end
 def teardown
   if container_exists
     puts "Stopping #{@container}"
-    run_command("docker stop #{@container}")
-    run_command("docker rm #{@container}")
+    run_command("docker stop #{@container}", silent: false, print_command: true)
+    run_command("docker rm #{@container}", silent: false, print_command: true)
   end
 end
 
 def start_container(ezbake_dir)
-  run_command("docker run -d --name #{@container} -v .:/code -v #{ezbake_dir}:/ezbake #{@image} /bin/sh -c 'tail -f /dev/null'")
+  run_command("docker run -d --name #{@container} -v .:/code -v #{ezbake_dir}:/ezbake #{@image} /bin/sh -c 'tail -f /dev/null'", silent: false, print_command: true)
 end
 
 def run(cmd)
-  puts "\033[32mRunning #{cmd}\033[0m"
-  run_command("docker exec #{@container} /bin/bash --login -c '#{cmd}'")
+  run_command("docker exec #{@container} /bin/bash --login -c '#{cmd}'", silent: false, print_command: true)
 end
 
 namespace :vox do
@@ -53,15 +52,15 @@ namespace :vox do
       # delete all containers and do `docker rmi ezbake-builder`
       unless image_exists
         puts "Building ezbake-builder image"
-        run_command("docker build -t ezbake-builder .")
+        run_command("docker build -t ezbake-builder .", silent: false, print_command: true)
       end
 
       puts "Checking out ezbake"
       tmp = Dir.mktmpdir("ezbake")
       ezbake_dir = "#{tmp}/ezbake"
-      run_command("git clone https://github.com/openvoxproject/ezbake #{ezbake_dir}")
+      run_command("git clone https://github.com/openvoxproject/ezbake #{ezbake_dir}", silent: false, print_command: true)
       ezbake_branch = ENV['EZBAKE_BRANCH'] || 'main'
-      Dir.chdir(ezbake_dir) { |_| run_command("git checkout #{ezbake_branch}") }
+      Dir.chdir(ezbake_dir) { |_| run_command("git checkout #{ezbake_branch}", silent: false, print_command: true) }
 
       puts "Starting container"
       teardown if container_exists
@@ -73,7 +72,7 @@ namespace :vox do
       puts "Building openvoxdb"
       run("cd /code && rm -rf ruby && rm -rf output && bundle install --without test && lein install")
       run("cd /code && COW=\"#{@debs}\" MOCK=\"#{@rpms}\" GEM_SOURCE='https://rubygems.org' EZBAKE_ALLOW_UNREPRODUCIBLE_BUILDS=true EZBAKE_NODEPLOY=true LEIN_PROFILES=ezbake lein with-profile user,ezbake,provided,internal ezbake local-build")
-      run_command("sudo chown -R $USER output")
+      run_command("sudo chown -R $USER output", print_command: true)
       Dir.glob('output/**/*i386*').each { |f| FileUtils.rm_rf(f) }
       Dir.glob('output/puppetdb-*.tar.gz').each { |f| FileUtils.mv(f, f.sub('puppetdb','openvoxdb'))}
     ensure
