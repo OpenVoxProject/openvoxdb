@@ -18,9 +18,9 @@ namespace :vox do
     set_version(version)
 
     # Run git command to get short SHA and one line description of the commit on HEAD
-    branch = run_command('git rev-parse --abbrev-ref HEAD', true)
-    sha = run_command('git rev-parse --short HEAD', true)
-    msg = run_command('git log -n 1 --pretty=%B', true)
+    branch = run_command('git rev-parse --abbrev-ref HEAD')
+    sha = run_command('git rev-parse --short HEAD')
+    msg = run_command('git log -n 1 --pretty=%B')
 
     puts "Branch: #{branch}"
     puts "SHA: #{sha}"
@@ -31,7 +31,7 @@ namespace :vox do
     puts "Setting version after tag to #{snapshot_version}"
     set_version("#{snapshot_version}-SNAPSHOT")
 
-    unless !ENV['NOPUSH'].nil?
+    if ENV['NOPUSH'].nil?
       puts "Pushing to origin"
       run_command("git push origin && git push origin #{args[:tag]}")
     end
