@@ -80,6 +80,12 @@
 
    There are benchmark metrics which can be viewed via JMX.
 
+   WARNING: DO NOT DO THIS WITH A PRODUCTION OR INTERNET-ACCESSIBLE INSTANCE! 
+   This gives remote access to the JVM internals, including potentially secrets.
+   If you absolutely must (you don't), read about using certs with JMX to do it
+   securely. You are better off using the metrics API or Grafana metrics
+   exporter.
+
    Add the following properties to your Benchmark Java process on startup:
 
    ```
