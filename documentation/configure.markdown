@@ -71,6 +71,12 @@ expose direct JMX access using standard JVM means as documented
 [here](http://docs.oracle.com/javase/6/docs/technotes/guides/management/agent.html).
 This can be done using the `JAVA_ARGS` init script setting, similar to configuring the heap size.
 
+WARNING: DO NOT DO THIS WITH A PRODUCTION OR INTERNET-ACCESSIBLE INSTANCE! 
+This gives remote access to the JVM internals, including potentially secrets.
+If you absolutely must (you don't), read about using certs with JMX to do it
+securely. You are better off using the metrics API or Grafana metrics
+exporter.
+
 For example, adding the following JVM options will open
 up a JMX socket on port 1099:
 
