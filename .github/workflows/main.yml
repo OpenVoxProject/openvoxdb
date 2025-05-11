@@ -1,5 +1,10 @@
+---
 name: main
-on: [push, pull_request]
+on:
+  pull_request: {}
+  push:
+    branches:
+      - main
 
 jobs:
   # We use "o" as the name to keep it short since the flavor repeats
@@ -15,13 +20,13 @@ jobs:
         # converted to "_" in the pdb-job-id below.
 
         flavor:
-          - core+ext/openjdk17/pg-14
           - core+ext/openjdk17/pg-16
+          - core+ext/openjdk17/pg-14
 
           - rspec/pup-main
           - lint/openjdk17
 
-        os: [ubuntu-20.04]
+        os: [ubuntu-24.04]
         ruby: ['3.2']
 
         # Defaults for special-case influencing vars
@@ -32,11 +37,8 @@ jobs:
         include:
           # integration
           - flavor: int/openjdk17/pup-main/srv-main/pg-16/rich
-            os: ubuntu-20.04
+            os: ubuntu-24.04
             ruby: '3.2'
-          - flavor: int/openjdk17/pup-7.x/srv-7.x/pg-14/rich
-            os: ubuntu-20.04
-            ruby: '2.7'
 
     steps:
       - name: Compute job outputs
