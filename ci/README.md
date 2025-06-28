@@ -131,13 +131,7 @@ Prepares the CI machine for tests and runs tests using `ci/bin/run`.
 ### `ci/bin/run`
 Runs tests on a prepared CI machine.
 
-### `ci/bin/travis-on-success`
-Runs when FOSS PDB Travis tests succeed. Triggers tests on same branch name for extensions repo. Referenced in `.travis.yml`.
-
 ## CI Configuration
-
-### `.travis.yml`
-Travis CI configuration. Main CI test runner. Runs core, external, integration, rspec, and container tests in a variety of forms. Notifies Slack with results. See https://travis-ci.com/puppetlabs/puppetdb.
 
 ###  `.github/workflows/main.yml`
 On pull request and push runs core, external, integration, and rspec tests on MacOS machines. Also runs lint test on an Ubuntu machine.
@@ -150,9 +144,6 @@ On push to `doc-latest` or `doc-6.y` builds and uploads docs to Puppet's s3 buck
 
 ### `.github/workflows/snyk.yml`
 On push to `6.x` and `main`, run Snyk security scanning tests.
-
-## Internal Jenkins CI Configuration
-Both FOSS PuppetDB and PuppetDB Extensions repos are tested with other Puppet Enterprise components internally using a [private Jenkins instance](https://jenkins-enterprise.delivery.puppetlabs.net/view/puppetdb). The CI jobs are defined by [Jenkins Job Builder](https://jenkins-job-builder.readthedocs.io/en/latest) YAML files. They live in the [private ci-job-configs repo](https://github.com/puppetlabs/ci-job-configs). The most important PuppetDB files in that repo are:
 
 ### `doc/pipelines/enterprise.md`
 Overview of whole Jenkins setup. Documents global parameters which can be used by any project.

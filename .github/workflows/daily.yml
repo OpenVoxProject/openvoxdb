@@ -1,3 +1,4 @@
+---
 name: daily
 on:
   schedule:
@@ -19,8 +20,8 @@ jobs:
           - core+ext/openjdk17/pg-15
           - core+ext/openjdk11/pg-11
 
-        branch: [7.x, main]
-        os: [ubuntu-20.04]
+        branch: main
+        os: [ubuntu-24.04]
         ruby: ['3.2']
 
         # Defaults for special-case influencing vars
@@ -30,47 +31,20 @@ jobs:
 
         # Special cases
         include:
-          - os: ubuntu-20.04
+          - os: ubuntu-24.04
             ruby: '3.2'
             flavor: core+ext/openjdk11/pg-16
             drop-joins: by-request
-          - os: ubuntu-20.04
+          - os: ubuntu-24.04
             ruby: '3.2'
             flavor: core+ext/openjdk11/pg-16
             lein-profile: fips
 
           # non-rich variants for main
-          - os: ubuntu-20.04
+          - os: ubuntu-24.04
             branch: main
             ruby: '3.2'
             flavor: int/openjdk11/pup-main/srv-main/pg-16
-          - os: ubuntu-20.04
-            branch: main
-            ruby: '2.7'
-            flavor: int/openjdk11/pup-7.x/srv-7.x/pg-16
-
-          # non-rich variants for 7.x
-          - os: ubuntu-20.04
-            branch: 7.x
-            ruby: '2.5'
-            flavor: int/openjdk11/pup-6.x/srv-6.x/pg-11
-          - os: ubuntu-20.04
-            branch: 7.x
-            ruby: '2.7'
-            flavor: int/openjdk11/pup-7.x/srv-7.x/pg-11
-
-          # OpenJDK 8 testing, only on 7.x
-          - os: ubuntu-20.04
-            branch: 7.x
-            ruby: '2.7'
-            flavor: core+ext/openjdk8/pg-11
-
-          # Test deprecated streaming on 7.x
-          - os: ubuntu-20.04
-            branch: 7.x
-            ruby: '2.7'
-            flavor: core+ext/openjdk11/pg-11
-            deprecated-query-streaming: 'by-request'
 
     steps:
       - name: Compute job outputs
