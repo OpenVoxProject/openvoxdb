@@ -38,11 +38,11 @@ group :test do
 
   case puppet_ref
   when "latest"
-    gem 'puppet', ">= #{oldest_supported_puppet}", :require => false
+    gem 'openvox', ">= #{oldest_supported_puppet}", :require => false
   when "oldest"
-    gem 'puppet', oldest_supported_puppet, :require => false
+    gem 'openvox', oldest_supported_puppet, :require => false
   else
-    gem 'puppet', :git => 'https://github.com/puppetlabs/puppet.git',
+    gem 'openvox', :git => 'https://github.com/openvoxproject/openvox.git',
       :ref => puppet_ref, :require => false
   end
   # syslog is a dependency of puppet/openvox, but missing in their gemspec
