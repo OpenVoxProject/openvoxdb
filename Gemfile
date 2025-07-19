@@ -20,7 +20,7 @@ def location_for(place)
   end
 end
 
-gem 'facter'
+gem 'openfact'
 gem 'rake'
 gem 'packaging', *location_for(ENV['PACKAGING_LOCATION'] || '~> 0.99')
 
