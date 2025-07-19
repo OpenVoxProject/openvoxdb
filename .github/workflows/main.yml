@@ -21,7 +21,6 @@ jobs:
 
         flavor:
           - core+ext/openjdk17/pg-16
-          - core+ext/openjdk17/pg-14
 
           - rspec/pup-main
           - lint/openjdk17
