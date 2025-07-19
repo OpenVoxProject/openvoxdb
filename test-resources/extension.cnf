@@ -1,0 +1,5 @@
+[CA_extensions]
+basicConstraints = critical,CA:TRUE
+nsComment = "Puppet Ruby/OpenSSL Internal Certificate"
+keyUsage = critical,keyCertSign,cRLSign
+subjectKeyIdentifier = hash
