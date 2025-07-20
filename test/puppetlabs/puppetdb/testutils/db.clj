@@ -128,7 +128,7 @@
   ([config]
    (jdbc/with-db-connection config (clear-db-for-testing!)))
   ([]
-   (jdbc/do-commands "DROP SCHEMA pdbtestschema123 CASCADE")
+   (jdbc/do-commands "DROP SCHEMA pdbtestschema CASCADE; select schema_name from information_schema.schemata")
    (doseq [table-name (cons "test" (sutils/sql-current-connection-table-names))]
      (drop-table! table-name))
    (doseq [sequence-name (cons "test" (sutils/sql-current-connection-sequence-names))]
