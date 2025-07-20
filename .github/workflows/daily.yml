@@ -5,6 +5,9 @@ on:
     # 12:00 UTC
     - cron: '0 12 * * *'
 
+permissions:
+  contents: read # minimal required permissions to clone repo
+
 jobs:
   core:
     runs-on: ${{ matrix.os }}
