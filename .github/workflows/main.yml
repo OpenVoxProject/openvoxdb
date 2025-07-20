@@ -83,3 +83,11 @@ jobs:
           path: |
             pg.log
             test.log
+
+  tests:
+    needs:
+      - o
+    runs-on: ubuntu-24.04
+    name: Test suite
+    steps:
+      - run: echo Test suite completed
