@@ -45,7 +45,8 @@ group :test do
     gem 'puppet', :git => 'https://github.com/puppetlabs/puppet.git',
       :ref => puppet_ref, :require => false
   end
-
+  # syslog is a dependency of puppet/openvox, but missing in their gemspec
+  gem 'syslog'
   gem 'puppet-pson', '~> 1.1'
 
   gem 'mocha', '~> 1.0'
