@@ -4,11 +4,13 @@ source ENV['GEM_SOURCE'] || "https://rubygems.org"
 oldest_supported_puppet = "7.0.0"
 beaker_version = ENV['BEAKER_VERSION']
 
-begin
-  puppet_ref = File.read(gemfile_home + '/ext/test-conf/puppet-ref-requested').strip
-rescue Errno::ENOENT
-  puppet_ref = File.read(gemfile_home + '/ext/test-conf/puppet-ref-default').strip
-end
+puppet_ref = if File.exist?(gemfile_home + '/ext/test-conf/puppet-ref-requested')
+               File.read(gemfile_home + '/ext/test-conf/puppet-ref-requested').strip
+            elsif File.exist?(gemfile_home + '/ext/test-conf/puppet-ref-default')
+              File.read(gemfile_home + '/ext/test-conf/puppet-ref-default').strip
+            else
+              'main'
+            end
 
 def location_for(place)
   if place =~ /^(git[:@][^#]*)#(.*)/
