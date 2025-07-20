@@ -6,6 +6,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read # minimal required permissions to clone repo
+
 jobs:
   # We use "o" as the name to keep it short since the flavor repeats
   # it, and the current actions interface doesn't show very many
