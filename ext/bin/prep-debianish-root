@@ -15,16 +15,16 @@ misuse() { usage 1>&2; exit 2; }
 # their own mirrors into /etc/apt/sources.list at VM start time, and
 # there's a delay in getting all their mirrors in sync.
 apt-get-update() {
-    local tmpdir
-    tmpdir=$(mktemp)
-    set +e
-    for i in $(seq 1 20); do
-        apt-get update 2>&1 | tee "$tmpdir"
-        grep -x "[WE]:.*" "$tmpdir" || break
-        sleep 1
-    done
-    set -e
-    echo "Executed apt-get update $i times"
+  local tmpdir
+  tmpdir=$(mktemp)
+  set +e
+  for i in $(seq 1 20); do
+    apt-get update 2>&1 | tee "$tmpdir"
+    grep -x "[WE]:.*" "$tmpdir" || break
+    sleep 1
+  done
+  set -e
+  echo "Executed apt-get update $i times"
 }
 
 install-pg() {
@@ -36,11 +36,11 @@ install-pg() {
         fi
     done
     if test "$need_pgdg"; then
-        apt install -y lsb-release gnupg2
-        curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-        echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -sc)-pgdg main" \
-             > /etc/apt/sources.list.d/pdb-pgdg.list
-        apt-get-update
+      install -d /usr/share/postgresql-common/pgdg
+      curl --output /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc
+      . /etc/os-release
+      echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt ${VERSION_CODENAME}-pgdg main" > /etc/apt/sources.list.d/pdb-pgdg.list
+      apt-get-update
     fi
 
     apt-get -y install "$@"
