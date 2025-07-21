@@ -125,7 +125,6 @@ An example configuration file:
 
     [puppetdb]
     certificate-allowlist = /path/to/file/containing/certnames
-    disable-update-checking = false
 
     [jetty]
     port = 8080
@@ -262,22 +261,6 @@ rather than the `dns_alt_names` setting.)
 If not supplied, PuppetDB uses standard HTTPS without any additional
 authorization. All HTTPS clients must still supply valid, verifiable
 SSL client certificates.
-
-### `disable-update-checking`
-
-Optional. Setting this to `true` disables checking for updated
-versions of PuppetDB and sending basic analytics data to Puppet. Defaults to `false`.
-
-If `disable-update-checking` is set to `false`, PuppetDB checks for updates upon start or restart, and every 24 hours thereafter, and sends the following data to Puppet:
-
-* Product name
-* Database name
-* Database version
-* PuppetDB version
-* IP address
-* Data collection timestamp
-
-The data Puppet collects provides just one of many methods we use for learning about our community of users. The more we know about how you use Puppet, the better we can address your needs. No personally identifiable information is collected, and the data we collect is never used or shared outside Puppet.
 
 ### `log-queries`
 Optional. Setting this to `true` will enable debug level logging of the internal
