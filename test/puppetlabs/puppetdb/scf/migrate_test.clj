@@ -1742,10 +1742,18 @@
   [date]
   (let [date-suffix (diff-date-suffix date)
         formatted-start-of-day (get-formatted-start-of-day date)
-        formatted-start-of-next-day (get-formatted-start-of-day (.plusDays date 1))]
+        formatted-start-of-next-day (get-formatted-start-of-day (.plusDays date 1))
+        pg17-db [17 0]
+        {current-db-version :version} (sutils/db-metadata)
+        ]
     [{:left-only
       {:constraint_name
-       (format "(((\"timestamp\" >= '%s'::timestamp with time zone) AND (\"timestamp\" < '%s'::timestamp with time zone)))" formatted-start-of-day formatted-start-of-next-day),
+       ;;; In PG >= 17 unnecessary parentheses are automatically removed. so if we're on pg <17 we have ((( and ))) and on pg >=17 (( and ))
+       (let [command (format "((\"timestamp\" >= '%s'::timestamp with time zone) AND (\"timestamp\" < '%s'::timestamp with time zone))" formatted-start-of-day formatted-start-of-next-day)]
+         (if (neg? (compare current-db-version pg17-db))
+           (str "(" command  ")")
+           command
+           ))
        :table_name (format "resource_events_%s" date-suffix),
        :constraint_type "CHECK",
        :initially_deferred "NO",
@@ -1968,13 +1976,21 @@
 (defn report-partition-day-constraint-diff-template
   "Generates the expected diff of a constraints for one report's partition day table"
   [date]
+  
   (let [date-suffix (diff-date-suffix date)
         formatted-start-of-day (get-formatted-start-of-day date)
         formatted-start-of-next-day (get-formatted-start-of-day (.plusDays date 1))
-        table-name (format "reports_%s" date-suffix)]
+        table-name (format "reports_%s" date-suffix)
+        pg17-db  [17 0]
+        {current-db-version :version} (sutils/db-metadata)]
     [{:left-only
+      ;;; In PG >= 17 unnecessary parentheses are automatically removed. so if we're on pg <17 we have ((( and ))) and on pg >=17 (( and ))
       {:constraint_name
-       (format "(((producer_timestamp >= '%s'::timestamp with time zone) AND (producer_timestamp < '%s'::timestamp with time zone)))" formatted-start-of-day formatted-start-of-next-day)
+       (let [command (format "((producer_timestamp >= '%s'::timestamp with time zone) AND (producer_timestamp < '%s'::timestamp with time zone))" formatted-start-of-day formatted-start-of-next-day)]
+         (if (neg? (compare current-db-version pg17-db))
+           (str "(" command  ")")
+           command
+         ))
        :table_name (format "reports_%s" date-suffix)
        :constraint_type "CHECK"
        :initially_deferred "NO"
