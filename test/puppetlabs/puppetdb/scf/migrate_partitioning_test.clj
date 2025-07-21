@@ -5,6 +5,7 @@
                      schema-info-map diff-schema-maps]]
             [puppetlabs.puppetdb.scf.partitioning :as partitioning]
             [puppetlabs.puppetdb.scf.migrate-test :refer [apply-migration-for-testing! fast-forward-to-migration!]]
+            [puppetlabs.puppetdb.scf.storage-utils :as sutils]
             [clojure.string :as str])
   (:import (java.time ZonedDateTime ZoneId)
            (java.time.format DateTimeFormatter)
@@ -550,11 +551,17 @@
                                            start-of-day (.format date-formatter
                                                                  (.truncatedTo date-of-week (ChronoUnit/DAYS)))
                                            end-of-day (.format date-formatter
-                                                               (.plusDays (.truncatedTo date-of-week (ChronoUnit/DAYS)) 1))]
+                                                               (.plusDays (.truncatedTo date-of-week (ChronoUnit/DAYS)) 1))
+                                           pg17-db [17 0]
+                                           {current-db-version :version} (sutils/db-metadata)]
                                        [{:left-only nil
                                          :right-only {:constraint_name
-                                                      (format "(((\"timestamp\" >= '%s'::timestamp with time zone) AND (\"timestamp\" < '%s'::timestamp with time zone)))"
-                                                              start-of-day end-of-day)
+                                                      ;;; In PG >= 17 unnecessary parentheses are automatically removed. so if we're on pg <17 we have ((( and ))) and on pg >=17 (( and ))
+                                                      (let [command (format "((\"timestamp\" >= '%s'::timestamp with time zone) AND (\"timestamp\" < '%s'::timestamp with time zone))" start-of-day end-of-day)]
+                                                        (if (neg? (compare current-db-version pg17-db))
+                                                          (str "(" command  ")")
+                                                          command
+                                                          ))
                                                       :table_name table-name
                                                       :constraint_type "CHECK"
                                                       :initially_deferred "NO"
@@ -1174,11 +1181,17 @@
                                             start-of-day (.format date-formatter
                                                                   (.truncatedTo date-of-week (ChronoUnit/DAYS)))
                                             end-of-day (.format date-formatter
-                                                                (.plusDays (.truncatedTo date-of-week (ChronoUnit/DAYS)) 1))]
+                                                                (.plusDays (.truncatedTo date-of-week (ChronoUnit/DAYS)) 1))
+                                            pg17-db [17 0]
+                                            {current-db-version :version} (sutils/db-metadata)]
                                         [{:left-only nil
                                           :right-only {:constraint_name
-                                                       (format "(((producer_timestamp >= '%s'::timestamp with time zone) AND (producer_timestamp < '%s'::timestamp with time zone)))"
-                                                               start-of-day end-of-day)
+                                                       ;;; In PG >= 17 unnecessary parentheses are automatically removed. so if we're on pg <17 we have ((( and ))) and on pg >=17 (( and ))
+                                                       (let [command (format "((producer_timestamp >= '%s'::timestamp with time zone) AND (producer_timestamp < '%s'::timestamp with time zone))" start-of-day end-of-day)]
+                                                       (if (neg? (compare current-db-version pg17-db))
+                                                         (str "(" command  ")")
+                                                         command
+                                                         ))
                                                        :table_name table-name
                                                        :constraint_type "CHECK"
                                                        :initially_deferred "NO"
