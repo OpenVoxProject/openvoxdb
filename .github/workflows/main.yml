@@ -29,8 +29,8 @@ jobs:
           - rspec/pup-main
           - lint/openjdk17
 
-        os: [ubuntu-22.04]
-        ruby: ['3.2']
+        os: [ubuntu-24.04]
+        ruby: ['3.2', '3.3', '3.4']
 
         # Defaults for special-case influencing vars
         lein-profile: ['']
@@ -42,13 +42,19 @@ jobs:
           - flavor: int/openjdk17/pup-main/srv-main/pg-16/rich
             os: ubuntu-24.04
             ruby: '3.2'
+          - flavor: int/openjdk17/pup-main/srv-main/pg-16/rich
+            os: ubuntu-24.04
+            ruby: '3.3'
+          - flavor: int/openjdk17/pup-main/srv-main/pg-16/rich
+            os: ubuntu-24.04
+            ruby: '3.4'
 
     steps:
       - name: Compute job outputs
         id: computed
         run: |
           # This id must be unique across all jobs
-          pdb_test_gh_job_id="${{ matrix.os }}/${{ matrix.flavor }}"
+          pdb_test_gh_job_id="${{ matrix.os }}/${{ matrix.flavor }}/${{ matrix.ruby }}"
           pdb_test_gh_job_id="${pdb_test_gh_job_id//\//_}"
           pdb_test_gh_job_id+="_${{ matrix.lein-profile }}"
           pdb_test_gh_job_id+="_${{ matrix.drop-joins }}"
@@ -69,6 +75,7 @@ jobs:
             ${{ hashFiles('**/Gemfile') }}
             ${{ hashFiles('**/project.clj') }}
             ${{ steps.computed.outputs.day }}
+            %{{ matrix.ruby }}
           path: |
             ci/local/jdk
             vendor/bundle/ruby
