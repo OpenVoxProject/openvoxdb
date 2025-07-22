@@ -8,4 +8,4 @@
       .toURI .toASCIIString))
 
 (defn dashboard-page? [{:keys [body] :as _req}]
-  (.contains body "<title>PuppetDB: Dashboard</title>"))
+  (.contains body "<title>OpenvoxDB: Dashboard</title>"))
