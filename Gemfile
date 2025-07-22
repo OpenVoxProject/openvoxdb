@@ -1,7 +1,7 @@
 gemfile_home = File.dirname(__FILE__)
 
-source ENV['GEM_SOURCE'] || "https://rubygems.org"
-oldest_supported_puppet = "7.0.0"
+source ENV['GEM_SOURCE'] || 'https://rubygems.org'
+oldest_supported_openvox = '7.37.1'
 beaker_version = ENV['BEAKER_VERSION']
 
 puppet_ref = if File.exist?(gemfile_home + '/ext/test-conf/puppet-ref-requested')
@@ -38,11 +38,11 @@ group :test do
 
   case puppet_ref
   when "latest"
-    gem 'puppet', ">= #{oldest_supported_puppet}", :require => false
+    gem 'openvox', ">= #{oldest_supported_openvox}", :require => false
   when "oldest"
-    gem 'puppet', oldest_supported_puppet, :require => false
+    gem 'openvox', oldest_supported_openvox, :require => false
   else
-    gem 'puppet', :git => 'https://github.com/puppetlabs/puppet.git',
+    gem 'openvox', :git => 'https://github.com/OpenVoxProject/openvox.git',
       :ref => puppet_ref, :require => false
   end
   # syslog is a dependency of puppet/openvox, but missing in their gemspec
