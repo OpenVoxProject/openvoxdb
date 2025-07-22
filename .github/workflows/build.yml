@@ -1,4 +1,8 @@
+---
 name: Build openvoxdb
+
+permissions:
+  contents: read # minimal required permissions to clone repo
 
 on:
   workflow_dispatch:
