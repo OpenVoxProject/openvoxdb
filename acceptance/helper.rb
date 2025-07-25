@@ -63,6 +63,12 @@ module PuppetDBExtensions
           "'purge packages and perform exhaustive cleanup after run'",
           "PUPPETDB_PURGE_AFTER_RUN", :false)
 
+    skip_openvox_package_installation =
+        get_option_value(options[:puppetdb_skip_openvox_package_installation],
+          [:true, :false],
+          "'skip installation of openvox packages, since the test suite does not know how'",
+          "PUPPETDB_SKIP_OPENVOX_PACKAGE_INSTALLATION", :true)
+
     skip_presuite_provisioning =
         get_option_value(options[:puppetdb_skip_presuite_provisioning],
           [:true, :false],
@@ -130,6 +136,7 @@ module PuppetDBExtensions
       :repo_hiera => puppetdb_repo_hiera,
       :repo_facter => puppetdb_repo_facter,
       :git_ref => puppetdb_git_ref,
+      :skip_openvox_package_installation => skip_openvox_package_installation == :true,
       :skip_presuite_provisioning => skip_presuite_provisioning == :true,
       :nightly => nightly == :true
     }

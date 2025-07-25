@@ -7,10 +7,14 @@ test_name "Install Puppet" do
       on(hosts, 'yum install -y tzdata-java')
     end
 
-    step "Install Puppet" do
-      install_puppet(puppet_repo_version(test_config[:platform_version],
-                                         test_config[:install_mode],
-                                         test_config[:nightly]))
+    if (test_config[:skip_openvox_package_installation])
+      install_puppet_conf
+    else
+      step "Install Puppet" do
+        install_puppet(puppet_repo_version(test_config[:platform_version],
+                                           test_config[:install_mode],
+                                           test_config[:nightly]))
+      end
     end
   end
 
