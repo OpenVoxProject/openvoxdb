@@ -38,6 +38,13 @@ on:
         required: true
         type: string
         default: main
+      fork:
+        description: |-
+          (Fork) The fork of openvoxdb to run the Beaker test suite
+          from.
+        required: true
+        type: string
+        default: openvoxproject
       pre-release-build:
         description: |-
           (Pre-release Build) Whether to test unreleased version
@@ -93,8 +100,9 @@ jobs:
   acceptance:
     uses: 'openvoxproject/shared-actions/.github/workflows/beaker_acceptance.yml@main'
     with:
-      ref: ${{ inputs.ref }}
       project-name: openvoxdb
+      ref: ${{ inputs.ref }}
+      fork: ${{ inputs.fork }}
       install-openvox: true
       openvox-collection: ${{ inputs.collection }}
       openvox-agent-version: ${{ inputs.openvox-agent-version }}
