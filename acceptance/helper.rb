@@ -63,6 +63,12 @@ module PuppetDBExtensions
           "'purge packages and perform exhaustive cleanup after run'",
           "PUPPETDB_PURGE_AFTER_RUN", :false)
 
+    skip_openvox_package_installation =
+        get_option_value(options[:puppetdb_skip_openvox_package_installation],
+          [:true, :false],
+          "'skip installation of openvox packages, since the test suite does not know how'",
+          "PUPPETDB_SKIP_OPENVOX_PACKAGE_INSTALLATION", :true)
+
     skip_presuite_provisioning =
         get_option_value(options[:puppetdb_skip_presuite_provisioning],
           [:true, :false],
@@ -130,6 +136,7 @@ module PuppetDBExtensions
       :repo_hiera => puppetdb_repo_hiera,
       :repo_facter => puppetdb_repo_facter,
       :git_ref => puppetdb_git_ref,
+      :skip_openvox_package_installation => skip_openvox_package_installation == :true,
       :skip_presuite_provisioning => skip_presuite_provisioning == :true,
       :nightly => nightly == :true
     }
@@ -195,7 +202,7 @@ module PuppetDBExtensions
   end
 
   def get_os_family(host)
-    on(host, "which yum", :silent => true)
+    result = on(host, "which yum", :silent => true)
     if result.exit_code == 0
       :redhat
     else
@@ -447,6 +454,70 @@ module PuppetDBExtensions
     on(hosts, 'puppet module install puppetlabs-puppetdb')
   end
 
+  def setup_openvoxdb_certs(database)
+    step 'Ensure PuppetDB certificates are setup' do
+      # Normally the openvoxdb package automagically post-install runs
+      # 'puppetdb ssl-setup', but this relies on the openvox-agent
+      # already having certs generated at the time that the openvoxdb
+      # package was installed. If we installed openvoxdb before
+      # running the suite and before agent certs were generated, then
+      # we need this step to ensure that openvoxdb now gets its certs.
+      # (If they are already in place, the command should be
+      # idempotent.)
+      apply_manifest_on(database, <<~EOM)
+        exec { 'puppetdb-prepare-certs':
+          command => '/opt/puppetlabs/bin/puppetdb ssl-setup',
+          path    => '/bin:/sbin:/usr/bin',
+          onlyif  => 'test -f /opt/puppetlabs/bin/puppetdb',
+        }
+      EOM
+    end
+  end
+
+  # Use the puppetdb module to configure pre-installed openvoxdb
+  # and packages.
+  def configure_openvoxdb(host)
+    manifest = <<~EOS
+      class { 'puppetdb':
+        puppetdb_package    => 'openvoxdb',
+        manage_firewall     => false,
+        manage_package_repo => true,
+        disable_update_checking => true,
+        database_listen_address => 'localhost',
+        postgres_version        => '14',
+        database_name           => 'puppetdb',
+        database_username       => 'puppetdb',
+        database_password       => 'puppetdb',
+        read_database_username  => 'puppetdb-read',
+        read_database_password  => 'puppetdb-read',
+      }
+    EOS
+    apply_manifest_on(host, manifest)
+    print_ini_files(host)
+    sleep_until_started(host)
+  end
+
+  def configure_openvoxdb_termini(host, databases)
+    server_urls = databases.map {|db| "https://#{db.node_name}:8081"}.join(',')
+    manifest = <<~EOS
+      class { 'puppetdb::master::config':
+        terminus_package         => 'openvoxdb-termini',
+        puppetdb_startup_timeout => 120,
+        manage_report_processor  => true,
+        enable_reports           => true,
+        strict_validation        => true,
+      }
+      ini_setting {'server_urls':
+        ensure  => present,
+        section => 'main',
+        path    => "${puppetdb::params::puppet_confdir}/puppetdb.conf",
+        setting => 'server_urls',
+        value   => '#{server_urls}',
+      }
+    EOS
+    apply_manifest_on(host, manifest)
+  end
+
   def install_puppetdb(host, version=nil)
     manifest = <<-EOS
     class { 'puppetdb::globals':
@@ -543,17 +614,17 @@ module PuppetDBExtensions
     # For EOL OSes, pgdg removes the package repo
     manage_package_repo = ! (is_bionic || is_buster)
 
-    manifest = <<-EOS
+    manifest = <<~EOS
       # create the puppetdb database
       class { '::puppetdb::database::postgresql':
-      listen_addresses            => 'localhost',
-      manage_package_repo         => #{manage_package_repo},
-      postgres_version            => '14',
-      database_name               => 'puppetdb',
-      database_username           => 'puppetdb',
-      database_password           => 'puppetdb',
-      read_database_username      => 'puppetdb-read',
-      read_database_password      => 'puppetdb-read',
+        listen_addresses            => 'localhost',
+        manage_package_repo         => #{manage_package_repo},
+        postgres_version            => '14',
+        database_name               => 'puppetdb',
+        database_username           => 'puppetdb',
+        database_password           => 'puppetdb',
+        read_database_username      => 'puppetdb-read',
+        read_database_password      => 'puppetdb-read',
       }
     EOS
     manifest
@@ -741,7 +812,7 @@ EOS
     desired_exit_codes = [desired_exit_codes].flatten
     result = on host, command, :acceptable_exit_codes => (0...127), :silent => true
     num_retries = 0
-    until desired_exit_codes.include?(exit_code) and (result.stdout =~ expected_output)
+    until desired_exit_codes.include?(result.exit_code) and (result.stdout =~ expected_output)
       sleep retry_interval
       result = on host, command, :acceptable_exit_codes => (0...127), :silent => true
       num_retries += 1
