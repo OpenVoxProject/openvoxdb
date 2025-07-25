@@ -454,6 +454,70 @@ module PuppetDBExtensions
     on(hosts, 'puppet module install puppetlabs-puppetdb')
   end
 
+  def setup_openvoxdb_certs(database)
+    step 'Ensure PuppetDB certificates are setup' do
+      # Normally the openvoxdb package automagically post-install runs
+      # 'puppetdb ssl-setup', but this relies on the openvox-agent
+      # already having certs generated at the time that the openvoxdb
+      # package was installed. If we installed openvoxdb before
+      # running the suite and before agent certs were generated, then
+      # we need this step to ensure that openvoxdb now gets its certs.
+      # (If they are already in place, the command should be
+      # idempotent.)
+      apply_manifest_on(database, <<~EOM)
+        exec { 'puppetdb-prepare-certs':
+          command => '/opt/puppetlabs/bin/puppetdb ssl-setup',
+          path    => '/bin:/sbin:/usr/bin',
+          onlyif  => 'test -f /opt/puppetlabs/bin/puppetdb',
+        }
+      EOM
+    end
+  end
+
+  # Use the puppetdb module to configure pre-installed openvoxdb
+  # and packages.
+  def configure_openvoxdb(host)
+    manifest = <<~EOS
+      class { 'puppetdb':
+        puppetdb_package    => 'openvoxdb',
+        manage_firewall     => false,
+        manage_package_repo => true,
+        disable_update_checking => true,
+        database_listen_address => 'localhost',
+        postgres_version        => '14',
+        database_name           => 'puppetdb',
+        database_username       => 'puppetdb',
+        database_password       => 'puppetdb',
+        read_database_username  => 'puppetdb-read',
+        read_database_password  => 'puppetdb-read',
+      }
+    EOS
+    apply_manifest_on(host, manifest)
+    print_ini_files(host)
+    sleep_until_started(host)
+  end
+
+  def configure_openvoxdb_termini(host, databases)
+    server_urls = databases.map {|db| "https://#{db.node_name}:8081"}.join(',')
+    manifest = <<~EOS
+      class { 'puppetdb::master::config':
+        terminus_package         => 'openvoxdb-termini',
+        puppetdb_startup_timeout => 120,
+        manage_report_processor  => true,
+        enable_reports           => true,
+        strict_validation        => true,
+      }
+      ini_setting {'server_urls':
+        ensure  => present,
+        section => 'main',
+        path    => "${puppetdb::params::puppet_confdir}/puppetdb.conf",
+        setting => 'server_urls',
+        value   => '#{server_urls}',
+      }
+    EOS
+    apply_manifest_on(host, manifest)
+  end
+
   def install_puppetdb(host, version=nil)
     manifest = <<-EOS
     class { 'puppetdb::globals':
@@ -550,17 +614,17 @@ module PuppetDBExtensions
     # For EOL OSes, pgdg removes the package repo
     manage_package_repo = ! (is_bionic || is_buster)
 
-    manifest = <<-EOS
+    manifest = <<~EOS
       # create the puppetdb database
       class { '::puppetdb::database::postgresql':
-      listen_addresses            => 'localhost',
-      manage_package_repo         => #{manage_package_repo},
-      postgres_version            => '14',
-      database_name               => 'puppetdb',
-      database_username           => 'puppetdb',
-      database_password           => 'puppetdb',
-      read_database_username      => 'puppetdb-read',
-      read_database_password      => 'puppetdb-read',
+        listen_addresses            => 'localhost',
+        manage_package_repo         => #{manage_package_repo},
+        postgres_version            => '14',
+        database_name               => 'puppetdb',
+        database_username           => 'puppetdb',
+        database_password           => 'puppetdb',
+        read_database_username      => 'puppetdb-read',
+        read_database_password      => 'puppetdb-read',
       }
     EOS
     manifest
