@@ -39,8 +39,7 @@
   []
   {:nrepl {}
    :global {:vardir (testutils/temp-dir)}
-   :puppetdb {:disable-update-checking "true"
-              :query-timeout-default "0"
+   :puppetdb {:query-timeout-default "0"
               :query-timeout-max "0"}
    :node-purge-ttl "14d"
    :jetty {:port 0}

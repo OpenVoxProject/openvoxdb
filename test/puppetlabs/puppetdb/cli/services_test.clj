@@ -11,16 +11,13 @@
                      get-temporal-partitions]
              :as part]
             [puppetlabs.trapperkeeper.testutils.logging
-             :refer [with-log-output
-                     logs-matching
-                     with-logged-event-maps
+             :refer [with-logged-event-maps
                      with-log-level]]
             [puppetlabs.puppetdb.cli.services :as svcs
              :refer [collect-garbage
                      db-config->clean-request
                      init-with-db
                      init-write-dbs
-                     maybe-check-for-updates
                      query]]
             [puppetlabs.puppetdb.testutils.db
              :refer [*db* *read-db* with-test-db with-unconnected-test-db]]
@@ -32,12 +29,7 @@
             [puppetlabs.puppetdb.scf.storage :as scf-store]
             [puppetlabs.puppetdb.scf.storage-utils :as sutils]
             [puppetlabs.puppetdb.time :as time :refer [now to-string]]
-            [puppetlabs.puppetdb.utils :as utils
-             :refer [await-scheduler-shutdown
-                     schedule
-                     scheduler
-                     request-scheduler-shutdown]]
-            [puppetlabs.puppetdb.meta.version :as version]
+            [puppetlabs.puppetdb.utils :as utils :refer [schedule]]
             [clojure.test :refer :all]
             [puppetlabs.puppetdb.testutils.services :as svc-utils
              :refer [*base-url*
@@ -57,40 +49,8 @@
    (ch.qos.logback.classic Level)
    (ch.qos.logback.classic.spi ILoggingEvent)
    (clojure.lang ExceptionInfo)
-   (java.util.concurrent CyclicBarrier TimeUnit)
+   (java.util.concurrent CyclicBarrier)
    (java.util.concurrent.locks ReentrantLock)))
-
-(deftest update-checking
-  (let [config-map {:global {:product-name "puppetdb"
-                             :update-server "update-server!"}}
-        shutdown-for-ex (fn [_ex]
-                          (binding [*out* *err*]
-                            (println "Ignoring shutdown exception during services tests.")))]
-
-    (testing "should check for updates if running as puppetdb"
-
-      (with-redefs [version/check-for-updates! (constantly "Checked for updates!")]
-        (let [job-pool-test (scheduler 4)
-              recurring-job-checkin (maybe-check-for-updates config-map {} job-pool-test
-                                                             shutdown-for-ex)
-              ;; Skip the first, immediate check
-              delay (->> #(do
-                            (Thread/sleep 100)
-                            (.getDelay recurring-job-checkin TimeUnit/MILLISECONDS))
-                         repeatedly
-                         (drop-while #(< % 20000))
-                         first)]
-          (is (> delay (* 1000 60 60 23)) "should run once a day")
-          (is (= false (.isDone recurring-job-checkin)))
-          (is (= false (.isCancelled recurring-job-checkin)))
-          (request-scheduler-shutdown job-pool-test :interrupt)
-          (assert (await-scheduler-shutdown job-pool-test default-timeout-ms)))))
-
-    (testing "should skip the update check if running as pe-puppetdb"
-      (with-log-output log-output
-        (maybe-check-for-updates (assoc-in config-map [:global :product-name] "pe-puppetdb")
-                                 {} nil shutdown-for-ex)
-        (is (= 1 (count (logs-matching #"Skipping update check on Puppet Enterprise" @log-output))))))))
 
 (defn- check-service-query
   [version q pagination check-result]

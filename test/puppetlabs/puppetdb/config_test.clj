@@ -26,18 +26,6 @@
 
 (deftest puppetdb-configuration
   (testing "puppetdb-configuration"
-    (testing "should convert disable-update-checking value to boolean, if it is specified"
-      (let [config (configure-puppetdb {:puppetdb {:disable-update-checking "true"}})]
-        (is (= (get-in config [:puppetdb :disable-update-checking]) true)))
-      (let [config (configure-puppetdb {:puppetdb {:disable-update-checking "false"}})]
-        (is (= (get-in config [:puppetdb :disable-update-checking]) false)))
-      (let [config (configure-puppetdb {:puppetdb {:disable-update-checking "some-string"}})]
-        (is (= (get-in config [:puppetdb :disable-update-checking]) false))))
-
-    (testing "should throw exception if disable-update-checking cannot be converted to boolean"
-      (is (thrown? clojure.lang.ExceptionInfo
-                   (configure-puppetdb {:puppetdb {:disable-update-checking 1337}}))))
-
     (testing "should default :add-agent-report-filter to true"
       (let [config (configure-puppetdb {})]
         (is (= true (get-in config [:puppetdb :add-agent-report-filter])))))
@@ -52,11 +40,7 @@
       (is (thrown? clojure.lang.ExceptionInfo
                    (configure-puppetdb {:puppetdb {:add-agent-report-filter 1337}}))))
 
-    (testing "disable-update-checking should default to 'false' if left unspecified"
-      (let [config (configure-puppetdb {})]
-        (is (= (get-in config [:puppetdb :disable-update-checking]) false))))
-
-    (testing "shold default :log-queries to false"
+    (testing "should default :log-queries to false"
       (let [config (configure-puppetdb {})]
         (is (= false (get-in config [:puppetdb :log-queries])))))
 

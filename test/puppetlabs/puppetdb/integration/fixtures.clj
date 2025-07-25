@@ -111,7 +111,7 @@
                                                     (ks/deep-merge config-overrides
                                                                    {:database (server-info postgres-server)
                                                                     :read-database (read-db-info postgres-server)
-                                                                    :puppetdb {:disable-update-checking "true"}})
+                                                                    :puppetdb {}})
                                                     10)]
     (PuppetDBTestServer. {:base-url base-url
                           :app app}

@@ -496,23 +496,6 @@
                    (or ex db-ex)))]
         (recur dbs ex)))))
 
-(defn maybe-check-for-updates
-  [config read-db job-pool shutdown-for-ex]
-  (if (conf/foss? config)
-    (let [checkin-interval-millis (* 1000 60 60 24)] ; once per day
-      (schedule-with-fixed-delay
-       job-pool
-       #(with-nonfatal-exceptions-suppressed
-          (with-monitored-execution shutdown-for-ex
-            (try
-              (-> config
-                  conf/update-server
-                  (version/check-for-updates! read-db))
-              (catch InterruptedException _
-                (log/info (trs "Update checker interrupted"))))))
-       0 checkin-interval-millis))
-    (log/debug (trs "Skipping update check on Puppet Enterprise"))))
-
 (def stop-gc-wait-ms (constantly 5000))
 (def stop-query-monitor-wait-ms (constantly 5000))
 
@@ -1083,9 +1066,6 @@
                                                       database-lock-status)]
 
         (init-metrics read-db write-db-pools)
-
-        (when-not (get-in config [:puppetdb :disable-update-checking])
-          (maybe-check-for-updates config read-db job-pool shutdown-for-ex))
 
         (start-schema-checks context service job-pool request-shutdown
                              (cons read-database write-db-cfgs)

@@ -36,7 +36,7 @@
   (let [db-cfg #(select-keys (get-shared-globals) [:scf-read-db])]
     [(GET "/" req (rr/redirect (str (rreq/request-url req) "/dashboard/index.html")))
      (wrap-with-context "/dashboard" (dashboard/build-app dashboard/default-meter-defs))
-     (wrap-with-context "/meta" (meta/build-app db-cfg defaulted-config))
+     (wrap-with-context "/meta" (meta/build-app))
      (wrap-with-context "/cmd" (cmd/command-app get-shared-globals enqueue-command-fn
                                       (conf/reject-large-commands? defaulted-config)
                                       (conf/max-command-size defaulted-config)))
