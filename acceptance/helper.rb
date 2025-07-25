@@ -195,7 +195,7 @@ module PuppetDBExtensions
   end
 
   def get_os_family(host)
-    on(host, "which yum", :silent => true)
+    result = on(host, "which yum", :silent => true)
     if result.exit_code == 0
       :redhat
     else
@@ -741,7 +741,7 @@ EOS
     desired_exit_codes = [desired_exit_codes].flatten
     result = on host, command, :acceptable_exit_codes => (0...127), :silent => true
     num_retries = 0
-    until desired_exit_codes.include?(exit_code) and (result.stdout =~ expected_output)
+    until desired_exit_codes.include?(result.exit_code) and (result.stdout =~ expected_output)
       sleep retry_interval
       result = on host, command, :acceptable_exit_codes => (0...127), :silent => true
       num_retries += 1
