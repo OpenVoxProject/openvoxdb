@@ -93,7 +93,7 @@ gem-install() {
 }
 
 echo "Installing gems"
-gem-install facter
+gem-install openfact
 gem-install hiera
 gem-install puppet-pson
 gem-install "${gem_list[@]}"
