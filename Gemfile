@@ -24,7 +24,7 @@ end
 
 gem 'openfact'
 gem 'rake'
-gem 'packaging', *location_for(ENV['PACKAGING_LOCATION'] || '~> 0.99')
+gem 'packaging', '~> 1.0', github: 'OpenVoxProject/packaging'
 
 group :test do
   # Add test-unit for ruby 2.2+ support (has been removed from stdlib)
