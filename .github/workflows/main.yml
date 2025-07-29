@@ -130,11 +130,29 @@ jobs:
       - name: build it
         run: bundle exec rake vox:build
 
+  termini-rspec:
+    name: openvoxdb-termini RSpec
+    runs-on: ubuntu-24.04
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: setup ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+      - name: Run RSpec
+        run: bundle exec rspec spec -fd
+        working-directory: puppet
+
   tests:
     needs:
       - o
       - run-dita
       - build
+      - termini-rspec
     runs-on: ubuntu-24.04
     name: Test suite
     steps:
