@@ -285,9 +285,6 @@ ssl-ca-cert = test-resources/ca.pem
 ssl-cert = test-resources/localhost.pem
 ssl-key = test-resources/localhost.key
 client-auth = want
-
-[puppetdb]
-disable-update-checking = true
 EOF
 
 # Create PuppetDB auth config file

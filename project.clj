@@ -144,7 +144,6 @@
 
                  ;; Puppet specific
                  [puppetlabs/comidi]
-                 [puppetlabs/dujour-version-check]
                  [puppetlabs/i18n]
                  [puppetlabs/kitchensink]
                  [puppetlabs/ssl-utils]

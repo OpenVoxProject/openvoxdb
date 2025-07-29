@@ -204,7 +204,6 @@
   (all-optional
    {:certificate-whitelist s/Str
     :certificate-allowlist s/Str
-    :disable-update-checking (pls/defaulted-maybe String "false")
     :add-agent-report-filter (pls/defaulted-maybe String "true")
     :log-queries (pls/defaulted-maybe String "false")
     :query-timeout-default (pls/defaulted-maybe String "600")
@@ -213,7 +212,6 @@
 (def puppetdb-config-out
   "Schema for validating the parsed/processed [puppetdb] block"
   {(s/optional-key :certificate-allowlist) s/Str
-   :disable-update-checking Boolean
    :add-agent-report-filter Boolean
    :log-queries Boolean
    :query-timeout-default s/Num
@@ -595,8 +593,7 @@
   (update config :global
           #(-> %
                (utils/assoc-when :product-name "puppetdb")
-               (update :product-name normalize-product-name)
-               (utils/assoc-when :update-server "https://updates.puppetlabs.com/check-for-updates"))))
+               (update :product-name normalize-product-name))))
 
 (defn warn-retirements
   "Warns about configuration retirements.  Abruptly exits the entire
@@ -704,9 +701,6 @@
 
 (defn pe? [config]
   (= "pe-puppetdb" (get-in config [:global :product-name])))
-
-(defn update-server [config]
-  (get-in config [:global :update-server]))
 
 (defn mq-thread-count
   "Returns the desired number of MQ listener threads."
