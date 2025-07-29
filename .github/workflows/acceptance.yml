@@ -119,7 +119,6 @@ jobs:
         [
           "acceptance/setup/openvox/configure_type_defaults.rb",
           "acceptance/setup/pre_suite/00_setup_test_env.rb",
-          "acceptance/setup/pre_suite/05_clear_firewalls.rb",
           "acceptance/setup/pre_suite/10_setup_proxies.rb",
           "acceptance/setup/pre_suite/20_install_puppet.rb",
           "acceptance/setup/pre_suite/30_generate_ssl_certs.rb",
