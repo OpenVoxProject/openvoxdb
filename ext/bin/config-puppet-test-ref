@@ -54,13 +54,13 @@ bundle config set --local without acceptance
 bundle install --retry=10
 bundle update
 # Print out info on Puppet dependency
-bundle info puppet || true  # Not all versions appear to have info
+bundle info openvox
 
 # Symlink vendor/puppet to the git tree bundler checked out.  Use a
 # relative path so that moving the pdb tree around won't break things.
 cd vendor
 # This will something like .../vendor/bundle/ruby/2.7.0/bundler/gems/puppet-ae5379e03311
 # It is a Puppet git repository installed by bundler
-puppet_path="$(bundle info puppet --path)"
+puppet_path="$(bundle info openvox --path)"
 # Create a symlink at `vendor/puppet` that points to Puppet repository
 "$top/ext/bin/symlink-relative-to" "$puppet_path" puppet
