@@ -4,6 +4,7 @@
 test_name('configure openvoxdb using the puppetdb module') do
   databases.each do
     setup_openvoxdb_certs(database)
+    configure_postgresql_repos_on_el(database)
     configure_openvoxdb(database)
 
     # The package should automatically start the service on debian.

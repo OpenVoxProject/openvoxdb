@@ -626,6 +626,20 @@ module PuppetDBExtensions
     apply_manifest_on(host, manifest)
   end
 
+  # Work around for testing on rhel and the repos on the image
+  # not finding the pg packages it needs.
+  # TODO: figure out why puppetdb module isn't managing this?
+  def configure_postgresql_repos_on_el(host)
+    if host.platform =~ /el-/
+      step 'Update EL postgresql repos' do
+        major_version = host.platform.split('-')[1]
+
+        on(host, "dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-#{major_version}-x86_64/pgdg-redhat-repo-latest.noarch.rpm")
+        on(host, "dnf -qy module disable postgresql")
+      end
+    end
+  end
+
   def postgres_manifest
     # bionic and buster are EOL, so the pgdg repos were removed.
     # For RedHat, the versions of the module that support upgrade_oldest
