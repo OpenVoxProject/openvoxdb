@@ -51,6 +51,15 @@ jobs:
           - flavor: int/openjdk17/pup-main/srv-main/pg-16/rich
             os: ubuntu-24.04
             ruby: '3.4'
+          - flavor: int/openjdk21/pup-main/srv-main/pg-17/rich
+            os: ubuntu-24.04
+            ruby: '3.2'
+          - flavor: int/openjdk21/pup-main/srv-main/pg-17/rich
+            os: ubuntu-24.04
+            ruby: '3.3'
+          - flavor: int/openjdk21/pup-main/srv-main/pg-17/rich
+            os: ubuntu-24.04
+            ruby: '3.4'
 
     steps:
       - name: Compute job outputs
