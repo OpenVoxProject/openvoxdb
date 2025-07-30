@@ -8,32 +8,28 @@
 
 (def err-exit-status 2)
 
-;; FIXME: maybe change this to rely on java.lang.Runtime$Version for
-;; jdk > 8 (cf. pdb-jdk-ver in project.clj).
-
 ;; Testing hook
 (defn java-version [] (System/getProperty "java.version"))
 
-(def supported-java-version "17")
-
 (defn jdk-support-status
-  "Returns :official, :tested, :deprecated, :unknown, or :no."
+  "Returns :official, :tested, :deprecated, :unknown, or :unsupported."
   [version]
   (cond
-    (re-matches #"1\.[1234567]($|(\..*))" version) :no
+    (re-matches #"1\.[1234567]($|(\..*))" version) :unsupported
     (re-matches #"1\.[89]($|(\..*))" version) :deprecated
     (re-matches #"10($|(\..*))" version) :deprecated
-    (re-matches (re-pattern (str supported-java-version "($|(\\..*))")) version) :official
     (re-matches #"11($|(\..*))" version) :tested
+    (re-matches #"17($|(\..*))" version) :official
+    (re-matches #"21($|(\..*))" version) :tested
     :else :unknown))
 
 (defn jdk-unsupported-msg [version]
   (let [status (jdk-support-status version)]
     (case status
-      (:unknown) {:warn (trs "JDK {0} is neither tested nor supported. Please use JDK {1}" version supported-java-version)}
-      (:deprecated) {:warn (trs "JDK {0} is deprecated, please upgrade to JDK {1}" version supported-java-version)}
+      (:unknown) {:warn (trs "JDK {0} is neither tested nor supported. Please use JDK 11, 17 or 21" version)}
+      (:deprecated) {:warn (trs "JDK {0} is deprecated, please upgrade to JDK 11, 17 or 21" version)}
       (:official :tested) nil
-      {:error (trs "PuppetDB doesn''t support JDK {0}" version)})))
+      {:error (trs "PuppetDB doesn't support JDK {0}" version)})))
 
 (defn run-cli-cmd [f]
   (let [jdk (java-version)]
