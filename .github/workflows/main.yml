@@ -27,6 +27,9 @@ jobs:
           - core+ext/openjdk17/pg-17
           - core+ext/openjdk17/pg-16
 
+          - core+ext/openjdk21/pg-17
+          - core+ext/openjdk21/pg-16
+
           - rspec/pup-main
           - lint/openjdk17
 
