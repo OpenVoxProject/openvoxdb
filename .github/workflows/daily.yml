@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Change the pb_test_gh_job_id definition below after any
+        # Change the pdb_test_gh_job_id definition below after any
         # additions/removals of matrix axes.  The flavor "/" is
         # converted to "_" in the pdb-job-id below.
 
@@ -23,7 +23,7 @@ jobs:
           - core+ext/openjdk17/pg-15
           - core+ext/openjdk11/pg-11
 
-        branch: main
+        branch: [main]
         os: [ubuntu-24.04]
         ruby: ['3.2']
 
