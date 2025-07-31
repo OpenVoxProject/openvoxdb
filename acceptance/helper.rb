@@ -8,6 +8,7 @@ require 'set'
 require 'test/unit/assertions'
 require 'json'
 require 'inifile'
+require 'mkmf' # provides find_executable()
 
 module PuppetDBExtensions
   include Test::Unit::Assertions
@@ -62,6 +63,12 @@ module PuppetDBExtensions
           [:true, :false],
           "'purge packages and perform exhaustive cleanup after run'",
           "PUPPETDB_PURGE_AFTER_RUN", :false)
+
+    skip_openvox_package_installation =
+        get_option_value(options[:puppetdb_skip_openvox_package_installation],
+          [:true, :false],
+          "'skip installation of openvox packages, since the test suite does not know how'",
+          "PUPPETDB_SKIP_OPENVOX_PACKAGE_INSTALLATION", :true)
 
     skip_presuite_provisioning =
         get_option_value(options[:puppetdb_skip_presuite_provisioning],
@@ -130,6 +137,7 @@ module PuppetDBExtensions
       :repo_hiera => puppetdb_repo_hiera,
       :repo_facter => puppetdb_repo_facter,
       :git_ref => puppetdb_git_ref,
+      :skip_openvox_package_installation => skip_openvox_package_installation == :true,
       :skip_presuite_provisioning => skip_presuite_provisioning == :true,
       :nightly => nightly == :true
     }
@@ -195,7 +203,7 @@ module PuppetDBExtensions
   end
 
   def get_os_family(host)
-    on(host, "which yum", :silent => true)
+    result = on(host, "which yum", :silent => true)
     if result.exit_code == 0
       :redhat
     else
@@ -235,7 +243,7 @@ module PuppetDBExtensions
 
   def start_puppetdb(host)
     step "Starting PuppetDB" do
-      on host, "service puppetdb start"
+      on(host, puppet_resource('service', 'puppetdb', 'ensure=running'))
       sleep_until_started(host)
     end
   end
@@ -462,6 +470,70 @@ module PuppetDBExtensions
     on(hosts, 'puppet module install puppetlabs-puppetdb --version 7.14.0')
   end
 
+  def setup_openvoxdb_certs(database)
+    step 'Ensure PuppetDB certificates are setup' do
+      # Normally the openvoxdb package automagically post-install runs
+      # 'puppetdb ssl-setup', but this relies on the openvox-agent
+      # already having certs generated at the time that the openvoxdb
+      # package was installed. If we installed openvoxdb before
+      # running the suite and before agent certs were generated, then
+      # we need this step to ensure that openvoxdb now gets its certs.
+      # (If they are already in place, the command should be
+      # idempotent.)
+      apply_manifest_on(database, <<~EOM)
+        exec { 'puppetdb-prepare-certs':
+          command => '/opt/puppetlabs/bin/puppetdb ssl-setup',
+          path    => '/bin:/sbin:/usr/bin',
+          onlyif  => 'test -f /opt/puppetlabs/bin/puppetdb',
+        }
+      EOM
+    end
+  end
+
+  # Use the puppetdb module to configure pre-installed openvoxdb
+  # and packages.
+  def configure_openvoxdb(host)
+    manifest = <<~EOS
+      class { 'puppetdb':
+        puppetdb_package    => 'openvoxdb',
+        manage_firewall     => false,
+        manage_package_repo => true,
+        disable_update_checking => true,
+        database_listen_address => 'localhost',
+        postgres_version        => '14',
+        database_name           => 'puppetdb',
+        database_username       => 'puppetdb',
+        database_password       => 'puppetdb',
+        read_database_username  => 'puppetdb-read',
+        read_database_password  => 'puppetdb-read',
+      }
+    EOS
+    apply_manifest_on(host, manifest)
+    print_ini_files(host)
+    sleep_until_started(host)
+  end
+
+  def configure_openvoxdb_termini(host, databases)
+    server_urls = databases.map {|db| "https://#{db.node_name}:8081"}.join(',')
+    manifest = <<~EOS
+      class { 'puppetdb::master::config':
+        terminus_package         => 'openvoxdb-termini',
+        puppetdb_startup_timeout => 120,
+        manage_report_processor  => true,
+        enable_reports           => true,
+        strict_validation        => true,
+      }
+      ini_setting {'server_urls':
+        ensure  => present,
+        section => 'main',
+        path    => "${puppetdb::params::puppet_confdir}/puppetdb.conf",
+        setting => 'server_urls',
+        value   => '#{server_urls}',
+      }
+    EOS
+    apply_manifest_on(host, manifest)
+  end
+
   def install_puppetdb(host, version=nil)
     manifest = <<-EOS
     class { 'puppetdb::globals':
@@ -554,23 +626,37 @@ module PuppetDBExtensions
     apply_manifest_on(host, manifest)
   end
 
+  # Work around for testing on rhel and the repos on the image
+  # not finding the pg packages it needs.
+  # TODO: figure out why puppetdb module isn't managing this?
+  def configure_postgresql_repos_on_el(host)
+    if host.platform =~ /el-/
+      step 'Update EL postgresql repos' do
+        major_version = host.platform.split('-')[1]
+
+        on(host, "dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-#{major_version}-x86_64/pgdg-redhat-repo-latest.noarch.rpm")
+        on(host, "dnf -qy module disable postgresql")
+      end
+    end
+  end
+
   def postgres_manifest
     # bionic and buster are EOL, so the pgdg repos were removed.
     # For RedHat, the versions of the module that support upgrade_oldest
     # tests from Puppet 6 configure the wrong GPG key
     manage_package_repo = ! ( is_bionic || is_buster || is_el )
 
-    manifest = <<-EOS
+    manifest = <<~EOS
       # create the puppetdb database
       class { '::puppetdb::database::postgresql':
-      listen_addresses            => 'localhost',
-      manage_package_repo         => #{manage_package_repo},
-      postgres_version            => '14',
-      database_name               => 'puppetdb',
-      database_username           => 'puppetdb',
-      database_password           => 'puppetdb',
-      read_database_username      => 'puppetdb-read',
-      read_database_password      => 'puppetdb-read',
+        listen_addresses            => 'localhost',
+        manage_package_repo         => #{manage_package_repo},
+        postgres_version            => '14',
+        database_name               => 'puppetdb',
+        database_username           => 'puppetdb',
+        database_password           => 'puppetdb',
+        read_database_username      => 'puppetdb-read',
+        read_database_password      => 'puppetdb-read',
       }
     EOS
     manifest
@@ -653,11 +739,11 @@ module PuppetDBExtensions
   end
 
   def stop_puppetdb(host)
-    pids = puppetdb_pids(host)
-
-    on host, "service puppetdb stop"
-
-    sleep_until_stopped(host, pids)
+    step 'Stopping PuppetDB' do
+      pids = puppetdb_pids(host)
+      on(host, puppet_resource('service', 'puppetdb', 'ensure=stopped'))
+      sleep_until_stopped(host, pids)
+    end
   end
 
   def sleep_until_stopped(host, pids)
@@ -758,7 +844,7 @@ EOS
     desired_exit_codes = [desired_exit_codes].flatten
     result = on host, command, :acceptable_exit_codes => (0...127), :silent => true
     num_retries = 0
-    until desired_exit_codes.include?(exit_code) and (result.stdout =~ expected_output)
+    until desired_exit_codes.include?(result.exit_code) and (result.stdout =~ expected_output)
       sleep retry_interval
       result = on host, command, :acceptable_exit_codes => (0...127), :silent => true
       num_retries += 1
@@ -1034,6 +1120,59 @@ EOS
     databases[0]
   end
 end
+
+module Beaker
+  module DSL
+    module Helpers
+      module PuppetServerAcceptance
+        # A sad little abstraction around service/systemctl to handle
+        # os differences for edge cases not suited to puppet resource
+        # service calls.
+        def service(host, action, service_name, acceptable_exit_codes: [0])
+          if find_executable('systemctl')
+            command = Command.new("systemctl #{action} #{service_name}")
+          elsif find_executable('service')
+            command = Command.new("service #{service_name} #{action}")
+          else
+            raise "Neither systemctl nor service found on #{host.name}"
+          end
+
+          host.exec(command, acceptable_exit_codes: acceptable_exit_codes)
+        end
+
+        # Override beaker-puppet BeakerPuppet::Helpers::PuppetHelpers#bounce_service
+        # to allow for systems that only have systemctl now (el9+, etc.)
+        #
+        # Ostensibly we should fork beaker-puppet...I'm just not quite
+        # ready to touch that yet...
+        #
+        # Restarts the named puppet service
+        #
+        # @param [Host] host Host the service runs on
+        # @param [String] service Name of the service to restart
+        # @param [Fixnum] curl_retries Number of seconds to wait for the restart to complete before failing
+        # @param [Fixnum] port Port to check status at
+        #
+        # @return [Result] Result of last status check
+        # @!visibility private
+        def bounce_service(host, service, curl_retries = nil, port = nil)
+          curl_retries = 120 if curl_retries.nil?
+          port = options[:puppetserver_port] if port.nil?
+          result = service(host, :reload, service, acceptable_exit_codes: [0, 1, 3])
+          return result if result.exit_code == 0
+
+          host.exec puppet_resource('service', service, 'ensure=stopped')
+          host.exec puppet_resource('service', service, 'ensure=running')
+
+          curl_with_retries(" #{service} ", host, "https://localhost:#{port}", [35, 60], curl_retries)
+        end
+      end
+    end
+  end
+end
+
+# Register the DSL extension
+Beaker::DSL.register(Beaker::DSL::Helpers::PuppetServerAcceptance)
 
 # oh dear.
 Beaker::TestCase.send(:include, PuppetDBExtensions)
