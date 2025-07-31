@@ -283,7 +283,7 @@
                                                ;; in the final package.
                                                [puppetlabs/puppetdb ~pdb-version]]
                       :name "puppetdb"
-                      :plugins [[puppetlabs/lein-ezbake "2.6.3-SNAPSHOT-openvox"]]}
+                      :plugins [[puppetlabs/lein-ezbake "3.0.1-SNAPSHOT"]]}
              :testutils {:source-paths ^:replace ["test"]
                          :resource-paths ^:replace []
                          ;; Something else may need adjustment, but
