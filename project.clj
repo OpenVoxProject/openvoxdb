@@ -12,15 +12,6 @@
 (defn pdb-run-clean [paths]
   (apply pdb-run-sh {:argc #{0} :echo true} "rm" "-rf" paths))
 
-(defn deploy-info
-  "Generate deployment information from the URL supplied and the username and
-   password for Nexus supplied as environment variables."
-  [url]
-  {:url url
-   :username :env/nexus_jenkins_username
-   :password :env/nexus_jenkins_password
-   :sign-releases false})
-
 (def pdb-jvm-ver
   ;; https://docs.oracle.com/javase/10/docs/api/java/lang/Runtime.Version.html
   ;; ...and do something similar for older versions.
@@ -35,12 +26,6 @@
         {:feature (.feature ver) :interim (.interim ver)}))))
 
 (def i18n-version "0.9.2")
-
-(def pdb-repositories
-  (if (true-in-env? "PUPPET_SUPPRESS_INTERNAL_LEIN_REPOS")
-    []
-    [["releases" "https://artifactory.delivery.puppetlabs.net/artifactory/list/clojure-releases__local/"]
-     ["snapshots" "https://artifactory.delivery.puppetlabs.net/artifactory/list/clojure-snapshots__local/"]]))
 
 (def pdb-dev-deps
   (concat
@@ -192,7 +177,10 @@
 
   :jvm-opts ~pdb-jvm-opts
 
-  :repositories ~pdb-repositories
+  :deploy-repositories [["clojars" {:url "https://clojars.org/repo"
+                                     :username :env/CLOJARS_USERNAME
+                                     :password :env/CLOJARS_PASSWORD
+                                     :sign-releases false}]]
 
   :plugins [[lein-release "1.1.3" :exclusions [org.clojure/clojure]]
             [lein-cloverage "1.2.4"]
@@ -222,9 +210,6 @@
                        :java-args ~(str "-Xmx192m "
                                         "-Djdk.tls.ephemeralDHKeySize=2048")}
                 :config-dir "ext/config/foss"}
-
-  :deploy-repositories [["releases" ~(deploy-info "https://artifactory.delivery.puppetlabs.net/artifactory/list/clojure-releases__local/")]
-                        ["snapshots" ~(deploy-info "https://artifactory.delivery.puppetlabs.net/artifactory/list/clojure-snapshots__local/")]]
 
   ;; Build a puppetdb-VER-test.jar containing test/ for projects like
   ;; pdbext to use by depending on ["puppetlabs.puppetdb" :classifier
