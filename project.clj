@@ -117,13 +117,13 @@
   :dependencies [[org.postgresql/postgresql]
                  [org.clojure/clojure]
                  [org.clojure/core.async]
-                 [org.clojure/core.match "0.3.0-alpha4"]
+                 [org.clojure/core.match "0.3.0"]
                  [org.clojure/core.memoize]
                  [org.clojure/data.generators "1.1.0"]
                  [org.clojure/java.jdbc]
                  [org.clojure/tools.macro]
                  [org.clojure/tools.namespace]
-                 [org.clojure/math.combinatorics "0.1.1"]
+                 [org.clojure/math.combinatorics "0.3.0"]
                  [org.clojure/tools.logging]
                  [org.clojure/tools.nrepl]
 
@@ -145,10 +145,10 @@
                  [clj-stacktrace]
                  [clj-time]
                  [com.rpl/specter "1.1.4"]
-                 [com.github.seancorfield/next.jdbc "1.3.939"]
+                 [com.github.seancorfield/next.jdbc "1.3.1048"]
                  [com.taoensso/nippy :exclusions [org.tukaani/xz]]
-                 [digest "1.4.3"]
-                 [fast-zip "0.4.0"]
+                 [digest "1.4.10"]
+                 [fast-zip "0.7.0"]
                  [instaparse]
                  [murphy "0.5.2"]
                  [clj-commons/fs]
@@ -170,7 +170,7 @@
 
                  ;; WebAPI support libraries.
                  [bidi]
-                 [clj-http "3.12.4"]
+                 [clj-http "3.13.1"]
                  [commons-io]
                  [compojure]
                  [ring/ring-core]]
@@ -222,7 +222,7 @@
                                        (require 'schema.core)
                                        (schema.core/set-fn-validation! true))]}
              :dev [:defaults {:dependencies [[org.bouncycastle/bcpkix-jdk18on]]
-                              :plugins [[jonase/eastwood "1.4.2"]]
+                              :plugins [[jonase/eastwood "1.4.3"]]
                               :jvm-opts ~(conj pdb-jvm-opts "-XX:-OmitStackTraceInFastThrow")}]
 
              :fips [:defaults
@@ -241,7 +241,7 @@
                                           17 "-Djava.security.properties==dev-resources/jdk11on-fips-security"
                                           (throw (ex-info "Unsupported major Java version. Expects 8, 11, or 17."
                                                           {:major feature :minor interim})))))}]
-             :kondo {:dependencies [[clj-kondo "2024.05.24"]]}
+             :kondo {:dependencies [[clj-kondo "2024.11.14"]]}
              :ezbake {:dependencies ^:replace [;; NOTE: we need to explicitly pass in `nil` values
                                                ;; for the version numbers here in order to correctly
                                                ;; inherit the versions from our parent project.
