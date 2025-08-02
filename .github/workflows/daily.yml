@@ -20,10 +20,10 @@ jobs:
 
         # These run on every branch
         flavor:
+          - core+ext/openjdk21/pg-15
           - core+ext/openjdk17/pg-15
           - core+ext/openjdk11/pg-11
 
-        branch: main
         os: [ubuntu-24.04]
         ruby: ['3.2']
 
