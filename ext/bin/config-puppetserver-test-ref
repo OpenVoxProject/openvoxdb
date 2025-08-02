@@ -63,11 +63,11 @@ if test -d puppetserver; then
    git -C puppetserver clean -fdx
 else
    # If repo doesn't exist, clone from GitHub
-   git clone -b "$pupsrv_ref" https://github.com/OpenVoxProject/openvox-server puppetserver
+   git clone -b "$pupsrv_ref" https://github.com/OpenVoxProject/openvox-server
 fi
 
 (export PUPPETSERVER_HEAP_SIZE=1G
- cd puppetserver
+ cd openvox-server
  # Install Puppet Server dependencies
  # If we're not testing against the git tree (say in jenkins), don't install.
  if test -z "$PDB_NO_PUPPETSERVER_INSTALL"; then
@@ -84,10 +84,13 @@ do
   gem_name=$(echo $LINE |awk '{print $1}')
   gem_version=$(echo $LINE |awk '{print $2}')
   gem_list+=("$gem_name:$gem_version")
-done < ./puppetserver/resources/ext/build-scripts/jruby-gem-list.txt
+done < ./openvox-server/resources/ext/build-scripts/jruby-gem-list.txt
 
 gem-install() {
-  java -cp puppetserver/target/puppet-server-release.jar clojure.main \
+  echo '###################################'
+  ls -la
+  echo '###################################'
+  java -cp openvox-server/target/puppet-server-release.jar clojure.main \
     -m puppetlabs.puppetserver.cli.gem \
     --config ./test-resources/puppetserver/puppetserver.conf -- install --no-document "$@"
 }
