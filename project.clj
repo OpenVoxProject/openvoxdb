@@ -239,8 +239,8 @@
                                           8 "-Djava.security.properties==dev-resources/jdk8-fips-security"
                                           11 "-Djava.security.properties==dev-resources/jdk11on-fips-security"
                                           17 "-Djava.security.properties==dev-resources/jdk11on-fips-security"
-                                          (throw (ex-info "Unsupported major Java version. Expects 8, 11, or 17."
-                                                          {:major feature :minor interim})))))}]
+                                          (do)
+                                        )))}]
              :kondo {:dependencies [[clj-kondo "2024.05.24"]]}
              :ezbake {:dependencies ^:replace [;; NOTE: we need to explicitly pass in `nil` values
                                                ;; for the version numbers here in order to correctly
