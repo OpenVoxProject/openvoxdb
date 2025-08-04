@@ -75,3 +75,6 @@ checkouts
 *.csv
 *report.html
 locust/load-test/__pycache__/
+
+# inellij configs
+/.idea
