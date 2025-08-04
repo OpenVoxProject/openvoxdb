@@ -197,6 +197,7 @@
   ;; the main namespace and start timeout need to be updated
   ;; there as well
   :lein-ezbake {:vars {:user "puppetdb"
+                       :service-port 8081
                        :group "puppetdb"
                        :build-type "foss"
                        :package-name "openvoxdb"
