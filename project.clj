@@ -1,6 +1,6 @@
 (def pdb-version "8.10.0")
 
-(def clj-parent-version "7.3.36")
+(def clj-parent-version "7.4.0")
 
 (defn true-in-env? [x]
   (#{"true" "yes" "1"} (System/getenv x)))
@@ -106,7 +106,7 @@
 
   :min-lein-version "2.7.1"
 
-  :parent-project {:coords [puppetlabs/clj-parent ~clj-parent-version]
+  :parent-project {:coords [org.openvoxproject/clj-parent ~clj-parent-version]
                    :inherit [:managed-dependencies]}
 
   ;; Abort when version ranges or version conflicts are detected in
