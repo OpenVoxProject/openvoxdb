@@ -73,7 +73,7 @@ jobs:
 
           echo "day=$(date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
           echo "pdb-job-id=$pdb_test_gh_job_id" >> "$GITHUB_OUTPUT"
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           persist-credentials: false
       - uses: ruby/setup-ruby@v1
@@ -113,7 +113,7 @@ jobs:
 
     steps:
     - name: Initialize
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Docs test
       uses: dita-ot/dita-ot-action@4.2.4
@@ -125,7 +125,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
       - name: setup java
@@ -146,7 +146,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
       - name: setup ruby
