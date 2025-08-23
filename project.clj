@@ -268,7 +268,7 @@
                                                ;; in the final package.
                                                [puppetlabs/puppetdb ~pdb-version]]
                       :name "puppetdb"
-                      :plugins [[puppetlabs/lein-ezbake "3.0.1-SNAPSHOT"]]}
+                      :plugins [[puppetlabs/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "3.0.1-SNAPSHOT")]]}
              :testutils {:source-paths ^:replace ["test"]
                          :resource-paths ^:replace []
                          ;; Something else may need adjustment, but
