@@ -2,7 +2,7 @@ def set_version(version)
   data = File.read('project.clj')
   data = data.sub(/\(def pdb-version "[^"]*"/,"(def pdb-version \"#{version}\"")
   File.write('project.clj', data)
-  run_command("git add project.clj && git commit -m 'Set version to #{version}'", true)
+  run_command("git add project.clj && git commit -m 'Set version to #{version}'", silent: true)
 end
 
 namespace :vox do
