@@ -116,7 +116,7 @@ jobs:
       uses: actions/checkout@v5
 
     - name: Docs test
-      uses: dita-ot/dita-ot-action@4.2.4
+      uses: dita-ot/dita-ot-action@4.3.4
       with:
         build: dita -i documentation/puppetdb.ditamap -o out -f html5 --processing-mode=strict
 
