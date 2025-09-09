@@ -241,7 +241,7 @@
                                           17 "-Djava.security.properties==dev-resources/jdk11on-fips-security"
                                           (do)
                                         )))}]
-             :kondo {:dependencies [[clj-kondo "2024.05.24"]]}
+             :kondo {:dependencies [[clj-kondo "2024.11.14"]]}
              :ezbake {:dependencies ^:replace [;; NOTE: we need to explicitly pass in `nil` values
                                                ;; for the version numbers here in order to correctly
                                                ;; inherit the versions from our parent project.
