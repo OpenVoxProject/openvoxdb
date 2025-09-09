@@ -100,58 +100,14 @@ jobs:
   acceptance:
     uses: 'openvoxproject/shared-actions/.github/workflows/beaker_acceptance.yml@main'
     with:
-      project-name: openvoxdb
+      suite-name: openvoxdb
       ref: ${{ inputs.ref }}
       fork: ${{ inputs.fork }}
-      install-openvox: true
       openvox-collection: ${{ inputs.collection }}
       openvox-agent-version: ${{ inputs.openvox-agent-version }}
       openvox-agent-pre-release-build: ${{ inputs.pre-release-build }}
-      install-openvox-server: true
       openvox-server-version: ${{ inputs.openvox-server-version }}
       openvox-server-pre-release-build: ${{ inputs.pre-release-build }}
-      install-openvoxdb: true
       openvoxdb-version: ${{ inputs.openvoxdb-version }}
       openvoxdb-pre-release-build: ${{ inputs.pre-release-build }}
       artifacts-url: ${{ inputs.artifacts-url }}
-      acceptance-working-dir: './'
-      acceptance-pre-suite: |-
-        [
-          "acceptance/setup/openvox/configure_type_defaults.rb",
-          "acceptance/setup/pre_suite/00_setup_test_env.rb",
-          "acceptance/setup/pre_suite/10_setup_proxies.rb",
-          "acceptance/setup/pre_suite/15_prep_locales.rb",
-          "acceptance/setup/pre_suite/20_install_puppet.rb",
-          "acceptance/setup/pre_suite/30_generate_ssl_certs.rb",
-          "acceptance/setup/pre_suite/40_install_deps.rb",
-          "acceptance/setup/pre_suite/50_install_modules.rb",
-          "acceptance/setup/pre_suite/75_clean_out_puppet5_repos.rb",
-          "acceptance/setup/pre_suite/80_add_dev_repo.rb",
-          "acceptance/setup/openvox/configure_openvoxdb.rb"
-        ]
-      acceptance-tests: |-
-        [
-          "acceptance/tests"
-        ]
-      beaker-options: |-
-        {
-          "helper":       "acceptance/helper.rb",
-          "options_file": "acceptance/options/openvox.rb"
-        }
-      vms: |-
-        [
-          {
-            "role": "primary",
-            "count": 1,
-            "cpus": 4,
-            "mem_mb": 8192,
-            "cpu_mode": "host-model"
-          },
-          {
-            "role": "agent",
-            "count": 1,
-            "cpus": 2,
-            "mem_mb": 2048,
-            "cpu_mode": "host-model"
-          }
-        ]
