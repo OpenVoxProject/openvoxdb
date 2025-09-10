@@ -117,7 +117,7 @@
   :dependencies [[org.postgresql/postgresql]
                  [org.clojure/clojure]
                  [org.clojure/core.async]
-                 [org.clojure/core.match "0.3.0-alpha4"]
+                 [org.clojure/core.match "0.3.0"]
                  [org.clojure/core.memoize]
                  [org.clojure/data.generators "1.1.0"]
                  [org.clojure/java.jdbc]
@@ -170,7 +170,7 @@
 
                  ;; WebAPI support libraries.
                  [bidi]
-                 [clj-http "3.12.4"]
+                 [clj-http "3.13.1"]
                  [commons-io]
                  [compojure]
                  [ring/ring-core]]
