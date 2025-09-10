@@ -145,7 +145,7 @@
                  [clj-stacktrace]
                  [clj-time]
                  [com.rpl/specter "1.1.4"]
-                 [com.github.seancorfield/next.jdbc "1.3.939"]
+                 [com.github.seancorfield/next.jdbc "1.3.1070"]
                  [com.taoensso/nippy :exclusions [org.tukaani/xz]]
                  [digest "1.4.10"]
                  [fast-zip "0.4.0"]
