@@ -1494,7 +1494,7 @@
                      ;; from the case where the incoming report needs partition(s) made for it.
                      (try
                        (jdbc/update! "resource_events" {:latest false} ["latest = true and report_id = ?" latest-report-id])
-                       (jdbc/update! "reports" {:latest false} ["latest = true and certname = ?" certname])
+                       (jdbc/update! "reports" {:latest false} ["latest = true and id = ?" latest-report-id])
                        (catch java.sql.BatchUpdateException e
                          ;; undefined table -- inheritance partitions, or declarative partitions w/ no children
                          ;; check constraint violation -- declarative partitions when row does not match child partitions
