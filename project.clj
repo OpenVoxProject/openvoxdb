@@ -148,7 +148,7 @@
                  [com.github.seancorfield/next.jdbc "1.3.1070"]
                  [com.taoensso/nippy :exclusions [org.tukaani/xz]]
                  [digest "1.4.10"]
-                 [fast-zip "0.4.0"]
+                 [fast-zip "0.7.0"]
                  [instaparse]
                  [murphy "0.5.2"]
                  [clj-commons/fs]
