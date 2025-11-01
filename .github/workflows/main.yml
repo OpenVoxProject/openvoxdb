@@ -24,13 +24,7 @@ jobs:
         # converted to "_" in the pdb-job-id below.
 
         flavor:
-          - core+ext/openjdk21/pg-17
-          - core+ext/openjdk21/pg-16
-          - core+ext/openjdk17/pg-17
-          - core+ext/openjdk17/pg-16
-
           - rspec/pup-main
-          - lint/openjdk17
 
         os: [ubuntu-24.04]
         ruby: ['3.2', '3.3', '3.4']
@@ -41,6 +35,27 @@ jobs:
 
         # Special cases
         include:
+          # lint
+          - flavor: lint/openjdk17
+            os: ubuntu-24.04
+            ruby: '3.4'
+
+          # unit
+          # jdk 21
+          - flavor: core+ext/openjdk21/pg-17
+            os: ubuntu-24.04
+            ruby: '3.4'
+          - flavor: core+ext/openjdk21/pg-16
+            os: ubuntu-24.04
+            ruby: '3.4'
+          # jdk 17
+          - flavor: core+ext/openjdk17/pg-17
+            os: ubuntu-24.04
+            ruby: '3.4'
+          - flavor: core+ext/openjdk17/pg-16
+            os: ubuntu-24.04
+            ruby: '3.4'
+
           # integration
           - flavor: int/openjdk17/pup-main/srv-main/pg-16/rich
             os: ubuntu-24.04
