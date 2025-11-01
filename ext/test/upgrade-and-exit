@@ -72,8 +72,10 @@ psql -U puppetdb puppetdb -c '\dt' >"$tmpdir/out" 2>"$tmpdir/err"
 cat "$tmpdir/out"
 cat "$tmpdir/err"
 # Output moved to err and changed as of at least pg 11
+# Output string on err changed to "tables" in pg18
 grep 'No relations found' "$tmpdir/out" \
-    || grep 'Did not find any relations' "$tmpdir/err"
+    || grep 'Did not find any relations' "$tmpdir/err" \
+    || grep 'Did not find any tables' "$tmpdir/err"
 
 # Run upgrade
 ./pdb upgrade -c "$PDBBOX/conf.d"
