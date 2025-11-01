@@ -29,6 +29,7 @@ jobs:
           # agent, server, db integration tests
           - int/openjdk17/pup-main/srv-main/pg-16/rich
           - int/openjdk21/pup-main/srv-main/pg-17/rich
+          - int/openjdk21/pup-main/srv-main/pg-18/rich
 
 
         os: [ubuntu-24.04]
@@ -47,6 +48,9 @@ jobs:
 
           # unit
           # jdk 21
+          - flavor: core+ext/openjdk21/pg-18
+            os: ubuntu-24.04
+            ruby: '3.4'
           - flavor: core+ext/openjdk21/pg-17
             os: ubuntu-24.04
             ruby: '3.4'
@@ -54,6 +58,9 @@ jobs:
             os: ubuntu-24.04
             ruby: '3.4'
           # jdk 17
+          - flavor: core+ext/openjdk17/pg-18
+            os: ubuntu-24.04
+            ruby: '3.4'
           - flavor: core+ext/openjdk17/pg-17
             os: ubuntu-24.04
             ruby: '3.4'
