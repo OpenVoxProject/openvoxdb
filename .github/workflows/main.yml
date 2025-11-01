@@ -24,13 +24,13 @@ jobs:
         # converted to "_" in the pdb-job-id below.
 
         flavor:
-          - core+ext/openjdk21/pg-17
-          - core+ext/openjdk21/pg-16
-          - core+ext/openjdk17/pg-17
-          - core+ext/openjdk17/pg-16
-
+          # terminus rspec tests
           - rspec/pup-main
-          - lint/openjdk17
+          # agent, server, db integration tests
+          - int/openjdk17/pup-main/srv-main/pg-16/rich
+          - int/openjdk21/pup-main/srv-main/pg-17/rich
+          - int/openjdk21/pup-main/srv-main/pg-18/rich
+
 
         os: [ubuntu-24.04]
         ruby: ['3.2', '3.3', '3.4']
@@ -41,23 +41,30 @@ jobs:
 
         # Special cases
         include:
-          # integration
-          - flavor: int/openjdk17/pup-main/srv-main/pg-16/rich
-            os: ubuntu-24.04
-            ruby: '3.2'
-          - flavor: int/openjdk17/pup-main/srv-main/pg-16/rich
-            os: ubuntu-24.04
-            ruby: '3.3'
-          - flavor: int/openjdk17/pup-main/srv-main/pg-16/rich
+          # lint
+          - flavor: lint/openjdk17
             os: ubuntu-24.04
             ruby: '3.4'
-          - flavor: int/openjdk21/pup-main/srv-main/pg-17/rich
+
+          # unit
+          # jdk 21
+          - flavor: core+ext/openjdk21/pg-18
             os: ubuntu-24.04
-            ruby: '3.2'
-          - flavor: int/openjdk21/pup-main/srv-main/pg-17/rich
+            ruby: '3.4'
+          - flavor: core+ext/openjdk21/pg-17
             os: ubuntu-24.04
-            ruby: '3.3'
-          - flavor: int/openjdk21/pup-main/srv-main/pg-17/rich
+            ruby: '3.4'
+          - flavor: core+ext/openjdk21/pg-16
+            os: ubuntu-24.04
+            ruby: '3.4'
+          # jdk 17
+          - flavor: core+ext/openjdk17/pg-18
+            os: ubuntu-24.04
+            ruby: '3.4'
+          - flavor: core+ext/openjdk17/pg-17
+            os: ubuntu-24.04
+            ruby: '3.4'
+          - flavor: core+ext/openjdk17/pg-16
             os: ubuntu-24.04
             ruby: '3.4'
 
