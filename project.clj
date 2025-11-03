@@ -150,7 +150,7 @@
                  [digest "1.4.10"]
                  [fast-zip "0.4.0"]
                  [instaparse]
-                 [murphy "0.5.2"]
+                 [murphy "0.5.3"]
                  [clj-commons/fs]
                  [metrics-clojure]
                  [robert/hooke "1.3.0"]
