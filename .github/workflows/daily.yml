@@ -75,7 +75,7 @@ jobs:
           PDB_QUERY_OPTIMIZE_DROP_UNUSED_JOINS: ${{ matrix.drop-joins }}
           PDB_USE_DEPRECATED_QUERY_STREAMING_METHOD: ${{ matrix.deprecated-query-streaming }}
         run: ci/bin/prep-and-run-in github ${{ matrix.flavor }}
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: "${{ steps.computed.outputs.pdb-job-id }}"
           path: |
