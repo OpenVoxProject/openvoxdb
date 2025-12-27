@@ -582,17 +582,6 @@
                  (on-timeout)
                  (time-limited-seq (rest s) deadline-ns on-timeout))))))))
 
-(defn- last-interceptor [interceptor]
-  ;; See the jetty org.eclipse.jetty.server.HttpOutput javadocs:
-  ;;
-  ;;   The HttpChannel is an Interceptor and is always the
-  ;;   last link in any Interceptor chain.
-  ;;
-  ;; ...and it ends up being something that is or has a SocketChannel.
-  (->> (iterate #(.getNextInterceptor %) interceptor)
-       (take-while identity)
-       last))
-
 (defprotocol HasSocketChannel
   (get-socket-channel [this] "Returns the associated socket channel."))
 
@@ -604,7 +593,7 @@
   "Returns the socket channel (i.e. something that can be registered
   with a Selector) associated with a jetty response object."
   [response]
+  ;; In Jetty 12, access the EndPoint through ServletChannel directly.
   ;; Sometimes the transport is a SocketChannel, and sometimes it's an
   ;; EndPoint.
-  (-> response .getHttpOutput .getInterceptor last-interceptor
-      .getEndPoint .getTransport get-socket-channel))
+  (-> response .getServletChannel .getEndPoint .getTransport get-socket-channel))
