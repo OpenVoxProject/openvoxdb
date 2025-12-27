@@ -17,7 +17,7 @@
   (:import
    (clojure.lang ExceptionInfo)
    (java.net HttpURLConnection)
-   (org.apache.commons.fileupload.util LimitedInputStream)))
+   (org.apache.commons.io.input BoundedInputStream)))
 
 (def min-supported-commands
   {"configure expiration" 1
@@ -124,13 +124,16 @@
   ;; The drain is because ruby.  i.e. if we closed the connection
   ;; without that, one of the ruby clients wouldn't handle the broken
   ;; pipe in a friendly way.
-  (proxy [LimitedInputStream] [stream max-size]
-    (raiseError [max-size count]
+  ;;
+  ;; Override onMaxLength which is called when
+  ;; the max count is reached during a read operation.
+  (proxy [BoundedInputStream] [stream max-size]
+    (onMaxLength [max-count read-count]
       ;; We don't trust skip; it appears to just invoke InputStream
       ;; skip which claims to allocate at least one buffer (of
       ;; unspecified size) per request.
       (loop [buf (byte-array (* 64 1024))]
-        (when (pos? (.read ^java.io.InputStream this buf))
+        (when (pos? (.read ^java.io.InputStream stream buf))
           (recur buf)))
       (throw (ex-info "" {:kind ::body-stream-overflow})))))
 
