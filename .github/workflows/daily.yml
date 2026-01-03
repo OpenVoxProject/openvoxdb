@@ -22,7 +22,6 @@ jobs:
         flavor:
           - core+ext/openjdk21/pg-15
           - core+ext/openjdk17/pg-15
-          - core+ext/openjdk11/pg-11
 
         os: [ubuntu-24.04]
         ruby: ['3.2']
@@ -36,18 +35,18 @@ jobs:
         include:
           - os: ubuntu-24.04
             ruby: '3.2'
-            flavor: core+ext/openjdk11/pg-16
+            flavor: core+ext/openjdk17/pg-16
             drop-joins: by-request
           - os: ubuntu-24.04
             ruby: '3.2'
-            flavor: core+ext/openjdk11/pg-16
+            flavor: core+ext/openjdk17/pg-16
             lein-profile: fips
 
           # non-rich variants for main
           - os: ubuntu-24.04
             branch: main
             ruby: '3.2'
-            flavor: int/openjdk11/pup-main/srv-main/pg-16
+            flavor: int/openjdk17/pup-main/srv-main/pg-16
 
     steps:
       - name: Compute job outputs
