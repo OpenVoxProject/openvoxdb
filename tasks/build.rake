@@ -64,7 +64,7 @@ namespace :vox do
       tmp = Dir.mktmpdir("ezbake")
       ezbake_dir = "#{tmp}/ezbake"
       ezbake_repo = ENV.fetch('EZBAKE_REPO', 'https://github.com/openvoxproject/ezbake')
-      ezbake_branch = ENV['EZBAKE_BRANCH'] || 'main'
+      ezbake_branch = ENV['EZBAKE_BRANCH'] || 'dev2'
       run_command("git clone -b #{ezbake_branch} #{ezbake_repo} #{ezbake_dir}", silent: false, print_command: true)
 
       puts "Starting container"
