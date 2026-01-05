@@ -4,6 +4,7 @@
    [clojure.java.jdbc :as sql]
    [clojure.string :as str]
    [clojure.tools.logging :as log]
+   [next.jdbc.prepare :refer [SettableParameter]]
    [puppetlabs.i18n.core :refer [trs tru]]
    [puppetlabs.kitchensink.core :as kitchensink]
    [puppetlabs.puppetdb.cheshire :as json]
@@ -11,19 +12,28 @@
    [puppetlabs.puppetdb.jdbc :as jdbc]
    [puppetlabs.puppetdb.query.common :refer [bad-query-ex]]
    [puppetlabs.puppetdb.schema :as pls]
+   [puppetlabs.puppetdb.utils :refer [byte-array-class]]
    [schema.core :as s])
   (:import
-   [java.sql Connection]
-   [java.util UUID]
-   [org.postgresql.util PGobject]))
+   (java.sql Connection PreparedStatement)
+   (java.util HexFormat UUID)
+   (org.postgresql.util PGobject)
+   (puppetlabs.puppetdb.jdbc PDBBytea VecPDBBytea)))
+
+(def ^:private warn-on-reflection-orig *warn-on-reflection*)
+(set! *warn-on-reflection* true)
 
 ;; SCHEMA
 
 (defn array-to-param
   [col-type java-type values]
-  (.createArrayOf ^Connection (:connection (jdbc/db))
-                  col-type
-                  (into-array java-type values)))
+  ;; We create the VecPDBBytea so we can redirect the parameter to
+  ;; setArray in the set-parameter specializations.
+  (if (= java-type PDBBytea)
+    ;; FIXME: change byte-array-class to byte/1 once we require clojure 1.12+
+    (VecPDBBytea. (into-array byte-array-class (map #(.data ^PDBBytea %) values)))
+    (.createArrayOf ^Connection (:connection (jdbc/db))
+                    col-type (into-array java-type values))))
 
 (def pg-extension-map
   "Maps to the table definition in postgres, but only includes some of the
@@ -427,9 +437,8 @@
   (sql/with-db-connection [_conn db]
     (sql/execute! db ["vacuum analyze"] {:transaction? false})))
 
-(defn parse-db-hash
-  [^PGobject db-hash]
-  (str/replace (.getValue db-hash) "\\x" ""))
+(defn db-hash->hex [^PDBBytea pdbb]
+  (.formatHex (HexFormat/of) (.data pdbb)))
 
 (defn parse-db-uuid
   [^UUID db-uuid]
@@ -454,9 +463,43 @@
 (defn bytea-escape [s]
   (format "\\x%s" s))
 
-(defn munge-hash-for-storage
-  [hash]
-  (str->pgobject "bytea" (bytea-escape hash)))
+(extend-protocol sql/ISQLParameter
+  ;; This became necessary with more recent pgjdbc
+  ;; versions (42.7.7 (at least) and newer), because it stopped
+  ;; handling a "bytea" PGobject; it started crashing in
+  ;; PGBytea/toPGLiteral, which doesn't have a clause to handle the
+  ;; escaped String that it ends up with, presumably from the PGobject
+  ;; value. The pgjdbc docs specify .setBytes, so do
+  ;; that:
+  ;;   https://jdbc.postgresql.org/documentation/binary-data/
+  ;;   https://clojure-doc.org/articles/ecosystem/java_jdbc/using_sql/
+  ;;   https://clojure.github.io/java.jdbc/#clojure.java.jdbc/ISQLParameter
+  PDBBytea
+  (sql/set-parameter [v ^PreparedStatement s i]
+    (.setBytes s i (.data v)))
+  VecPDBBytea
+  (sql/set-parameter [v ^PreparedStatement s i]
+    (.setArray s i (.createArrayOf ^Connection (:connection (jdbc/db))
+                                   "bytea" (.data v)))))
+
+(extend-protocol SettableParameter
+  PDBBytea
+  (sql/set-parameter [v ^PreparedStatement s i] (.setBytes s i (.data v)))
+  VecPDBBytea
+  (sql/set-parameter [v ^PreparedStatement s i]
+    (.setArray s i (.createArrayOf ^Connection (:connection (jdbc/db))
+                                   "bytea" (.data v)))))
+
+(defn munge-hash-for-storage [hash]
+  ;; Represent hashes as PDBBytea so we can add them to
+  ;; PreparedStatments via setBytes via the clojure/next jdbc
+  ;; protocols above. It'd be more efficient if eventually pdb just
+  ;; used something like PDBBytea or byte[] everywhere, though the
+  ;; latter would allow mutation and might raise "ownership"
+  ;; questions. The *most* efficient hash that's not just a byte[]
+  ;; might be a class with two long members and a short to store the
+  ;; 20 bytes (i.e. so that the data would be inline in the class).
+  (PDBBytea. (.parseHex (HexFormat/of) hash)))
 
 (defn munge-json-for-storage
   "Prepare a clojure object for storage depending on db type."
@@ -497,3 +540,5 @@
   (log/info (trs "Analyzing small tables"))
   (apply jdbc/do-commands-outside-txn
          (map #(str "analyze " %) small-tables)))
+
+(set! *warn-on-reflection* warn-on-reflection-orig)

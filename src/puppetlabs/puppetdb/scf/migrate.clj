@@ -71,7 +71,7 @@
    (java.time LocalDateTime LocalDate ZonedDateTime Instant)
    (java.time.temporal ChronoUnit)
    (java.time.format DateTimeFormatter)
-   (org.postgresql.util PGobject)))
+   (puppetlabs.puppetdb.jdbc PDBBytea)))
 
 (defn init-through-2-3-8
   []
@@ -1432,7 +1432,7 @@
             from (select unnest(?) as id, unnest(?) as hash) in_data
             where fact_values.id = in_data.id"
           [(sutils/array-to-param "bigint" Long ids)
-           (sutils/array-to-param "bytea" PGobject hashes)])))))
+           (sutils/array-to-param "bytea" PDBBytea hashes)])))))
 
   (log/info (trs "[7/8] Indexing fact_values table..."))
   (jdbc/do-commands

@@ -78,17 +78,23 @@
          "puppetserver"
          "vendor"]))
 
+(def pdb-aot-classes
+  ;; Compile classes first for now:
+  ;; https://codeberg.org/leiningen/leiningen/issues/99
+  '[puppetlabs.puppetdb.jdbc.PDBBytea puppetlabs.puppetdb.jdbc.VecPDBBytea])
+
 (def pdb-aot-namespaces
-  (apply vector
-         #"puppetlabs\.puppetdb\..*"
-         (->> "resources/puppetlabs/puppetdb/bootstrap.cfg"
-              clojure.java.io/reader
-              line-seq
-              (map clojure.string/trim)
-              (remove #(re-matches #"#.*" %))  ;; # comments
-              (remove #(re-matches #"puppetlabs\.puppetdb\.." %))
-              (map #(clojure.string/replace % #"(.*)/[^/]+$" "$1"))
-              (map symbol))))
+  (into []
+        (concat pdb-aot-classes
+                [#"puppetlabs\.puppetdb\..*"]
+                (->> "resources/puppetlabs/puppetdb/bootstrap.cfg"
+                     clojure.java.io/reader
+                     line-seq
+                     (map clojure.string/trim)
+                     (remove #(re-matches #"#.*" %)) ;; # comments
+                     (remove #(re-matches #"puppetlabs\.puppetdb\.." %))
+                     (map #(clojure.string/replace % #"(.*)/[^/]+$" "$1"))
+                     (map symbol)))))
 
 ;; Avoid startup reflection warnings due to
 ;; https://clojure.atlassian.net/browse/CLJ-2066
@@ -215,6 +221,8 @@
   ;; pdbext to use by depending on ["puppetlabs.puppetdb" :classifier
   ;; "test"].  See the :testutils profile below.
   :classifiers  {:test :testutils}
+
+  :aot ~pdb-aot-classes
 
   :profiles {:defaults {:resource-paths ["test-resources"]
                         :dependencies ~pdb-dev-deps
