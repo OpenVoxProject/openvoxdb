@@ -53,6 +53,7 @@ end
 
 group :development do
   gem 'httparty'
+  gem 'multi_json', '~> 1.18.0'
 end
 
 # This is a workaround for a bug in bundler, where it likes to look at ruby
