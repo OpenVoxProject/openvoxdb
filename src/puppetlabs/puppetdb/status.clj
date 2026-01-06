@@ -65,6 +65,6 @@
   with the associated `status-callback-fn`"
   [register-fn status-callback-fn]
   (register-fn "puppetdb-status"
-               (get-artifact-version "puppetlabs" "puppetdb")
+               (get-artifact-version "org.openvoxproject" "puppetdb")
                1
                status-callback-fn))
