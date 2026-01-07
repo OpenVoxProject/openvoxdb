@@ -162,7 +162,7 @@
                  [com.fasterxml.jackson.core/jackson-databind]
 
                  ;; Filesystem utilities
-                 [org.apache.commons/commons-lang3]
+                 [org.apache.commons/commons-lang3 "3.20.0"]
 
                  ;; Database connectivity
                  [com.zaxxer/HikariCP]
