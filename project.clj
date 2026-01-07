@@ -1,6 +1,6 @@
 (def pdb-version "8.12.0-SNAPSHOT")
 
-(def clj-parent-version "7.6.3")
+(def clj-parent-version "7.6.5")
 
 (defn true-in-env? [x]
   (#{"true" "yes" "1"} (System/getenv x)))
@@ -240,7 +240,7 @@
                                           21 "-Djava.security.properties==dev-resources/jdk11on-fips-security"
                                           (do)
                                         )))}]
-             :kondo {:dependencies [[clj-kondo "2024.12.23"]]}
+             :kondo {:dependencies [[clj-kondo "2025.10.23"]]}
              :ezbake {:dependencies ^:replace [;; NOTE: we need to explicitly pass in `nil` values
                                                ;; for the version numbers here in order to correctly
                                                ;; inherit the versions from our parent project.
