@@ -135,6 +135,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           submodules: recursive
+          fetch-depth: 0 # So we fetch all history and tags and can build non-tagged versions
       - name: setup java
         uses: actions/setup-java@v5
         with:
@@ -147,6 +148,19 @@ jobs:
           bundler-cache: true
       - name: build it
         run: bundle exec rake vox:build
+      - name: get version
+        id: version
+        run: |
+          DESCRIBE=$(git describe --abbrev=9)
+          echo "describe=${DESCRIBE//-/.}" >> $GITHUB_OUTPUT
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: openvoxdb-${{ steps.version.outputs.describe }}
+          path: output/
+          retention-days: 1 # quite low retention, because the artifacts are quite large
+          overwrite: true # overwrite old artifacts if a PR runs again (artifacts are per PR * per project)
+
 
   termini-rspec:
     name: openvoxdb-termini RSpec
