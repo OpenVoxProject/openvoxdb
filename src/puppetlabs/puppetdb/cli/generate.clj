@@ -706,7 +706,7 @@
   ([{:keys [file line level message source tags]
      :or {level (rand-nth ["info" "notice"])
           message (rnd/random-sentence-ish)
-          tags #{level}
+          tags #{}
           source "Puppet"}}]
    (let [final-tags (cset/union (set tags) #{level})]
      {:file file

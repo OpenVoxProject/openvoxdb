@@ -549,9 +549,9 @@
                                            date-formatter (.withZone (DateTimeFormatter/ofPattern "yyyy-MM-dd HH:mm:ssx")
                                                                      (ZoneId/systemDefault))
                                            start-of-day (.format date-formatter
-                                                                 (.truncatedTo date-of-week (ChronoUnit/DAYS)))
+                                                                 (.truncatedTo date-of-week ChronoUnit/DAYS))
                                            end-of-day (.format date-formatter
-                                                               (.plusDays (.truncatedTo date-of-week (ChronoUnit/DAYS)) 1))
+                                                               (.plusDays (.truncatedTo date-of-week ChronoUnit/DAYS) 1))
                                            pg17-db [17 0]
                                            {current-db-version :version} (sutils/db-metadata)]
                                        [{:left-only nil
@@ -1179,9 +1179,9 @@
                                             date-formatter (.withZone (DateTimeFormatter/ofPattern "yyyy-MM-dd HH:mm:ssx")
                                                                       (ZoneId/systemDefault))
                                             start-of-day (.format date-formatter
-                                                                  (.truncatedTo date-of-week (ChronoUnit/DAYS)))
+                                                                  (.truncatedTo date-of-week ChronoUnit/DAYS))
                                             end-of-day (.format date-formatter
-                                                                (.plusDays (.truncatedTo date-of-week (ChronoUnit/DAYS)) 1))
+                                                                (.plusDays (.truncatedTo date-of-week ChronoUnit/DAYS) 1))
                                             pg17-db [17 0]
                                             {current-db-version :version} (sutils/db-metadata)]
                                         [{:left-only nil
