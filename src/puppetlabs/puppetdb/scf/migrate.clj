@@ -1293,8 +1293,8 @@
           "  ALTER COLUMN target SET NOT NULL")
      (str "ALTER TABLE edges_transform"
           "  ALTER COLUMN type SET NOT NULL")
-     "DROP TABLE edges"
-     "ALTER TABLE edges_transform RENAME TO edges"
+     (str "DROP TABLE edges")
+     (str "ALTER TABLE edges_transform RENAME TO edges")
      (str "ALTER TABLE ONLY edges ADD CONSTRAINT edges_certname_fkey"
           "  FOREIGN KEY (certname)"
           "  REFERENCES certnames(certname)"
@@ -1604,7 +1604,7 @@
                                   _iso-year-week :- s/Str]))]
   (let [date (partitioning/to-zoned-date-time date)                      ;; guarantee a ZonedDateTime, so our suffix ends in Z
         start-of-day (-> date
-                         (.truncatedTo ChronoUnit/DAYS))  ;; this is a ZonedDateTime
+                         (.truncatedTo (ChronoUnit/DAYS)))  ;; this is a ZonedDateTime
         start-of-next-day (-> start-of-day
                               (.plusDays 1))
         date-formatter DateTimeFormatter/ISO_OFFSET_DATE_TIME
