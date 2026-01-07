@@ -12,15 +12,15 @@
 
 (defn random-string
   "Generate a random string of optional length"
-  ([] (RandomStringUtils/randomAlphabetic (inc (rand-int 10))))
+  ([] (.nextAlphabetic (RandomStringUtils/secure) (inc (rand-int 10))))
   ([length]
-   (RandomStringUtils/randomAlphabetic length)))
+   (.nextAlphabetic (RandomStringUtils/secure) length)))
 
 (defn random-string-alpha
   "Generate a random string of optional length, only lower case alphabet chars"
   ([] (random-string (inc (rand-int 10))))
   ([length]
-   (.toLowerCase (RandomStringUtils/randomAlphabetic length))))
+   (.toLowerCase (.nextAlphabetic (RandomStringUtils/secure) length))))
 
 (defn random-bool
   "Generate a random boolean"
@@ -125,8 +125,8 @@
   ([length] (random-pronouncable-word length nil))
   ([length sd] (random-pronouncable-word length sd {}))
   ([length sd {:keys [lowerb upperb] :or {lowerb 1}}]
-   (let [random-consonant #(RandomStringUtils/random 1 "bcdfghjklmnpqrstvwxz")
-         random-vowel #(RandomStringUtils/random 1 "aeiouy")
+   (let [random-consonant #(.next (RandomStringUtils/secure) 1 "bcdfghjklmnpqrstvwxz")
+         random-vowel #(.next (RandomStringUtils/secure) 1 "aeiouy")
          bounds (if (nil? upperb) {:lowerb lowerb} {:lowerb lowerb :upperb upperb})
          actual-length (if (nil? sd) length (safe-sample-normal length sd bounds))]
      (->> (for [i (range actual-length)]

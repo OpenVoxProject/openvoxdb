@@ -335,7 +335,7 @@
         (recur (assoc parameters
                       (parameter-name
                         (rnd/safe-sample-normal 20 5 {:lowerb 5}))
-                      (RandomStringUtils/randomAscii
+                      (.nextAscii (RandomStringUtils/secure)
                         (rnd/safe-sample-normal 50 25 {:upperb (max 50 size)}))))
         parameters))))
 
@@ -480,7 +480,7 @@
         bsize (rnd/safe-sample-normal avg-blob-size-in-bytes standard-deviation {:lowerb lowerb :upperb upperb})
         pname (format "content_blob_%s" (rnd/random-pronouncable-word))]
     (update-in catalog [:resources (rand-int (count resources)) :parameters]
-               #(merge % {pname (RandomStringUtils/randomAscii bsize)}))))
+               #(merge % {pname (.nextAscii (RandomStringUtils/secure) bsize)}))))
 
 (defn system-seconds-str
   "Epoch seconds as a string. Used by default as a version string in Puppet

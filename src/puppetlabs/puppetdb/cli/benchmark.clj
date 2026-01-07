@@ -308,7 +308,7 @@
 
   TODO: handle arrays and maps."
   class)
-(defmethod touch-parameter-value String [p] (RandomStringUtils/randomAscii(count p)))
+(defmethod touch-parameter-value String [p] (.nextAscii (RandomStringUtils/secure) (count p)))
 (defmethod touch-parameter-value Number [_] (rand-int 1000000))
 (defmethod touch-parameter-value Boolean [p] (not p))
 ;; Allow other types to pass through unmutated for now
