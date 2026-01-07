@@ -1796,13 +1796,12 @@
   specified, delete all the events that are older than whichever time
   is more recent."
   [{:keys [report-ttl resource-events-ttl incremental? update-lock-status]
-    :or {resource-events-ttl report-ttl
-         incremental? false
+    :or {incremental? false
          update-lock-status (constantly true)}}]
   {:pre [(instance? org.joda.time.DateTime report-ttl)
-         (instance? org.joda.time.DateTime resource-events-ttl)
          (ifn? update-lock-status)]}
-  (let [effective-resource-events-ttl
+  (let [resource-events-ttl (or resource-events-ttl report-ttl)
+        effective-resource-events-ttl
          (if (before? report-ttl resource-events-ttl) resource-events-ttl report-ttl)]
     (if-not (detach-partitions-concurrently?)
       ;; PG11

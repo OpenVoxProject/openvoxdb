@@ -54,7 +54,7 @@
    date :- (s/cond-pre LocalDate LocalDateTime ZonedDateTime Instant java.sql.Timestamp)]
   (let [date (to-zoned-date-time date)                      ;; guarantee a ZonedDateTime, so our suffix ends in Z
         start-of-day (-> date
-                         (.truncatedTo (ChronoUnit/DAYS)))  ;; this is a ZonedDateTime
+                         (.truncatedTo ChronoUnit/DAYS))  ;; this is a ZonedDateTime
         start-of-next-day (-> start-of-day
                               (.plusDays 1))
         date-formatter DateTimeFormatter/ISO_OFFSET_DATE_TIME

@@ -15,11 +15,11 @@
       (is (= false (t/mentions-report-type? [op "x" "y"])))
       (is (= true (t/mentions-report-type? [op "type" "y"])))))
 
-  (testing (str "unary operator null?")
+  (testing "unary operator null?"
     (is (= false (t/mentions-report-type? ["null?" "x" true])))
     (is (= true (t/mentions-report-type? ["null?" "type" true]))))
 
-  (testing (str "unary operator not")
+  (testing "unary operator not"
     (is (= false (t/mentions-report-type? ["not" ["=" "x" "y"]])))
     (is (= true (t/mentions-report-type? ["not" ["=" "type" "y"]])))
     (is (= true (t/mentions-report-type? ["not" ["null?" "type" true]])))
