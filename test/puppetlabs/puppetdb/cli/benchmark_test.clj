@@ -550,6 +550,16 @@
                   (get-in modded-cat [:resource-hash k1 "parameters"]))
             "parameters have changed")))))
 
+(deftest touch-parameter-value-test
+  (testing "empty string produces non-empty string"
+    (let [result (benchmark/touch-parameter-value "")]
+      (is (= 1 (count result)))
+      (is (not= "" result))))
+  (testing "single character string produces different string"
+    (let [result (benchmark/touch-parameter-value "x")]
+      (is (= 1 (count result)))
+      (is (not= "x" result)))))
+
 (deftest touch-parameters-test
   (let [psmall {"a" "b"}
         pbig (build-parameters 2000)
@@ -563,7 +573,8 @@
     (is (= 2 (weigh ps-mutated)))
     (is (not= psmall ps-mutated))
     (is (= pbig-count (count pb-mutated)))
-    (is (= pbig-weight (weigh pb-mutated)))
+    (is (#{pbig-weight (inc pbig-weight)} (weigh pb-mutated))
+        "weight same or +1 if empty string was mutated")
     (is (not= pbig pb-mutated))))
 
 (deftest rebuild-parameters-test
@@ -571,6 +582,7 @@
         pbig (build-parameters 2000)
         pbig-count (count pbig)
         pbig-weight (weigh pbig)
+        pbig-empty-count (count (filter #(= "" %) (vals pbig)))
 
         ps-rebuilt (benchmark/rebuild-parameters psmall)
         pb-rebuilt (benchmark/rebuild-parameters pbig)]
@@ -578,7 +590,8 @@
     (is (= 1 (count ps-rebuilt)))
     (is (= 6 (weigh ps-rebuilt)))
     (is (= pbig-count (count pb-rebuilt)))
-    (is (= pbig-weight (weigh pb-rebuilt)))
+    (is (= (+ pbig-weight pbig-empty-count) (weigh pb-rebuilt))
+        "weight increases by count of empty strings")
     (is (not= pbig pb-rebuilt))
     (let [pb-keys (set (keys pbig))
           pb-vals (set (vals pbig))

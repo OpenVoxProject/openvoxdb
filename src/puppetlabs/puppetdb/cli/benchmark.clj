@@ -308,7 +308,15 @@
 
   TODO: handle arrays and maps."
   class)
-(defmethod touch-parameter-value String [p] (.nextAscii (RandomStringUtils/secure) (count p)))
+(defmethod touch-parameter-value String [p]
+  (let [len (count p)]
+    (if (zero? len)
+      (.nextAscii (RandomStringUtils/secure) 1)  ; empty -> single char
+      (loop [attempts 5]
+        (let [new-val (.nextAscii (RandomStringUtils/secure) len)]
+          (if (or (not= new-val p) (zero? attempts))
+            new-val
+            (recur (dec attempts))))))))
 (defmethod touch-parameter-value Number [_] (rand-int 1000000))
 (defmethod touch-parameter-value Boolean [p] (not p))
 ;; Allow other types to pass through unmutated for now
