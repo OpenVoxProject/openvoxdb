@@ -71,7 +71,7 @@
    (java.time LocalDateTime LocalDate ZonedDateTime Instant)
    (java.time.temporal ChronoUnit)
    (java.time.format DateTimeFormatter)
-   (org.postgresql.util PGobject)))
+   (puppetlabs.puppetdb.jdbc PDBBytea)))
 
 (defn init-through-2-3-8
   []
@@ -1293,8 +1293,8 @@
           "  ALTER COLUMN target SET NOT NULL")
      (str "ALTER TABLE edges_transform"
           "  ALTER COLUMN type SET NOT NULL")
-     (str "DROP TABLE edges")
-     (str "ALTER TABLE edges_transform RENAME TO edges")
+     "DROP TABLE edges"
+     "ALTER TABLE edges_transform RENAME TO edges"
      (str "ALTER TABLE ONLY edges ADD CONSTRAINT edges_certname_fkey"
           "  FOREIGN KEY (certname)"
           "  REFERENCES certnames(certname)"
@@ -1432,7 +1432,7 @@
             from (select unnest(?) as id, unnest(?) as hash) in_data
             where fact_values.id = in_data.id"
           [(sutils/array-to-param "bigint" Long ids)
-           (sutils/array-to-param "bytea" PGobject hashes)])))))
+           (sutils/array-to-param "bytea" PDBBytea hashes)])))))
 
   (log/info (trs "[7/8] Indexing fact_values table..."))
   (jdbc/do-commands
@@ -1604,7 +1604,7 @@
                                   _iso-year-week :- s/Str]))]
   (let [date (partitioning/to-zoned-date-time date)                      ;; guarantee a ZonedDateTime, so our suffix ends in Z
         start-of-day (-> date
-                         (.truncatedTo (ChronoUnit/DAYS)))  ;; this is a ZonedDateTime
+                         (.truncatedTo ChronoUnit/DAYS))  ;; this is a ZonedDateTime
         start-of-next-day (-> start-of-day
                               (.plusDays 1))
         date-formatter DateTimeFormatter/ISO_OFFSET_DATE_TIME

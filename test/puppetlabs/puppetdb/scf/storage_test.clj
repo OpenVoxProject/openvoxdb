@@ -290,7 +290,7 @@
                           :stable {:hostname "myhost" :kernel "Linux" :uptime_seconds 3600}
                           :volatile {:domain "mynewdomain.com" :fqdn "myhost.mynewdomain.com"}}
                          (-> m
-                             (update :hash sutils/parse-db-hash)
+                             (update :hash sutils/db-hash->hex)
                              (update :paths_hash bytes->hex)
                              (update :stable_hash bytes->hex)
                              (update :stable sutils/parse-db-json)

@@ -58,7 +58,7 @@
    (java.time ZoneId ZonedDateTime)
    (java.util Arrays)
    (org.joda.time Period)
-   (org.postgresql.util PGobject)))
+   (puppetlabs.puppetdb.jdbc PDBBytea)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Schemas
@@ -475,7 +475,7 @@
   (if (seq resource-hashes)
     (let [resource-array (->> (vec resource-hashes)
                               (map sutils/munge-hash-for-storage)
-                              (sutils/array-to-param "bytea" org.postgresql.util.PGobject))
+                              (sutils/array-to-param "bytea" PDBBytea))
           query (format "SELECT DISTINCT %s as resource FROM resource_params_cache WHERE resource=ANY(?)"
                         (sutils/sql-hash-as-str "resource"))
           sql-params [query resource-array]]
@@ -1039,7 +1039,7 @@
 (defn find-package-hashes [package-hashes]
   (jdbc/call-with-query-rows [(format "SELECT id, %s as package_hash FROM packages WHERE hash = ANY(?)"
                                       (sutils/sql-hash-as-str "hash"))
-                              (sutils/array-to-param "bytea" PGobject
+                              (sutils/array-to-param "bytea" PDBBytea
                                                      (map sutils/munge-hash-for-storage package-hashes))]
                              (fn [rows]
                                (reduce (fn [acc {:keys [id package_hash]}]
@@ -1796,13 +1796,12 @@
   specified, delete all the events that are older than whichever time
   is more recent."
   [{:keys [report-ttl resource-events-ttl incremental? update-lock-status]
-    :or {resource-events-ttl report-ttl
-         incremental? false
+    :or {incremental? false
          update-lock-status (constantly true)}}]
   {:pre [(instance? org.joda.time.DateTime report-ttl)
-         (instance? org.joda.time.DateTime resource-events-ttl)
          (ifn? update-lock-status)]}
-  (let [effective-resource-events-ttl
+  (let [resource-events-ttl (or resource-events-ttl report-ttl)
+        effective-resource-events-ttl
          (if (before? report-ttl resource-events-ttl) resource-events-ttl report-ttl)]
     (if-not (detach-partitions-concurrently?)
       ;; PG11

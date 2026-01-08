@@ -26,9 +26,17 @@
   {:exclude
    {puppetlabs.puppetdb.jdbc/call-with-array-converted-query-rows {:namespaces [".*"]}
     puppetlabs.puppetdb.testutils.services/call-with-puppetdb-instance {:namespaces [".*"]}
-    puppetlabs.puppetdb.testutils.services/with-puppetdb-instance {:namespaces [".*"]}}}
+    puppetlabs.puppetdb.testutils.services/with-puppetdb-instance {:namespaces [".*"]}
+    puppetlabs.trapperkeeper.testutils.logging/atom-logger {:namespaces [".*"]}
+    puppetlabs.trapperkeeper.testutils.logging/with-log-output {:namespaces [".*"]}
+    puppetlabs.trapperkeeper.testutils.logging/logs-matching {:namespaces [".*"]}}}
   :refer-all {:exclude [clojure.test]}
   :unresolved-symbol
   {:exclude
    [(puppetlabs.comidi/GET)
-    (puppetlabs.comidi/POST)]}}}
+    (puppetlabs.comidi/POST)]}
+  :unresolved-var
+  {:exclude
+   [digest/sha1
+    instaparse.core/transform
+    com.rpl.specter/ALL]}}}

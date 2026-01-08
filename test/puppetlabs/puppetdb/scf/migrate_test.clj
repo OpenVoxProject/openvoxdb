@@ -1733,7 +1733,7 @@
   [date]
   (let [date-formatter (.withZone (DateTimeFormatter/ofPattern "yyyy-MM-dd HH:mm:ssx") (ZoneId/systemDefault))]
     (-> date
-        (.truncatedTo (ChronoUnit/DAYS)) ;; this is a ZonedDateTime
+        (.truncatedTo ChronoUnit/DAYS) ;; this is a ZonedDateTime
         (.format date-formatter))))
 
 (defn resource-events-partition-day-constraint-diff-template

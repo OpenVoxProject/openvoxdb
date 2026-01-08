@@ -97,7 +97,7 @@
                                          port
                                          "/metrics/v2/read/"
                                          "puppetlabs.puppetdb.storage"
-                                         (str ":name=" pg ".store-report-time"))
+                                         ":name=" pg ".store-report-time")
                                     svc-utils/get-ssl
                                     :body
                                     :value

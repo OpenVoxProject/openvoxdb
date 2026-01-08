@@ -1,6 +1,6 @@
-(def pdb-version "8.11.1-SNAPSHOT")
+(def pdb-version "8.12.0-SNAPSHOT")
 
-(def clj-parent-version "7.4.0")
+(def clj-parent-version "7.6.6")
 
 (defn true-in-env? [x]
   (#{"true" "yes" "1"} (System/getenv x)))
@@ -25,15 +25,15 @@
       (let [ver (eval '(java.lang.Runtime/version))]
         {:feature (.feature ver) :interim (.interim ver)}))))
 
-(def i18n-version "0.9.2")
+(def i18n-version "1.0.2")
 
 (def pdb-dev-deps
   (concat
    '[[ring/ring-mock]
      [timofreiberg/bultitude "0.3.1"]
-     [puppetlabs/trapperkeeper :classifier "test"]
-     [puppetlabs/kitchensink :classifier "test"]
-     [com.puppetlabs/trapperkeeper-webserver-jetty10 :classifier "test"]
+     [org.openvoxproject/trapperkeeper :classifier "test"]
+     [org.openvoxproject/kitchensink :classifier "test"]
+     [org.openvoxproject/trapperkeeper-webserver-jetty10 :classifier "test"]
      [org.flatland/ordered "1.15.12"]
      [org.clojure/test.check "1.1.1"]
      [com.gfredericks/test.chuck "0.2.14"]
@@ -42,7 +42,7 @@
      [org.yaml/snakeyaml]
 
      ;; Only needed for :integration tests
-     [puppetlabs/trapperkeeper-filesystem-watcher nil]]))
+     [org.openvoxproject/trapperkeeper-filesystem-watcher nil]]))
 
 ;; Don't use lein :clean-targets so that we don't have to repeat
 ;; ourselves, given that we need to remove some protected files, and
@@ -78,17 +78,23 @@
          "puppetserver"
          "vendor"]))
 
+(def pdb-aot-classes
+  ;; Compile classes first for now:
+  ;; https://codeberg.org/leiningen/leiningen/issues/99
+  '[puppetlabs.puppetdb.jdbc.PDBBytea puppetlabs.puppetdb.jdbc.VecPDBBytea])
+
 (def pdb-aot-namespaces
-  (apply vector
-         #"puppetlabs\.puppetdb\..*"
-         (->> "resources/puppetlabs/puppetdb/bootstrap.cfg"
-              clojure.java.io/reader
-              line-seq
-              (map clojure.string/trim)
-              (remove #(re-matches #"#.*" %))  ;; # comments
-              (remove #(re-matches #"puppetlabs\.puppetdb\.." %))
-              (map #(clojure.string/replace % #"(.*)/[^/]+$" "$1"))
-              (map symbol))))
+  (into []
+        (concat pdb-aot-classes
+                [#"puppetlabs\.puppetdb\..*"]
+                (->> "resources/puppetlabs/puppetdb/bootstrap.cfg"
+                     clojure.java.io/reader
+                     line-seq
+                     (map clojure.string/trim)
+                     (remove #(re-matches #"#.*" %)) ;; # comments
+                     (remove #(re-matches #"puppetlabs\.puppetdb\.." %))
+                     (map #(clojure.string/replace % #"(.*)/[^/]+$" "$1"))
+                     (map symbol)))))
 
 ;; Avoid startup reflection warnings due to
 ;; https://clojure.atlassian.net/browse/CLJ-2066
@@ -96,13 +102,13 @@
 (def pdb-jvm-opts (when (< 8 (:feature pdb-jvm-ver) 17)
                     ["--illegal-access=deny"]))
 
-(defproject puppetlabs/puppetdb pdb-version
+(defproject org.openvoxproject/puppetdb pdb-version
   :description "OpenVox-integrated catalog and fact storage"
 
   :license {:name "Apache License, Version 2.0"
             :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
 
-  :url "https://docs.puppetlabs.com/puppetdb/"
+  :url "https://github.com/openvoxproject/openvoxdb/"
 
   :min-lein-version "2.7.1"
 
@@ -128,17 +134,17 @@
                  [org.clojure/tools.nrepl]
 
                  ;; Puppet specific
-                 [puppetlabs/comidi]
-                 [puppetlabs/i18n]
-                 [puppetlabs/kitchensink]
-                 [puppetlabs/ssl-utils]
-                 [puppetlabs/stockpile "0.0.4"]
-                 [puppetlabs/structured-logging]
-                 [puppetlabs/trapperkeeper]
-                 [com.puppetlabs/trapperkeeper-webserver-jetty10]
-                 [puppetlabs/trapperkeeper-metrics]
-                 [puppetlabs/trapperkeeper-status]
-                 [puppetlabs/trapperkeeper-authorization]
+                 [org.openvoxproject/comidi]
+                 [org.openvoxproject/i18n]
+                 [org.openvoxproject/kitchensink]
+                 [org.openvoxproject/ssl-utils]
+                 [org.openvoxproject/stockpile "1.0.0"]
+                 [org.openvoxproject/structured-logging "1.0.0"]
+                 [org.openvoxproject/trapperkeeper]
+                 [org.openvoxproject/trapperkeeper-webserver-jetty10]
+                 [org.openvoxproject/trapperkeeper-metrics]
+                 [org.openvoxproject/trapperkeeper-status]
+                 [org.openvoxproject/trapperkeeper-authorization]
 
                  ;; Various
                  [cheshire]
@@ -162,7 +168,7 @@
                  [com.fasterxml.jackson.core/jackson-databind]
 
                  ;; Filesystem utilities
-                 [org.apache.commons/commons-lang3]
+                 [org.apache.commons/commons-lang3 "3.20.0"]
 
                  ;; Database connectivity
                  [com.zaxxer/HikariCP]
@@ -177,7 +183,7 @@
 
   :jvm-opts ~pdb-jvm-opts
 
-  :deploy-repositories [["clojars" {:url "https://clojars.org/repo"
+  :deploy-repositories [["releases" {:url "https://clojars.org/repo"
                                      :username :env/CLOJARS_USERNAME
                                      :password :env/CLOJARS_PASSWORD
                                      :sign-releases false}]]
@@ -185,7 +191,7 @@
   :plugins [[lein-release "1.1.3" :exclusions [org.clojure/clojure]]
             [lein-cloverage "1.2.4"]
             [lein-parent "0.3.9"]
-            [puppetlabs/i18n ~i18n-version]]
+            [org.openvoxproject/i18n ~i18n-version]]
 
   :lein-release {:scm        :git
                  :deploy-via :lein-deploy}
@@ -216,6 +222,8 @@
   ;; "test"].  See the :testutils profile below.
   :classifiers  {:test :testutils}
 
+  :aot ~pdb-aot-classes
+
   :profiles {:defaults {:resource-paths ["test-resources"]
                         :dependencies ~pdb-dev-deps
                         :injections [(do
@@ -236,12 +244,11 @@
                      :jvm-opts ~(let [{:keys [feature interim]} pdb-jvm-ver]
                                   (conj pdb-jvm-opts
                                         (case feature
-                                          8 "-Djava.security.properties==dev-resources/jdk8-fips-security"
-                                          11 "-Djava.security.properties==dev-resources/jdk11on-fips-security"
                                           17 "-Djava.security.properties==dev-resources/jdk11on-fips-security"
+                                          21 "-Djava.security.properties==dev-resources/jdk11on-fips-security"
                                           (do)
                                         )))}]
-             :kondo {:dependencies [[clj-kondo "2024.05.24"]]}
+             :kondo {:dependencies [[clj-kondo "2025.10.23"]]}
              :ezbake {:dependencies ^:replace [;; NOTE: we need to explicitly pass in `nil` values
                                                ;; for the version numbers here in order to correctly
                                                ;; inherit the versions from our parent project.
@@ -266,7 +273,7 @@
                                                ;; This circular dependency is required because of a bug in
                                                ;; ezbake (EZ-35); without it, bootstrap.cfg will not be included
                                                ;; in the final package.
-                                               [puppetlabs/puppetdb ~pdb-version]]
+                                               [org.openvoxproject/puppetdb ~pdb-version]]
                       :name "puppetdb"
                       :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.7.1")]]}
              :testutils {:source-paths ^:replace ["test"]

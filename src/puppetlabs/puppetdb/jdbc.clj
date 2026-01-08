@@ -6,6 +6,7 @@
    [clojure.string :as str]
    [clojure.tools.logging :as log]
    [honey.sql :as hsql]
+   [next.jdbc.prepare :refer [set-parameter]]
    [puppetlabs.i18n.core :refer [trs]]
    [puppetlabs.kitchensink.core :as kitchensink]
    [puppetlabs.puppetdb.jdbc.internal :refer [limit-result-set!]]
@@ -213,7 +214,7 @@
    (with-db-transaction []
      (with-open [stmt (.prepareStatement ^Connection (:connection *db*) sql)]
        (doseq [[i param] (map vector (range) params)]
-         (.setObject stmt (inc i) param))
+         (set-parameter param stmt (inc i)))
        (.setFetchSize stmt (or fetch-size 500))
        (with-open [rset (.executeQuery stmt)]
          (try
@@ -245,7 +246,7 @@
    (with-db-transaction []
      (with-open [stmt (.prepareStatement ^Connection (:connection *db*) sql)]
        (doseq [[i param] (map vector (range) params)]
-         (.setObject stmt (inc i) param))
+         (set-parameter param stmt (inc i)))
        (.setFetchSize stmt fetch-size)
        (let [fix-vals (if as-arrays?
                         #(mapv any-sql-array->vec %)
