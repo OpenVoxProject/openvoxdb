@@ -149,7 +149,7 @@
                          [org.bouncycastle/bc-fips "1.0.2.6"]
                          [org.bouncycastle/bctls-fips "1.0.19"]
 
-                         [ring/ring-core "1.8.2"]
+                         [ring/ring-core "1.15.3"]
                          [ring/ring-codec "1.3.0"]
                          [instaparse "1.5.0"]
                          [commons-codec "1.20.0"]
