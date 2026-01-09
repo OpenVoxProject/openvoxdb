@@ -202,7 +202,7 @@
                  ;; We do not currently use this dependency directly, but
                  ;; we have documentation that shows how users can use it to
                  ;; send their logs to logstash, so we include it in the jar.
-                 [net.logstash.logback/logstash-logback-encoder "7.3"]
+                 [net.logstash.logback/logstash-logback-encoder "9.0"]
                  [com.fasterxml.jackson.core/jackson-databind]
 
                  ;; Filesystem utilities
