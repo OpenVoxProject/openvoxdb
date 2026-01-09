@@ -147,7 +147,7 @@
                          [org.bouncycastle/bcpkix-jdk18on "1.83"]
                          [org.bouncycastle/bcpkix-fips "1.0.8"]
                          [org.bouncycastle/bc-fips "1.0.2.6"]
-                         [org.bouncycastle/bctls-fips "1.0.19"]
+                         [org.bouncycastle/bctls-fips "2.1.22"]
 
                          [ring/ring-core "1.8.2"]
                          [ring/ring-codec "1.3.0"]
