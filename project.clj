@@ -294,7 +294,7 @@
 
     :fips [:defaults :fips-settings]
 
-    :kondo {:dependencies [[clj-kondo "2025.10.23"]]}
+    :kondo {:dependencies [[clj-kondo "2025.12.23"]]}
     :ezbake {:dependencies ^:replace [;; NOTE: we need to explicitly pass in `nil` values
                                       ;; for the version numbers here in order to correctly
                                       ;; inherit the versions from our parent project.
