@@ -192,7 +192,7 @@
                  [com.github.seancorfield/next.jdbc "1.3.1086"]
                  [com.taoensso/nippy "3.1.1" :exclusions [org.tukaani/xz]]
                  [digest "1.4.10"]
-                 [fast-zip "0.4.0"]
+                 [fast-zip "0.7.0"]
                  [instaparse]
                  [murphy "0.5.3"]
                  [clj-commons/fs "1.6.312"]
