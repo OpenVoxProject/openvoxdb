@@ -124,7 +124,7 @@
   ;; defined under :dependencies ends up causing an error due to :pedantic? :abort,
   ;; because it is a dep of a dep with a different version, move it here.
   :managed-dependencies [[org.clojure/clojure "1.12.4"]
-                         [org.clojure/tools.reader "1.3.6"]
+                         [org.clojure/tools.reader "1.6.0"]
 
                          [org.slf4j/slf4j-api ~slf4j-version]
                          [org.slf4j/jul-to-slf4j ~slf4j-version]
