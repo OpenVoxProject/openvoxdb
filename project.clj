@@ -98,7 +98,7 @@
 (def pdb-jvm-opts (when (< 8 (:feature pdb-jvm-ver) 17)
                     ["--illegal-access=deny"]))
 
-(def kitchensink-version "3.5.3")
+(def kitchensink-version "3.5.5")
 (def trapperkeeper-version "4.3.0")
 (def trapperkeeper-webserver-jetty10-version "1.1.0")
 (def jackson-version "2.15.4")
