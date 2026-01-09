@@ -160,7 +160,7 @@
 
   :dependencies [[org.postgresql/postgresql "42.7.8"]
                  [org.clojure/clojure]
-                 [org.clojure/core.async "1.5.648"]
+                 [org.clojure/core.async "1.8.741"]
                  [org.clojure/core.match "1.1.1"]
                  [org.clojure/core.memoize "1.0.257"]
                  [org.clojure/data.generators "1.1.1"]
