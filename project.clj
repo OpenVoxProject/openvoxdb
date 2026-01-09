@@ -215,7 +215,7 @@
                  ;; WebAPI support libraries.
                  [bidi "2.1.6"]
                  [clj-http "3.13.1"]
-                 [commons-io "2.20.0"]
+                 [commons-io "2.21.0"]
                  [compojure "1.7.1"]
                  [ring/ring-core]]
 
