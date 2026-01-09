@@ -153,7 +153,7 @@
                          [ring/ring-codec "1.3.0"]
                          [instaparse "1.5.0"]
                          [commons-codec "1.20.0"]
-                         [clj-time "0.11.0"]
+                         [clj-time "0.15.2"]
                          [org.yaml/snakeyaml "2.0"]
                          [joda-time "2.12.5"]
                          [cheshire "5.10.2"]]
