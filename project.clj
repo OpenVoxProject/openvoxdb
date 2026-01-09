@@ -155,7 +155,7 @@
                          [commons-codec "1.20.0"]
                          [clj-time "0.11.0"]
                          [org.yaml/snakeyaml "2.0"]
-                         [joda-time "2.12.5"]
+                         [joda-time "2.14.0"]
                          [cheshire "5.10.2"]]
 
   :dependencies [[org.postgresql/postgresql "42.7.8"]
