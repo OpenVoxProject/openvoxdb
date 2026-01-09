@@ -224,72 +224,81 @@
 
   :aot ~pdb-aot-classes
 
-  :profiles {:defaults {:resource-paths ["test-resources"]
+  :profiles {
+    :defaults {:resource-paths ["test-resources"]
                         :dependencies ~pdb-dev-deps
                         :injections [(do
                                        (require 'schema.core)
                                        (schema.core/set-fn-validation! true))]}
-             :dev [:defaults {:dependencies [[org.bouncycastle/bcpkix-jdk18on]]
-                              :plugins [[jonase/eastwood "1.4.3"]]
-                              :jvm-opts ~(conj pdb-jvm-opts "-XX:-OmitStackTraceInFastThrow")}]
 
-             :fips [:defaults
-                    {:dependencies [[org.bouncycastle/bcpkix-fips]
+    :dev-settings {:dependencies [[org.bouncycastle/bcpkix-jdk18on]]
+                    :plugins [[jonase/eastwood "1.4.3"]]
+                    :jvm-opts ~(conj pdb-jvm-opts "-XX:-OmitStackTraceInFastThrow")}
+
+    :dev [:defaults :dev-settings]
+
+    :fips-settings {:dependencies [[org.bouncycastle/bcpkix-fips]
                                     [org.bouncycastle/bc-fips]
                                     [org.bouncycastle/bctls-fips]]
 
-                     ;; this only ensures that we run with the proper profiles
-                     ;; during testing. This JVM opt will be set in the puppet module
-                     ;; that sets up the JVM classpaths during installation.
-                     :jvm-opts ~(let [{:keys [feature interim]} pdb-jvm-ver]
+                    :vars {:java-args ~(str "-Xmx192m "
+                                            "-Djdk.tls.ephemeralDHKeySize=2048 "
+                                            "-Djava.security.properties==/opt/puppetlabs/server/data/puppetdb/java.security.fips")}
+
+                    ;; this only ensures that we run with the proper profiles
+                    ;; during testing. This JVM opt will be set in the puppet module
+                    ;; that sets up the JVM classpaths during installation.
+                    :jvm-opts ~(let [{:keys [feature interim]} pdb-jvm-ver]
                                   (conj pdb-jvm-opts
                                         (case feature
-                                          17 "-Djava.security.properties==dev-resources/jdk11on-fips-security"
-                                          21 "-Djava.security.properties==dev-resources/jdk11on-fips-security"
-                                          (do)
-                                        )))}]
-             :kondo {:dependencies [[clj-kondo "2025.10.23"]]}
-             :ezbake {:dependencies ^:replace [;; NOTE: we need to explicitly pass in `nil` values
-                                               ;; for the version numbers here in order to correctly
-                                               ;; inherit the versions from our parent project.
-                                               ;; This is because of a bug in lein 2.7.1 that
-                                               ;; prevents the deps from being processed properly
-                                               ;; with `:managed-dependencies` when you specify
-                                               ;; dependencies in a profile.  See:
-                                               ;; https://github.com/technomancy/leiningen/issues/2216
-                                               ;; Hopefully we can remove those `nil`s (if we care)
-                                               ;; and this comment when lein 2.7.2 is available.
+                                          17 "-Djava.security.properties==resources/ext/build-scripts/java.security.fips"
+                                          21 "-Djava.security.properties==resources/ext/build-scripts/java.security.fips"
+                                          (do))))}
 
-                                               ;; ezbake does not use the uberjar profile so we need
-                                               ;; to duplicate this dependency here
-                                               [org.bouncycastle/bcpkix-jdk18on nil]
+    :fips [:defaults :fips-settings]
 
-                                               ;; we need to explicitly pull in our parent project's
-                                               ;; clojure version here, because without it, lein
-                                               ;; brings in its own version, and older versions of
-                                               ;; lein depend on clojure 1.6.
-                                               [org.clojure/clojure nil]
+    :kondo {:dependencies [[clj-kondo "2025.10.23"]]}
+    :ezbake {:dependencies ^:replace [;; NOTE: we need to explicitly pass in `nil` values
+                                      ;; for the version numbers here in order to correctly
+                                      ;; inherit the versions from our parent project.
+                                      ;; This is because of a bug in lein 2.7.1 that
+                                      ;; prevents the deps from being processed properly
+                                      ;; with `:managed-dependencies` when you specify
+                                      ;; dependencies in a profile.  See:
+                                      ;; https://github.com/technomancy/leiningen/issues/2216
+                                      ;; Hopefully we can remove those `nil`s (if we care)
+                                      ;; and this comment when lein 2.7.2 is available.
 
-                                               ;; This circular dependency is required because of a bug in
-                                               ;; ezbake (EZ-35); without it, bootstrap.cfg will not be included
-                                               ;; in the final package.
-                                               [org.openvoxproject/puppetdb ~pdb-version]]
-                      :name "puppetdb"
-                      :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.7.1")]]}
-             :testutils {:source-paths ^:replace ["test"]
-                         :resource-paths ^:replace []
-                         ;; Something else may need adjustment, but
-                         ;; without this, "lein uberjar" tries to
-                         ;; compile test files, and crashes because
-                         ;; "src" namespaces aren't available.
-                         :aot ^:replace []}
-             :ci {:plugins [[lein-pprint "1.3.2"]
-                            [lein-exec "0.3.7"]]}
-             ; We only want to include bouncycastle in the FOSS uberjar.
-             ; PE should be handled by selecting the proper bouncycastle jar
-             ; at runtime (standard/fips)
-             :uberjar {:dependencies [[org.bouncycastle/bcpkix-jdk18on]]
-                       :aot ~pdb-aot-namespaces}}
+                                      ;; ezbake does not use the uberjar profile so we need
+                                      ;; to duplicate this dependency here
+                                      [org.bouncycastle/bcpkix-jdk18on nil]
+
+                                      ;; we need to explicitly pull in our parent project's
+                                      ;; clojure version here, because without it, lein
+                                      ;; brings in its own version, and older versions of
+                                      ;; lein depend on clojure 1.6.
+                                      [org.clojure/clojure nil]
+
+                                      ;; This circular dependency is required because of a bug in
+                                      ;; ezbake (EZ-35); without it, bootstrap.cfg will not be included
+                                      ;; in the final package.
+                                      [org.openvoxproject/puppetdb ~pdb-version]]
+              :name "puppetdb"
+              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.7.1")]]}
+    :testutils {:source-paths ^:replace ["test"]
+                :resource-paths ^:replace []
+                ;; Something else may need adjustment, but
+                ;; without this, "lein uberjar" tries to
+                ;; compile test files, and crashes because
+                ;; "src" namespaces aren't available.
+                :aot ^:replace []}
+    :ci {:plugins [[lein-pprint "1.3.2"]
+                    [lein-exec "0.3.7"]]}
+    ; We only want to include bouncycastle in the FOSS uberjar.
+    ; PE should be handled by selecting the proper bouncycastle jar
+    ; at runtime (standard/fips)
+    :uberjar {:dependencies [[org.bouncycastle/bcpkix-jdk18on]]
+              :aot ~pdb-aot-namespaces}}
 
   :jar-exclusions [#"leiningen/"]
 
