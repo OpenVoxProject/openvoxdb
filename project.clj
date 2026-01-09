@@ -151,7 +151,7 @@
 
                          [ring/ring-core "1.8.2"]
                          [ring/ring-codec "1.3.0"]
-                         [instaparse "1.4.1"]
+                         [instaparse "1.5.0"]
                          [commons-codec "1.15"]
                          [clj-time "0.11.0"]
                          [org.yaml/snakeyaml "2.0"]
