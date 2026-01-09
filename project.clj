@@ -209,7 +209,7 @@
                  [org.apache.commons/commons-lang3 "3.20.0"]
 
                  ;; Database connectivity
-                 [com.zaxxer/HikariCP "5.0.1"]
+                 [com.zaxxer/HikariCP "7.0.2"]
                  [com.github.seancorfield/honeysql "2.3.911"]
 
                  ;; WebAPI support libraries.
