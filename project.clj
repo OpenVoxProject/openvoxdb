@@ -154,7 +154,7 @@
                          [instaparse "1.5.0"]
                          [commons-codec "1.20.0"]
                          [clj-time "0.11.0"]
-                         [org.yaml/snakeyaml "2.0"]
+                         [org.yaml/snakeyaml "2.5"]
                          [joda-time "2.12.5"]
                          [cheshire "5.10.2"]]
 
