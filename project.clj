@@ -168,7 +168,7 @@
                  [org.clojure/tools.macro "0.2.2"]
                  [org.clojure/tools.namespace "0.2.11"]
                  [org.clojure/math.combinatorics "0.3.0"]
-                 [org.clojure/tools.logging "1.2.4"]
+                 [org.clojure/tools.logging "1.3.1"]
                  [org.clojure/tools.nrepl "0.2.13"]
 
                  ;; OpenVox specific
