@@ -1,7 +1,5 @@
 (def pdb-version "8.12.0-SNAPSHOT")
 
-(def clj-parent-version "7.6.6")
-
 (defn true-in-env? [x]
   (#{"true" "yes" "1"} (System/getenv x)))
 
@@ -25,11 +23,9 @@
       (let [ver (eval '(java.lang.Runtime/version))]
         {:feature (.feature ver) :interim (.interim ver)}))))
 
-(def i18n-version "1.0.2")
-
 (def pdb-dev-deps
   (concat
-   '[[ring/ring-mock]
+   '[[ring/ring-mock "0.4.0"]
      [timofreiberg/bultitude "0.3.1"]
      [org.openvoxproject/trapperkeeper :classifier "test"]
      [org.openvoxproject/kitchensink :classifier "test"]
@@ -42,7 +38,7 @@
      [org.yaml/snakeyaml]
 
      ;; Only needed for :integration tests
-     [org.openvoxproject/trapperkeeper-filesystem-watcher nil]]))
+     [org.openvoxproject/trapperkeeper-filesystem-watcher "1.3.0"]]))
 
 ;; Don't use lein :clean-targets so that we don't have to repeat
 ;; ourselves, given that we need to remove some protected files, and
@@ -102,6 +98,12 @@
 (def pdb-jvm-opts (when (< 8 (:feature pdb-jvm-ver) 17)
                     ["--illegal-access=deny"]))
 
+(def kitchensink-version "3.5.3")
+(def trapperkeeper-version "4.3.0")
+(def trapperkeeper-webserver-jetty10-version "1.1.0")
+(def jackson-version "2.15.4")
+(def i18n-version "1.0.2")
+(def slf4j-version "2.0.17")
 (defproject org.openvoxproject/puppetdb pdb-version
   :description "OpenVox-integrated catalog and fact storage"
 
@@ -112,73 +114,109 @@
 
   :min-lein-version "2.7.1"
 
-  :parent-project {:coords [org.openvoxproject/clj-parent ~clj-parent-version]
-                   :inherit [:managed-dependencies]}
-
   ;; Abort when version ranges or version conflicts are detected in
   ;; dependencies. Also supports :warn to simply emit warnings.
   ;; requires lein 2.2.0+.
   :pedantic? :abort
 
-  :dependencies [[org.postgresql/postgresql]
-                 [org.clojure/clojure]
-                 [org.clojure/core.async]
-                 [org.clojure/core.match "1.1.1"]
-                 [org.clojure/core.memoize]
-                 [org.clojure/data.generators "1.1.1"]
-                 [org.clojure/java.jdbc]
-                 [org.clojure/tools.macro]
-                 [org.clojure/tools.namespace]
-                 [org.clojure/math.combinatorics "0.3.0"]
-                 [org.clojure/tools.logging]
-                 [org.clojure/tools.nrepl]
+  ;; These are to enforce consistent versions across dependencies of dependencies,
+  ;; and to avoid having to define versions in multiple places. If a component
+  ;; defined under :dependencies ends up causing an error due to :pedantic? :abort,
+  ;; because it is a dep of a dep with a different version, move it here.
+  :managed-dependencies [[org.clojure/clojure "1.12.4"]
+                         [org.clojure/tools.reader "1.3.6"]
 
-                 ;; Puppet specific
-                 [org.openvoxproject/comidi]
-                 [org.openvoxproject/i18n]
+                         [org.slf4j/slf4j-api ~slf4j-version]
+                         [org.slf4j/jul-to-slf4j ~slf4j-version]
+                         [org.slf4j/log4j-over-slf4j ~slf4j-version]
+
+                         [org.openvoxproject/kitchensink ~kitchensink-version]
+                         [org.openvoxproject/kitchensink ~kitchensink-version :classifier "test"]
+                         [org.openvoxproject/trapperkeeper ~trapperkeeper-version]
+                         [org.openvoxproject/trapperkeeper ~trapperkeeper-version :classifier "test"]
+                         [org.openvoxproject/trapperkeeper-webserver-jetty10 ~trapperkeeper-webserver-jetty10-version]
+                         [org.openvoxproject/trapperkeeper-webserver-jetty10 ~trapperkeeper-webserver-jetty10-version :classifier "test"]
+                         
+                         [com.fasterxml.jackson.core/jackson-core ~jackson-version]
+                         [com.fasterxml.jackson.core/jackson-databind ~jackson-version]
+                         [com.fasterxml.jackson.core/jackson-annotations ~jackson-version]
+                         [com.fasterxml.jackson.module/jackson-module-afterburner ~jackson-version]
+                         [com.fasterxml.jackson.dataformat/jackson-dataformat-cbor ~jackson-version]
+                         [com.fasterxml.jackson.dataformat/jackson-dataformat-smile ~jackson-version]
+
+                         [org.bouncycastle/bcpkix-jdk18on "1.83"]
+                         [org.bouncycastle/bcpkix-fips "1.0.8"]
+                         [org.bouncycastle/bc-fips "1.0.2.6"]
+                         [org.bouncycastle/bctls-fips "1.0.19"]
+
+                         [ring/ring-core "1.8.2"]
+                         [ring/ring-codec "1.1.2"]
+                         [instaparse "1.4.1"]
+                         [commons-codec "1.15"]
+                         [clj-time "0.11.0"]
+                         [org.yaml/snakeyaml "2.0"]
+                         [joda-time "2.12.5"]
+                         [cheshire "5.10.2"]]
+
+  :dependencies [[org.postgresql/postgresql "42.7.8"]
+                 [org.clojure/clojure]
+                 [org.clojure/core.async "1.5.648"]
+                 [org.clojure/core.match "1.1.1"]
+                 [org.clojure/core.memoize "1.0.257"]
+                 [org.clojure/data.generators "1.1.1"]
+                 [org.clojure/java.jdbc "0.7.12"]
+                 [org.clojure/tools.macro "0.1.5"]
+                 [org.clojure/tools.namespace "0.2.11"]
+                 [org.clojure/math.combinatorics "0.3.0"]
+                 [org.clojure/tools.logging "1.2.4"]
+                 [org.clojure/tools.nrepl "0.2.13"]
+
+                 ;; OpenVox specific
+                 [org.openvoxproject/comidi "1.1.1"]
+                 [org.openvoxproject/i18n ~i18n-version]
                  [org.openvoxproject/kitchensink]
-                 [org.openvoxproject/ssl-utils]
+                 [org.openvoxproject/ssl-utils "3.6.1"]
                  [org.openvoxproject/stockpile "1.0.0"]
                  [org.openvoxproject/structured-logging "1.0.0"]
                  [org.openvoxproject/trapperkeeper]
                  [org.openvoxproject/trapperkeeper-webserver-jetty10]
-                 [org.openvoxproject/trapperkeeper-metrics]
-                 [org.openvoxproject/trapperkeeper-status]
-                 [org.openvoxproject/trapperkeeper-authorization]
+                 [org.openvoxproject/trapperkeeper-metrics "2.1.0"]
+                 [org.openvoxproject/trapperkeeper-status "1.3.0"]
+                 [org.openvoxproject/trapperkeeper-authorization "2.1.0"]
 
                  ;; Various
                  [cheshire]
-                 [clj-stacktrace]
+                 [clj-stacktrace "0.2.8"]
                  [clj-time]
                  [com.rpl/specter "1.1.6"]
                  [com.github.seancorfield/next.jdbc "1.3.1086"]
-                 [com.taoensso/nippy :exclusions [org.tukaani/xz]]
+                 [com.taoensso/nippy "3.1.1" :exclusions [org.tukaani/xz]]
                  [digest "1.4.10"]
                  [fast-zip "0.4.0"]
                  [instaparse]
                  [murphy "0.5.3"]
-                 [clj-commons/fs]
-                 [metrics-clojure]
+                 [clj-commons/fs "1.6.312"]
+                 [metrics-clojure "2.10.0"]
                  [robert/hooke "1.3.0"]
-                 [trptcolin/versioneer]
+                 [trptcolin/versioneer "0.2.0"]
                  ;; We do not currently use this dependency directly, but
                  ;; we have documentation that shows how users can use it to
                  ;; send their logs to logstash, so we include it in the jar.
-                 [net.logstash.logback/logstash-logback-encoder]
+                 [net.logstash.logback/logstash-logback-encoder "7.3"]
                  [com.fasterxml.jackson.core/jackson-databind]
 
                  ;; Filesystem utilities
                  [org.apache.commons/commons-lang3 "3.20.0"]
 
                  ;; Database connectivity
-                 [com.zaxxer/HikariCP]
-                 [com.github.seancorfield/honeysql]
+                 [com.zaxxer/HikariCP "5.0.1"]
+                 [com.github.seancorfield/honeysql "2.3.911"]
 
                  ;; WebAPI support libraries.
-                 [bidi]
+                 [bidi "2.1.6"]
                  [clj-http "3.13.1"]
-                 [commons-io]
-                 [compojure]
+                 [commons-io "2.20.0"]
+                 [compojure "1.7.1"]
                  [ring/ring-core]]
 
   :jvm-opts ~pdb-jvm-opts
@@ -190,7 +228,6 @@
 
   :plugins [[lein-release "1.1.3" :exclusions [org.clojure/clojure]]
             [lein-cloverage "1.2.4"]
-            [lein-parent "0.3.9"]
             [org.openvoxproject/i18n ~i18n-version]]
 
   :lein-release {:scm        :git
@@ -271,13 +308,13 @@
 
                                       ;; ezbake does not use the uberjar profile so we need
                                       ;; to duplicate this dependency here
-                                      [org.bouncycastle/bcpkix-jdk18on nil]
+                                      [org.bouncycastle/bcpkix-jdk18on]
 
                                       ;; we need to explicitly pull in our parent project's
                                       ;; clojure version here, because without it, lein
                                       ;; brings in its own version, and older versions of
                                       ;; lein depend on clojure 1.6.
-                                      [org.clojure/clojure nil]
+                                      [org.clojure/clojure]
 
                                       ;; This circular dependency is required because of a bug in
                                       ;; ezbake (EZ-35); without it, bootstrap.cfg will not be included
