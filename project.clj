@@ -99,7 +99,7 @@
                     ["--illegal-access=deny"]))
 
 (def kitchensink-version "3.5.3")
-(def trapperkeeper-version "4.3.0")
+(def trapperkeeper-version "4.3.2")
 (def trapperkeeper-webserver-jetty10-version "1.1.0")
 (def jackson-version "2.15.4")
 (def i18n-version "1.0.2")
