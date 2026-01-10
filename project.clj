@@ -172,7 +172,7 @@
                  [org.clojure/tools.nrepl "0.2.13"]
 
                  ;; OpenVox specific
-                 [org.openvoxproject/comidi "1.1.1"]
+                 [org.openvoxproject/comidi "1.1.2"]
                  [org.openvoxproject/i18n ~i18n-version]
                  [org.openvoxproject/kitchensink]
                  [org.openvoxproject/ssl-utils "3.6.1"]
