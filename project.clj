@@ -180,7 +180,7 @@
                  [org.openvoxproject/structured-logging "1.0.0"]
                  [org.openvoxproject/trapperkeeper]
                  [org.openvoxproject/trapperkeeper-webserver-jetty10]
-                 [org.openvoxproject/trapperkeeper-metrics "2.1.0"]
+                 [org.openvoxproject/trapperkeeper-metrics "2.1.2"]
                  [org.openvoxproject/trapperkeeper-status "1.3.0"]
                  [org.openvoxproject/trapperkeeper-authorization "2.1.0"]
 
