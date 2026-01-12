@@ -172,7 +172,7 @@
                  [org.clojure/tools.nrepl "0.2.13"]
 
                  ;; OpenVox specific
-                 [org.openvoxproject/comidi "1.1.1"]
+                 [org.openvoxproject/comidi "1.1.2"]
                  [org.openvoxproject/i18n ~i18n-version]
                  [org.openvoxproject/kitchensink]
                  [org.openvoxproject/ssl-utils "3.6.1"]
@@ -216,7 +216,7 @@
                  [bidi "2.1.6"]
                  [clj-http "3.13.1"]
                  [commons-io "2.21.0"]
-                 [compojure "1.7.1"]
+                 [compojure "1.7.2"]
                  [ring/ring-core]]
 
   :jvm-opts ~pdb-jvm-opts
