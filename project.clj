@@ -177,7 +177,7 @@
                  [org.openvoxproject/kitchensink]
                  [org.openvoxproject/ssl-utils "3.6.1"]
                  [org.openvoxproject/stockpile "1.0.0"]
-                 [org.openvoxproject/structured-logging "1.0.0"]
+                 [org.openvoxproject/structured-logging "1.0.1"]
                  [org.openvoxproject/trapperkeeper]
                  [org.openvoxproject/trapperkeeper-webserver-jetty10]
                  [org.openvoxproject/trapperkeeper-metrics "2.1.0"]
