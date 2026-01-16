@@ -71,8 +71,12 @@ fi
  # Install Puppet Server dependencies
  # If we're not testing against the git tree (say in jenkins), don't install.
  if test -z "$PDB_NO_PUPPETSERVER_INSTALL"; then
+     # Because openvox-server as of 8.12.0 no longer packages the BC code directly
+     # in the uberjar due to flexibility building for FIPS and non-FIPS, and is only
+     # included in the ezbake packaging profile, we need to build the uberjar here
+     # with that profile. Should probably fix this in the openvox-server project.clj at some point.
      lein install
-     lein uberjar
+     lein with-profile ezbake uberjar
  fi
  # Cache Puppet Server version in a file in ext/test-conf directory
  dep_ver="$(lein-pprint :version)"

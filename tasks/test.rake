@@ -29,7 +29,7 @@ namespace :vox do
       spec = args[:spec] || 'core+ext/openjdk17/pg-17'
       _suite, java, _pg = spec.split('/')
 
-      image = java =~ /17/ ? "debian:12" : "debian:13"
+      image = java =~ /17/ ? "ruby:3.2-bookworm" : "ruby:3.2-trixie"
 
       puts "Starting container"
       teardown if container_exists
