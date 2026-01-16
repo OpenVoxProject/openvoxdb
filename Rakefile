@@ -1,32 +1,4 @@
 require 'rake'
-require 'open3'
-
-RED = "\033[31m"
-GREEN = "\033[32m"
-RESET = "\033[0m"
-
-def run_command(cmd, silent: true, print_command: false, report_status: false, allowed_exit_codes: [0])
-  puts "#{GREEN}Running #{cmd}#{RESET}" if print_command
-  output = ''
-  Open3.popen2e(cmd) do |_stdin, stdout_stderr, thread|
-    stdout_stderr.each do |line|
-      puts line unless silent
-      output += line
-    end
-    exitcode = thread.value.exitstatus
-    unless allowed_exit_codes.include?(exitcode)
-      err = "#{RED}Command failed! Command: #{cmd}, Exit code: #{exitcode}"
-      # Print details if we were running silent
-      err += "\nOutput:\n#{output}" if silent
-      err += RESET
-      abort err
-    end
-    puts "#{GREEN}Command finished with status #{exitcode}#{RESET}" if report_status
-  end
-  output.chomp
-end
-
-Dir.glob(File.join('tasks/**/*.rake')).each { |file| load file }
 
 ### puppetlabs stuff ###
 def run_beaker(test_files)
@@ -209,32 +181,5 @@ namespace :release do
     pe_git_data.each do |ticket, data|
       find_jira_match(jql_search, ticket, data, jira_issues, fix_version, 'pe-puppetdb-exntesions')
     end
-  end
-end
-
-begin
-  require 'github_changelog_generator/task'
-rescue LoadError
-  task :changelog do
-    abort('Run `bundle install --with release` to install the `github_changelog_generator` gem.')
-  end
-else
-  GitHubChangelogGenerator::RakeTask.new :changelog do |config|
-    config.header = <<~HEADER.chomp
-      # Changelog
-
-      All notable changes to this project will be documented in this file.
-    HEADER
-    config.user = 'openvoxproject'
-    config.project = 'openvoxdb'
-    config.exclude_labels = %w[dependencies duplicate question invalid wontfix wont-fix modulesync skip-changelog]
-    # this is probably the worst way to do this
-    # ideally there would be a VERSION file and clojure and Rake would read it
-    config.future_release = File.readlines('project.clj').first.scan(/".*"/).first.gsub('"', '')
-    # we limit the changelog to all new openvox releases, to skip perforce onces
-    # otherwise the changelog generate takes a lot amount of time
-    config.since_tag = '8.9.1'
-    #config.exclude_tags_regex = /\A7\./
-    config.release_branch = 'main'
   end
 end
