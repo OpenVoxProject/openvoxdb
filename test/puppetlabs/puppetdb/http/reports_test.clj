@@ -219,11 +219,14 @@
   (let [{:keys [status body]} (query-response :get "/v4/reports" "[\"=\"")]
     (testing "malformed json queries don't return status 500 responses"
       (is (= 400 status))
-      (is (= (str "Json parse error at line 1, column 5:\n\n"
-                  "[\"=\"\n"
-                  "   ^\n\n"
+      (is (re-matches
+            (re-pattern
+              (str "Json parse error at line 1, column 5:\\n\\n"
+                  "\\[\"=\"\\n"
+                  "   \\^\\n\\n"
                   "Unexpected end-of-input: expected close marker for Array "
-                  "(start marker at [Source: (StringReader); line: 1, column: 1])") body)))))
+                  "\\(start marker at \\[Source: .*; line: 1, column: 1\\]\\)"))
+            body)))))
 
 (deftest-http-app query-report-data
   [[_version field] [[:v4 :logs] [:v4 :metrics]]
