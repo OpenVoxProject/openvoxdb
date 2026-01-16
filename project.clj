@@ -176,7 +176,7 @@
                  [org.openvoxproject/i18n ~i18n-version]
                  [org.openvoxproject/kitchensink]
                  [org.openvoxproject/ssl-utils "3.6.1"]
-                 [org.openvoxproject/stockpile "1.0.0"]
+                 [org.openvoxproject/stockpile "1.0.1"]
                  [org.openvoxproject/structured-logging "1.0.0"]
                  [org.openvoxproject/trapperkeeper]
                  [org.openvoxproject/trapperkeeper-webserver-jetty10]
