@@ -5,7 +5,7 @@ RED = "\033[31m"
 GREEN = "\033[32m"
 RESET = "\033[0m"
 
-def run_command(cmd, silent: true, print_command: false, report_status: false)
+def run_command(cmd, silent: true, print_command: false, report_status: false, allowed_exit_codes: [0])
   puts "#{GREEN}Running #{cmd}#{RESET}" if print_command
   output = ''
   Open3.popen2e(cmd) do |_stdin, stdout_stderr, thread|
@@ -14,7 +14,7 @@ def run_command(cmd, silent: true, print_command: false, report_status: false)
       output += line
     end
     exitcode = thread.value.exitstatus
-    unless exitcode.zero?
+    unless allowed_exit_codes.include?(exitcode)
       err = "#{RED}Command failed! Command: #{cmd}, Exit code: #{exitcode}"
       # Print details if we were running silent
       err += "\nOutput:\n#{output}" if silent
