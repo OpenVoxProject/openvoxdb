@@ -40,7 +40,7 @@
   "Takes an augmented failure object and prints the error message"
   [{:keys [line column text reason]}]
   (let [opening (tru "PQL parse error at line {0}, column {1}:\n\n{2}\n{3}\n\n"
-                     line column text (failure/marker column))
+                     line column text (failure/marker text column))
         full-reasons (distinct (map :expecting
                                     (filter :full reason)))
         partial-reasons (distinct (map :expecting
