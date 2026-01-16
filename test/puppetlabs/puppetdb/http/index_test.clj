@@ -77,11 +77,12 @@
       ;; Ensure we parse anything that looks like AST/JSON as JSON not PQL
       (let [{:keys [status body headers]} (query-response method endpoint "[\"from\",\"foobar\"")]
         (is (re-matches
-              #"(?s)Json parse error at line 1, column 17:\n\n
-                \[\"from\",\"foobar\"\n
-                \s+\^\n\n
-                Unexpected end-of-input: expected close marker for Array
-                \(start marker at \[Source: .*; line: 1, column: 1\]\)"
+              (re-pattern
+                (str "(?s)Json parse error at line 1, column 17:\\n\\n"
+                    "\\[\"from\",\"foobar\"\\n"
+                    "\\s+\\^\\n\\n"
+                    "Unexpected end-of-input: expected close marker for Array "
+                    "\\(start marker at \\[Source: .*; line: 1, column: 1\\]\\)"))
               body))
         (are-error-response-headers headers)
         (is (= HttpURLConnection/HTTP_BAD_REQUEST status)))
