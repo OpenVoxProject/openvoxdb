@@ -305,6 +305,7 @@
 
     :dev-settings {:dependencies [[org.bouncycastle/bcpkix-jdk18on]]
                     :plugins [[jonase/eastwood "1.4.3"]]
+                    :injections [(require 'test-summary)]
                     :jvm-opts ~(conj pdb-jvm-opts "-XX:-OmitStackTraceInFastThrow")}
 
     :dev [:defaults :dev-settings]
