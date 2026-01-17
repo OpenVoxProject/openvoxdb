@@ -165,6 +165,16 @@ CONF
         end.to raise_error(/PuppetDB 'server_urls' cannot contain URL paths, found 'https:\/\/foo.something-different.com\/bar'/)
       end
 
+      it "allows http for 127.0.0.1" do
+        write_config <<CONF
+[main]
+server_urls = http://127.0.0.1:8080
+CONF
+
+        config = described_class.load
+        expect(config.server_urls).to eq([URI("http://127.0.0.1:8080")])
+      end
+
       it "should fail if given a server/port combo" do
         write_config <<CONF
 [main]
