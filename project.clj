@@ -126,7 +126,7 @@
                          [org.clojure/core.memoize "1.0.257"]
                          [org.clojure/data.generators "1.1.1"]
                          [org.clojure/java.jdbc "0.7.12"]
-                         [org.clojure/math.combinatorics "0.3.0"]
+                         [org.clojure/math.combinatorics "0.3.2"]
                          [org.clojure/test.check "1.1.1"]
                          [org.clojure/tools.logging "1.2.4"]
                          [org.clojure/tools.macro "0.2.2"]
