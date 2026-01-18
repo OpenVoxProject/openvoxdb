@@ -198,7 +198,7 @@
                          [riddley "0.2.0"]
                          [ring/ring-codec "1.3.0"]
                          [ring/ring-core "1.8.2"]
-                         [ring/ring-mock "0.4.0"]
+                         [ring/ring-mock "0.6.2"]
                          [robert/hooke "1.3.0"]
                          [timofreiberg/bultitude "0.3.1"]
                          [trptcolin/versioneer "0.2.0"]]
