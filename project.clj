@@ -134,7 +134,7 @@
                          [org.clojure/tools.nrepl "0.2.13"]
                          [org.clojure/tools.reader "1.3.6"]
                          [bidi "2.1.6"]
-                         [cheshire "5.10.2"]
+                         [cheshire "5.13.0"]
                          [clj-commons/clj-yaml "1.0.29"]
                          [clj-commons/fs "1.6.312"]
                          [clj-http "3.13.1"]
