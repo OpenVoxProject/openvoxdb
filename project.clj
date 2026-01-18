@@ -157,7 +157,7 @@
                          [com.zaxxer/HikariCP "5.0.1"]
                          [commons-codec "1.20.0"]
                          [commons-io "2.21.0"]
-                         [compojure "1.7.1"]
+                         [compojure "1.7.2"]
                          [digest "1.4.10"]
                          [fast-zip "0.4.0"]
                          [instaparse "1.5.0"]
