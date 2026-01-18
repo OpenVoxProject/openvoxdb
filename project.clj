@@ -153,7 +153,7 @@
                          [com.github.seancorfield/honeysql "2.3.911"]
                          [com.github.seancorfield/next.jdbc "1.3.1086"]
                          [com.rpl/specter "1.1.6"]
-                         [com.taoensso/nippy "3.1.1" :exclusions [org.tukaani/xz]]
+                         [com.taoensso/nippy "3.6.0" :exclusions [org.tukaani/xz]]
                          [com.zaxxer/HikariCP "5.1.0"]
                          [commons-codec "1.20.0"]
                          [commons-io "2.21.0"]
