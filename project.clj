@@ -128,7 +128,7 @@
                          [org.clojure/java.jdbc "0.7.12"]
                          [org.clojure/math.combinatorics "0.3.2"]
                          [org.clojure/test.check "1.1.3"]
-                         [org.clojure/tools.logging "1.2.4"]
+                         [org.clojure/tools.logging "1.3.1"]
                          [org.clojure/tools.macro "0.2.2"]
                          [org.clojure/tools.namespace "0.2.11"]
                          [org.clojure/tools.nrepl "0.2.13"]
