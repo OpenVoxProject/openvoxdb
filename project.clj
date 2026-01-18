@@ -161,7 +161,7 @@
                          [digest "1.4.10"]
                          [fast-zip "0.4.0"]
                          [instaparse "1.5.0"]
-                         [joda-time "2.12.5"]
+                         [joda-time "2.14.0"]
                          [metrics-clojure "2.10.0"]
                          [murphy "0.5.3"]
                          [net.logstash.logback/logstash-logback-encoder "7.4"]
