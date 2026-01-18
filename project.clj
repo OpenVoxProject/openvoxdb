@@ -138,7 +138,7 @@
                          [clj-commons/clj-yaml "1.0.29"]
                          [clj-commons/fs "1.6.312"]
                          [clj-http "3.13.1"]
-                         [clj-kondo "2025.10.23"]
+                         [clj-kondo "2025.12.23"]
                          [clj-stacktrace "0.2.8"]
                          [clj-time "0.15.2"]
                          [com.fasterxml.jackson.core/jackson-core ~jackson-version]
