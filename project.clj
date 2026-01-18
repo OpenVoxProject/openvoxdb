@@ -154,7 +154,7 @@
                          [com.github.seancorfield/next.jdbc "1.3.1086"]
                          [com.rpl/specter "1.1.6"]
                          [com.taoensso/nippy "3.1.1" :exclusions [org.tukaani/xz]]
-                         [com.zaxxer/HikariCP "5.0.1"]
+                         [com.zaxxer/HikariCP "5.1.0"]
                          [commons-codec "1.20.0"]
                          [commons-io "2.21.0"]
                          [compojure "1.7.2"]
