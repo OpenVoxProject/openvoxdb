@@ -164,7 +164,7 @@
                          [joda-time "2.12.5"]
                          [metrics-clojure "2.10.0"]
                          [murphy "0.5.3"]
-                         [net.logstash.logback/logstash-logback-encoder "7.3"]
+                         [net.logstash.logback/logstash-logback-encoder "7.4"]
                          [org.apache.commons/commons-lang3 "3.20.0"]
                          [org.bouncycastle/bcpkix-jdk18on "1.83"]
                          [org.bouncycastle/bcpkix-fips "1.0.8"]
