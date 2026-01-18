@@ -132,7 +132,7 @@
                          [org.clojure/tools.macro "0.2.2"]
                          [org.clojure/tools.namespace "0.2.11"]
                          [org.clojure/tools.nrepl "0.2.13"]
-                         [org.clojure/tools.reader "1.3.6"]
+                         [org.clojure/tools.reader "1.6.0"]
                          [bidi "2.1.6"]
                          [cheshire "5.13.0"]
                          [clj-commons/clj-yaml "1.0.29"]
