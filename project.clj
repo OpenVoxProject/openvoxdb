@@ -149,7 +149,7 @@
                          ;; For some reason, this version is 2.20 without a .1. Update this back to
                          ;; ~jackson-version when they match again.
                          [com.fasterxml.jackson.core/jackson-annotations "2.20"]
-                         [com.gfredericks/test.chuck "0.2.14"]
+                         [com.gfredericks/test.chuck "0.2.15"]
                          [com.github.seancorfield/honeysql "2.3.911"]
                          [com.github.seancorfield/next.jdbc "1.3.1086"]
                          [com.rpl/specter "1.1.6"]
