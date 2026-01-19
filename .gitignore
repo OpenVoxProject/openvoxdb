@@ -79,3 +79,13 @@ locust/load-test/__pycache__/
 
 # inellij configs
 /.idea
+
+# ovdb local config
+/.ovdb.conf
+
+# ovdb sandboxes (default location for pdbboxes)
+/dev-resources/sandboxes/
+
+# ovdb test output
+/last-integration-run.log
+/last-test-run.log

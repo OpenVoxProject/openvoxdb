@@ -1,0 +1,697 @@
+#!/usr/bin/env bash
+#
+# OpenVoxDB Development Helper
+#
+# Prerequisites:
+#   - Postgres 9.6+
+#   - pgbox script on your $PATH
+#
+# Exit codes
+# 0 - All good
+# 1 - command format error
+# 2 - incorrect current working directory
+# NOTE: shell pipefail enabled, exit codes could be due to failing subcommand as well
+
+set -euo pipefail
+
+pg_bin_path() {
+  local pg_ver="$1"
+  printf "/usr/lib/postgresql/$pg_ver/bin"
+}
+
+# Get the directory where this script lives
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Configuration loading
+# Precedence: CLI flags > env vars > config file > defaults
+load_config() {
+  local config_file="$script_dir/.ovdb.conf"
+
+  # Set defaults first
+  pg_bin=""
+  pg_sandbox="$script_dir/dev-resources/sandboxes"
+  ovdb_dir=""
+  parallel_test_state=""
+
+  # Source config file if it exists
+  if [[ -f "$config_file" ]]; then
+    config_source="$config_file"
+    # shellcheck source=/dev/null
+    source "$config_file"
+  else
+    config_source="defaults"
+  fi
+
+  # Environment variables override config file
+  pg_bin="${OVDB_PG_BIN:-$pg_bin}"
+  pg_sandbox="${OVDB_SANDBOX:-$pg_sandbox}"
+  ovdb_dir="${OVDB_DIR:-$ovdb_dir}"
+  parallel_test_state="${OVDB_PARALLEL_STATE:-$parallel_test_state}"
+
+  # Apply defaults for optional values
+  if [[ -z "$parallel_test_state" ]]; then
+    parallel_test_state="$pg_sandbox/ovdb-parallel-testing.edn"
+  fi
+}
+
+# Track where each config value came from (for doctor/debug output)
+config_provenance() {
+  local var_name="$1"
+  local env_var="$2"
+  local config_file="$script_dir/.ovdb.conf"
+  local env_val="${!env_var:-}"
+
+  if [[ -n "$env_val" ]]; then
+    echo "env:$env_var"
+  elif [[ -f "$config_file" ]] && grep -q "^${var_name}=" "$config_file" 2>/dev/null; then
+    echo "file:$config_file"
+  else
+    echo "default"
+  fi
+}
+
+validate_pg_bin() {
+  if [[ -z "$pg_bin" ]]; then
+    log_error "pg_bin is not configured"
+    log_error ""
+    log_error "Set OVDB_PG_BIN environment variable or pg_bin in .ovdb.conf"
+    log_error "See: ovdb.conf.example for common platform paths"
+    log_error "Run: ovdb doctor to validate your configuration"
+    exit 1
+  fi
+
+  if [[ ! -d "$pg_bin" ]]; then
+    log_error "pg_bin directory not found: $pg_bin"
+    log_error ""
+    log_error "Set OVDB_PG_BIN environment variable or pg_bin in .ovdb.conf"
+    log_error "See: ovdb.conf.example for common platform paths"
+    log_error "Run: ovdb doctor to validate your configuration"
+    exit 1
+  fi
+
+  if [[ ! -x "$pg_bin/pg_ctl" ]]; then
+    log_error "pg_ctl not found or not executable in: $pg_bin"
+    log_error ""
+    log_error "Ensure pg_bin points to a PostgreSQL bin directory"
+    exit 1
+  fi
+}
+
+validate_pg_sandbox() {
+  local parent_dir
+  parent_dir="$(dirname "$pg_sandbox")"
+
+  if [[ ! -d "$parent_dir" ]]; then
+    log_error "pg_sandbox parent directory not found: $parent_dir"
+    log_error ""
+    log_error "Set OVDB_SANDBOX environment variable or pg_sandbox in .ovdb.conf"
+    exit 1
+  fi
+}
+
+is_ovdb_pwd() {
+  if grep "defproject puppetlabs/puppetdb" project.clj &>/dev/null ; then
+    return 0
+  elif grep "defproject org.openvoxproject/puppetdb" project.clj &>/dev/null ; then
+    return 0
+  fi
+
+  return 1
+}
+
+# Load configuration from env vars, config file, and defaults
+config_source="defaults"
+load_config
+
+# Override ovdb_dir with cwd if we're in a checkout
+if is_ovdb_pwd ; then
+  ovdb_dir="$(pwd)"
+fi
+
+# Create sandbox directory
+mkdir -p "$pg_sandbox"
+
+# These files live in the openvoxdb repo
+ovdbbox_init=$ovdb_dir/ext/bin/pdbbox-init
+ovdbbox_env=$ovdb_dir/ext/bin/pdbbox-env
+
+# Name of the default dir to store postgres data inside
+# Can be overridden with the --name option
+pg_tmpdir=tmp_pg
+
+# A utility to pipe output to STDERR.
+STDERR() {
+  cat - 1>&2
+}
+
+# A utility to pipe output to STDOUT.
+STDOUT() {
+  cat -
+}
+
+print_err_line() {
+  echo "$@" | STDERR
+}
+
+log_error() {
+  print_err_line "ERROR: $@"
+}
+
+log_warn() {
+  print_err_line "WARNING: $@"
+}
+
+log_info() {
+  print_err_line "INFO: $@"
+}
+
+log_debug() {
+  print_err_line "DEBUG: $@"
+}
+
+empty_err_line() {
+  echo "" | STDERR
+}
+
+usage_text() {
+  echo "A single command is required. Print available commands and options with 'ovdb --help'" | $1
+  echo "" | $1
+  echo "Usage: ovdb <command> [options] [-- [command-args]]" | $1
+}
+
+usage() {
+  usage_text STDERR
+  exit 1
+}
+
+usage_full() {
+  # Allows a non-failure usage message to be printed with the -h or --help flags
+  exit_code=1
+  prn=print_err_line
+  if [ "$#" -eq 1 -a "$1" -eq 0 ]; then
+    exit_code=0
+    prn=echo
+
+    usage_text STDOUT
+  else
+    usage_text STDERR
+  fi
+
+
+  $prn
+
+  $prn "Commands"
+  $prn "    aq             Run an AST query against OpenVoxDB"
+  $prn "        -- '<ast-query>' [explain]"
+  $prn "    benchmark      Submit benchmark data to openvoxdb"
+  $prn "        -- [number-of-nodes [host-offset]]"
+  $prn "    calibrate      Calibrate parallel test timing"
+  $prn "    clean          Clean up unneeded files (lein distclean)"
+  $prn "    doctor         Validate configuration and paths"
+  $prn "    edit           Edit the config files"
+  $prn "    ext            Run the ext tests"
+  $prn "    generate       Generate realistic test data"
+  $prn
+  $prn "    init           Initialize a postgres database for openvoxdb"
+  $prn "    integration    Run the integration tests"
+  $prn "        :only [clojure.ns/test]+"
+  $prn "        -- [setup-only] [test-only] [puppet_ref [puppetserver_ref]]"
+  $prn
+  $prn "    new-db         Drop and recreate the database"
+  $prn "    pgenv          Run an arbitrary command in the pg env"
+  $prn "        -- <command>"
+  $prn "    pglog          View the tail of the pg log"
+  $prn "    psql           Enter psql of the database"
+  $prn "    ptest          Run parallel tests"
+  $prn
+  $prn "    query          Query OpenVoxDB on localhost HTTP port"
+  $prn "        -- '<query>' [explain]"
+  $prn "    repl           Start the repl"
+  $prn "    run            Run openvoxdb (lein run services)"
+  $prn "    run-uberjar    Run openvoxdb from the uberjar"
+  $prn
+  $prn "    start          Start the postgres database"
+  $prn "        -- [fsync]"
+  $prn "    stop           Stop the postgres database"
+  $prn "    test           Run the unit tests"
+  $prn "        :only [clojure.ns/test]+"
+
+  $prn
+
+  $prn "Options"
+  $prn "    -h, --help              Print the full help text"
+  $prn "    -n, --name <name>       Change the name for the pg box in the pg sandbox"
+  $prn "    -p, --port <number>     Set the port"
+  $prn "    -v, --verbose           Print debugging information as the command executes"
+
+  exit $exit_code
+}
+
+fail_if_no_args() {
+  if [ "$1" -eq 0 ]; then
+    log_error "No arguments given."
+    usage
+  fi
+}
+
+verify_ovdb_pwd() {
+  if ! is_ovdb_pwd ; then
+    log_error "Current working directory $(pwd) does not appear to be an openvoxdb checkout"
+    exit 2
+  fi
+}
+
+debug=0
+function debug() {
+  if [ $debug -eq 1 ]; then
+    return 0; # true
+  else
+    return 1; # false
+  fi
+}
+
+fail_if_no_args $#
+
+subcommand=
+pg_port=
+# Only used for clojure tests this will process and save the ":only lein.ns.one lein.ns.two" args
+test_only=
+# Process flags
+while [ ! $# -eq 0 ]; do
+  case "$1" in
+    --)
+      # Loop has processed until the "--" which denotes the split
+      # between arguments to this utility and arguments to the subcommand.
+      # Shift the "--" off the argument list and now $@ will refer to the
+      # subcommand arguments.
+      if debug; then
+        log_debug "Encountered '--', finished processing ovdb arguments and options"
+      fi
+      shift
+      break
+      ;;
+    --help | -h)
+      # Print full help text and exit with 0
+      usage_full 0
+      exit
+      ;;
+    --verbose | -v)
+      debug=1
+      log_info "Enabled verbose debugging output"
+      shift
+      ;;
+    --name | -n)
+      pg_tmpdir=$2
+      if debug; then
+        log_debug "Set pg_tmpdir=$2"
+      fi
+      shift 2
+      ;;
+    --port | -p)
+      pg_port=$2
+      shift 2
+      ;;
+    --pgver)
+      # Check for version-specific config (e.g., pg_bin_16) first
+      pgver_var="pg_bin_$2"
+      if [[ -n "${!pgver_var}" ]]; then
+        pg_bin="${!pgver_var}"
+      else
+        pg_bin="$(pg_bin_path $2)"
+      fi
+      shift 2
+      ;;
+    :only)
+      if [ "$subcommand" = test -o "$subcommand" = integration ]; then
+        test_only=":only"
+        shift
+        while [ ! $# -eq 0 ]; do
+          if [ $1 = "--" ]; then
+            break
+          else
+            test_only="$test_only $1"
+            shift
+          fi
+        done
+      else
+        log_error "Don't know what to do with option :only for '$subcommand'"
+        empty_err_line
+        usage_full 1
+      fi
+      ;;
+    *)
+      # If this is the first command, store it.
+      # If this is the second command, print error message and error.
+      if [ -z $subcommand ]; then
+        subcommand="$1"
+        if debug; then
+          log_debug "Using subcommand '$subcommand'"
+        fi
+        shift
+      else
+        log_error "Unknown argument:" $1
+        empty_err_line
+        usage
+      fi
+  esac
+done
+
+# Full path the to postgres tmpdir
+pg_tmpdir_fullpath="$pg_sandbox/$pg_tmpdir"
+
+# Export postgres info
+export PGUSER=puppetdb
+export PDBBOX=$pg_tmpdir_fullpath
+
+
+if debug; then
+  empty_err_line
+  log_debug "Configuration source: $config_source"
+  log_debug "pg_bin=$pg_bin [$(config_provenance pg_bin OVDB_PG_BIN)]"
+  log_debug "pg_sandbox=$pg_sandbox [$(config_provenance pg_sandbox OVDB_SANDBOX)]"
+  log_debug "ovdb_dir=$ovdb_dir [$(config_provenance ovdb_dir OVDB_DIR)]"
+  log_debug "parallel_test_state=$parallel_test_state [$(config_provenance parallel_test_state OVDB_PARALLEL_STATE)]"
+  empty_err_line
+  log_debug "PG temp dir - " $pg_tmpdir
+  log_debug "PG full path - " $pg_tmpdir_fullpath
+  log_debug "Command - " $subcommand
+  log_debug "Subcommand flags - " $@
+  empty_err_line
+  set -x
+fi
+
+function random_port {
+  python3 -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()'
+}
+
+function config_test_refs {
+  puppet_ref=
+  puppetserver_ref=
+  case $# in
+    2)
+      puppet_ref=$1
+      puppetserver_ref=$2
+      ;;
+    1)
+      puppet_ref=$1
+      ;;
+    0)
+      ;;
+    *)
+      exit 3
+      ;;
+  esac
+
+  ext/bin/config-puppet-test-ref $puppet_ref
+  ext/bin/config-puppetserver-test-ref $puppetserver_ref
+}
+
+case $subcommand in
+  doctor)
+    echo "OpenVoxDB Dev Helper Configuration"
+    echo "================================="
+    echo ""
+    echo "Configuration source: $config_source"
+    echo ""
+
+    # Check pg_bin
+    pg_bin_prov=$(config_provenance pg_bin OVDB_PG_BIN)
+    if [[ -z "$pg_bin" ]]; then
+      echo "x pg_bin: (not set) [$pg_bin_prov]"
+      echo "  Set OVDB_PG_BIN env var or pg_bin in .ovdb.conf"
+    elif [[ ! -d "$pg_bin" ]]; then
+      echo "x pg_bin=$pg_bin [$pg_bin_prov]"
+      echo "  Directory does not exist"
+    elif [[ ! -x "$pg_bin/pg_ctl" ]]; then
+      echo "x pg_bin=$pg_bin [$pg_bin_prov]"
+      echo "  pg_ctl not found in directory"
+    else
+      echo "* pg_bin=$pg_bin [$pg_bin_prov]"
+    fi
+
+    # Check pg_sandbox
+    pg_sandbox_prov=$(config_provenance pg_sandbox OVDB_SANDBOX)
+    sandbox_parent="$(dirname "$pg_sandbox")"
+    if [[ ! -d "$sandbox_parent" ]]; then
+      echo "x pg_sandbox=$pg_sandbox [$pg_sandbox_prov]"
+      echo "  Parent directory does not exist: $sandbox_parent"
+    else
+      echo "* pg_sandbox=$pg_sandbox [$pg_sandbox_prov]"
+    fi
+
+    # Check ovdb_dir
+    ovdb_dir_prov=$(config_provenance ovdb_dir OVDB_DIR)
+    if [[ -z "$ovdb_dir" ]]; then
+      echo "- ovdb_dir: (not set) [$ovdb_dir_prov]"
+      echo "  Will use current directory if in an openvoxdb checkout"
+    elif [[ ! -d "$ovdb_dir" ]]; then
+      echo "x ovdb_dir=$ovdb_dir [$ovdb_dir_prov]"
+      echo "  Directory does not exist"
+    elif [[ ! -f "$ovdb_dir/project.clj" ]]; then
+      echo "x ovdb_dir=$ovdb_dir [$ovdb_dir_prov]"
+      echo "  project.clj not found (not an openvoxdb checkout?)"
+    else
+      echo "* ovdb_dir=$ovdb_dir [$ovdb_dir_prov]"
+    fi
+
+    # Check parallel_test_state
+    parallel_prov=$(config_provenance parallel_test_state OVDB_PARALLEL_STATE)
+    echo "- parallel_test_state=$parallel_test_state [$parallel_prov]"
+
+    echo ""
+    echo "Legend: * = OK, x = error, - = optional/info"
+    echo ""
+    echo "Config file: $script_dir/.ovdb.conf"
+    exit 0
+    ;;
+  benchmark)
+    verify_ovdb_pwd
+    numhosts=10
+    if [ "$#" -gt 0 ]; then
+      numhosts="$1"
+      shift
+    fi
+
+    offset=0
+    if [ "$#" -gt 0 ]; then
+      offset="$1"
+      shift
+    fi
+
+    cat > "$pg_tmpdir_fullpath/benchmark.ini" <<EOF
+[global]
+logging-config = $pg_tmpdir_fullpath/logback.xml
+
+[jetty]
+ssl-host = localhost
+ssl-port = 8081
+ssl-ca-cert = test-resources/ca.pem
+ssl-cert = test-resources/localhost.pem
+ssl-key = test-resources/localhost.key
+EOF
+    PDBBOX=$pg_tmpdir_fullpath $ovdbbox_env lein trampoline run benchmark -c $pg_tmpdir_fullpath/benchmark.ini \
+      --numhosts "$numhosts" --offset "$offset" \
+      --reports $ovdb_dir/resources/puppetlabs/puppetdb/generate/realistic/reports \
+      --facts $ovdb_dir//resources/puppetlabs/puppetdb/generate/realistic/facts \
+      --catalogs  $ovdb_dir//resources/puppetlabs/puppetdb/generate/realistic/catalogs \
+      --nummsgs 1
+    ;;
+  clean)
+    verify_ovdb_pwd
+    $ovdbbox_env lein distclean
+    ;;
+  edit)
+    $EDITOR $pg_tmpdir_fullpath/conf.d/{pdb.ini,auth.conf}
+    ;;
+  generate)
+      set -x
+      PDBBOX=$pg_tmpdir_fullpath $ovdbbox_env lein run generate \
+        --num-classes 100 \
+        --num-resources 800 \
+        --title-size 40 \
+        --resource-size 500 \
+        --additional-edge-percent 15 \
+        --blob-count 2 \
+        --blob-size 40 \
+        --num-facts 400 \
+        --total-fact-size 15 \
+        --max-fact-depth 7 \
+        --num-packages 1000 \
+        --num-reports 20 \
+        --high-change-reports-percent 5 \
+        --high-change-resources-percent 60 \
+        --low-change-reports-percent 15 \
+        --low-change-resources-percent 5 \
+        --num-additional-logs 10 \
+        --percent-add-report-logs 20
+    ;;
+  integration)
+    verify_ovdb_pwd
+    run_tests=0
+    if [ "${1:-}" = "setup-only" ]; then
+      run_tests=1
+      shift
+    fi
+
+    run_setup=0
+    if [ "${1:-}" = "test-only" ]; then
+      run_setup=1
+      shift
+    fi
+
+    if [ 0 -eq $run_setup ]; then
+      config_test_refs $@
+    fi
+
+    # Run the integration test
+    if [ 0 -eq $run_tests ]; then
+      $ovdbbox_env lein test :integration $test_only 2>&1 | tee last-integration-run.log
+    fi
+    ;;
+  init)
+    validate_pg_bin
+    validate_pg_sandbox
+    if test -e "$pg_tmpdir_fullpath"; then
+      read -p "$pg_tmpdir_fullpath already exists, do you want to overwrite it? " confirm
+      if [[ "$confirm" != y* ]] ; then
+        exit 0
+      fi
+    fi
+    # Destroys any existing pg_tmpdir configuration
+    # Creates pg_tmpdir configuration and starts postgres
+    ( "$script_dir/ovdb" -n "$pg_tmpdir" stop && log_info "Stopped server" ) || log_info "No server running."
+    rm -rf $pg_tmpdir_fullpath
+
+    $ovdbbox_init -s $pg_tmpdir_fullpath --pgbin "$pg_bin" --pgport ${pg_port:-`random_port`} --bind-addr localhost
+
+    log_info "Starting sandboxed postgres server"
+    $ovdbbox_env pg_ctl start -o -F > $pg_tmpdir_fullpath/pg.log
+    ;;
+  new-db)
+    # Create a new database without regenerating the whole pgbox
+    save_pguser="$PGUSER"
+    export PGUSER=postgres
+
+    $ovdbbox_env psql -c 'DROP DATABASE puppetdb'
+
+    $ovdbbox_env createdb -E UTF8 -O puppetdb puppetdb
+    $ovdbbox_env psql puppetdb -c 'CREATE EXTENSION pg_trgm'
+    $ovdbbox_env psql puppetdb -c 'CREATE EXTENSION pgcrypto'
+    $ovdbbox_env psql puppetdb -c 'CREATE EXTENSION citext'
+
+    export PGUSER="$save_pguser"
+    ;;
+  pgenv)
+    set -x
+    $ovdbbox_env "$@"
+    ;;
+  pglog)
+    set -x
+    tail -fn 50 /$pg_tmpdir_fullpath/pg.log
+    ;;
+  psql)
+    $ovdbbox_env psql puppetdb
+    ;;
+  aq)
+    # AST queries
+    query="$1"
+    shift
+
+    explain='no'
+    if [ "$#" -eq 1 ]; then
+      explain="$1"
+      shift
+    fi
+
+    if [ "$explain" = 'explain' ]; then
+      curl -X POST "http://localhost:8080/pdb/query/v4" \
+        -H 'Content-Type:application/json' \
+        -d "{\"query\" : $query, \"explain\": \"analyze\"}" 2>/dev/null | jq
+    else
+      curl -X POST "http://localhost:8080/pdb/query/v4" \
+        -H 'Content-Type:application/json' \
+        -d "{\"query\" : $query }" 2>/dev/null | jq
+    fi
+
+    ;;
+  query)
+    query=$(jq -n --arg var "$1" '{$var}.var')
+    shift
+
+    explain='no'
+    if [ "$#" -eq 1 ]; then
+      explain="$1"
+      shift
+    fi
+
+    if [ "$explain" = 'explain' ]; then
+      curl -X POST "http://localhost:8080/pdb/query/v4" \
+        -H 'Content-Type:application/json' \
+        -d "{\"query\" : $query, \"explain\": \"analyze\"}" 2>/dev/null | jq
+    else
+      curl -X POST "http://localhost:8080/pdb/query/v4" \
+        -H 'Content-Type:application/json' \
+        -d "{\"query\" : $query}" 2>/dev/null | jq
+    fi
+
+    ;;
+  repl)
+    verify_ovdb_pwd
+    # Start the lein repl project using the pg_tmpdir
+    $ovdbbox_env lein repl
+    ;;
+  run)
+    verify_ovdb_pwd
+    $ovdbbox_env lein run "${1:-services}" -c $pg_tmpdir_fullpath/conf.d
+    ;;
+  run-uberjar)
+    verify_ovdb_pwd
+    $ovdbbox_env ./pdb "${1:-services}" -c $pg_tmpdir_fullpath/conf.d
+    ;;
+  start)
+    if [ "${1:-}" = "fsync" ]; then
+      shift
+      $ovdbbox_env pg_ctl start > $pg_tmpdir_fullpath/pg.log
+    else
+      $ovdbbox_env pg_ctl start -o -F > $pg_tmpdir_fullpath/pg.log
+    fi
+    ;;
+  stop)
+    $ovdbbox_env pg_ctl stop
+    ;;
+  calibrate)
+    $ovdbbox_env lein test-in-parallel --calibrate --concurrency 1 2>&1 | tee last-test-run.log
+    ;;
+  ptest)
+    # Run parallel tests
+    $ovdbbox_env lein test-in-parallel --concurrency 3 --state "$parallel_test_state" 2>&1 | tee last-test-run.log
+    ;;
+  test)
+    verify_ovdb_pwd
+
+    set -x
+    # Run the unit tests
+    $ovdbbox_env lein test $test_only 2>&1 | tee last-test-run.log | grep 'lein test'
+
+    # print the result count
+    tail -n 5 last-test-run.log
+    ;;
+  ext)
+    verify_ovdb_pwd
+    validate_pg_bin
+
+    log_warn "The ext command will create temporary pdbboxes for each test, bypassing anything in the one specified by the script"
+    # The tests will always create their own boxes, so get them a new port
+    ext/bin/test-config --set pgport `random_port`
+    ext/bin/test-config --set pgbin "$pg_bin"
+
+    ext/bin/run-external-tests
+
+    ;;
+  *)
+    log_error "\'${subcommand}\' not recognized"
+    usage
+    ;;
+esac
+
+exit 0

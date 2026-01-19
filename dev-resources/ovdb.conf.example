@@ -1,0 +1,62 @@
+# OpenVoxDB Dev Helper Configuration
+# ===================================
+# Copy this file to .ovdb.conf (in the same directory as the ovdb script) and edit.
+#
+# Configuration precedence (highest wins):
+#   1. Command-line flags (e.g., --pgver, --port)
+#   2. Environment variables (e.g., OVDB_PG_BIN)
+#   3. Config file (.ovdb.conf)
+#   4. Built-in defaults
+#
+# All paths should be absolute. Use $HOME instead of ~ for shell expansion.
+# Lines starting with # are comments.
+
+# PostgreSQL bin directory (REQUIRED)
+# -----------------------------------
+# Full path to the directory containing pg_ctl, psql, etc.
+#
+# Mac (Homebrew Intel):      pg_bin=/usr/local/opt/postgresql@16/bin
+# Mac (Homebrew Apple):      pg_bin=/opt/homebrew/opt/postgresql@16/bin
+# Mac (Postgres.app):        pg_bin=/Applications/Postgres.app/Contents/Versions/16/bin
+# Linux (Debian/Ubuntu):     pg_bin=/usr/lib/postgresql/16/bin
+# Linux (RHEL/CentOS):       pg_bin=/usr/pgsql-16/bin
+# asdf:                      pg_bin=$HOME/.asdf/installs/postgres/16.2/bin
+# nix (shell):               pg_bin=$(dirname $(which psql))
+#
+# Env var override: OVDB_PG_BIN
+pg_bin=
+
+# Sandbox directory
+# -----------------
+# Where pdbboxes will be created. Each pdbbox gets a subdirectory here.
+# Default: dev-resources/sandboxes (relative to ovdb script location)
+#
+# Env var override: OVDB_SANDBOX
+# pg_sandbox=$HOME/sandbox/ovdb
+
+# OpenVoxDB directory (optional)
+# ------------------------------
+# Full path to your openvoxdb checkout. If not set, the script will use
+# the current working directory when you're inside a checkout.
+#
+# Env var override: OVDB_DIR
+# ovdb_dir=$HOME/src/openvoxdb
+
+# Parallel test state file (optional)
+# -----------------------------------
+# Path to the EDN file used by lein test-in-parallel for storing test timing.
+# Default: $pg_sandbox/ovdb-parallel-testing.edn
+#
+# Env var override: OVDB_PARALLEL_STATE
+# parallel_test_state=$HOME/ovdb-parallel-testing.edn
+
+# Version-specific PostgreSQL paths (optional)
+# --------------------------------------------
+# If you work with multiple PostgreSQL versions, you can define version-specific
+# paths that will be used when you pass --pgver <version> to the script.
+#
+# Example:
+# pg_bin_14=/usr/lib/postgresql/14/bin
+# pg_bin_15=/usr/lib/postgresql/15/bin
+# pg_bin_16=/usr/lib/postgresql/16/bin
+# pg_bin_17=/usr/lib/postgresql/17/bin
