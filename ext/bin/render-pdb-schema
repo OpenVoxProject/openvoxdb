@@ -12,7 +12,7 @@ Usage: [PDB_JAR=JAR] $(basename "$0") [--pgbin PGBIN] [--pgport PGPORT] DEST"
   tree if they've been set via test-config, and the pgbin setting may
   be guessed.  Otherwise, you'll need to specify them.
 
-  The version of pdb will be the one run via ./pdb which defaults to
+  The version of pdb will be the one run via ./uberjar which defaults to
   the uberjar in target/.  
 
 EOF
@@ -85,7 +85,7 @@ tmpdir="$(mktemp -d "test-upgrade-and-exit-XXXXXX")"
 tmpdir="$(cd "$tmpdir" && pwd)"
 trap "$(printf 'rm -rf %q' "$tmpdir")" EXIT
 
-./pdb upgrade -c "$PDBBOX/conf.d"
+./uberjar upgrade -c "$PDBBOX/conf.d"
 
 postgresql_autodoc -t dot -u puppetdb -d puppetdb -f "$tmpdir/pdb"
 dot -Tsvg "$tmpdir/pdb.dot" -o "$dest"

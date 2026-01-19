@@ -646,7 +646,7 @@ EOF
     ;;
   run-uberjar)
     verify_ovdb_pwd
-    $ovdbbox_env ./pdb "${1:-services}" -c $pg_tmpdir_fullpath/conf.d
+    $ovdbbox_env ./uberjar "${1:-services}" -c $pg_tmpdir_fullpath/conf.d
     ;;
   start)
     if [ "${1:-}" = "fsync" ]; then

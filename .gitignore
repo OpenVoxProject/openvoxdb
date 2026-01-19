@@ -69,8 +69,8 @@ checkouts
 /.clj-kondo/.cache/
 /.eastwood
 /.nrepl-port
-/pdb.bcpkix
-/pdb.bcprov
+/uberjar.bcpkix
+/uberjar.bcprov
 
 # locust output files and python cache
 *.csv
