@@ -164,7 +164,7 @@ jobs:
           retention-days: 1 # quite low retention, because the artifacts are quite large
           overwrite: true # overwrite old artifacts if a PR runs again (artifacts are per PR * per project)
       - name: Find existing comment
-        uses: peter-evans/find-comment@v3
+        uses: peter-evans/find-comment@v4
         if: github.event.pull_request.head.repo.full_name == github.repository
         id: find-comment
         with:
