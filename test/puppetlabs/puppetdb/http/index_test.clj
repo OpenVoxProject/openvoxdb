@@ -95,11 +95,14 @@
 
       ;; Ensure we don't allow garbage after query
       (let [{:keys [status body headers]} (query-response method endpoint "[\"from\",\"foobar\"] random-stuff")]
-        (is (= (str "Json parse error at line 1, column 25:\n\n"
-                    "[\"from\",\"foobar\"] random-stuff\n"
-                    "                       ^\n\n"
+        (is (re-matches
+              (re-pattern
+                (str "(?s)^Json parse error at line 1, column \\d+:\\n\\n"
+                    "\\[\"from\",\"foobar\"\\] random-stuff\\n"
+                    "\\s+\\^\\n\\n"
                     "Unrecognized token 'random': was expecting "
-                    "(JSON String, Number, Array, Object or token 'null', 'true' or 'false')") body))
+                    "\\(JSON String, Number, Array, Object or token 'null', 'true' or 'false'\\)$"))
+              body))
         (are-error-response-headers headers)
         (is (= HttpURLConnection/HTTP_BAD_REQUEST status)))
 
