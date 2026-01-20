@@ -55,6 +55,9 @@ top of things.
 
 ### Testing
 
+> **Quick setup:** For a streamlined development workflow using the `ovdb` helper
+> script, see the [Local Development Guide](../dev-docs/local-dev.md).
+
 Before you do anything else, you may want to consider setting
 `PUPPET_SUPPRESS_INTERNAL_LEIN_REPOS=1` in your environment.  We'll
 eventually make that the default, but for now that setting may help
