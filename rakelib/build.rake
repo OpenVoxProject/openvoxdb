@@ -32,13 +32,15 @@ module Vox
       # To be fixed one of these days. Relevant stuff:
       #   https://github.com/puppetlabs/ezbake/blob/aeb7735a16d2eecd389a6bd9e5c0cfc7c62e61a5/resources/puppetlabs/lein-ezbake/template/global/tasks/build.rake
       #   https://github.com/puppetlabs/ezbake/blob/aeb7735a16d2eecd389a6bd9e5c0cfc7c62e61a5/resources/puppetlabs/lein-ezbake/template/global/ext/fpm.rb
-      deb_platforms = ENV['DEB_PLATFORMS'] || 'ubuntu-20.04,ubuntu-22.04,ubuntu-24.04,ubuntu-25.04,debian-11,debian-12,debian-13'
-      rpm_platforms = ENV['RPM_PLATFORMS'] || 'el-8,el-9,el-10,sles-15,sles-16,amazon-2,amazon-2023,fedora-42,fedora-43'
-
+      deb_platforms = ENV['DEB_PLATFORMS'] || 'ubuntu-20.04,ubuntu-22.04,ubuntu-24.04,ubuntu-25.04,ubuntu-25.10,debian-11,debian-12,debian-13'
       debs = deb_platforms.split(',').map { |p| "base-#{p.split("-").join}-i386.cow" }.join(" ")
-      rpms = rpm_platforms.split(',').map { |p| "pl-#{p}-x86_64" }.join(" ")
 
-      [debs, rpms]
+      rpm_platforms = ENV['RPM_PLATFORMS'] || 'el-8,el-9,el-10,sles-15,sles-16,amazon-2,amazon-2023,fedora-42,fedora-43'
+      rpm_fips, rpm_nonfips = rpm_platforms.split(',').partition { |p| p.start_with?('redhatfips') }
+      nonfips_rpms = rpm_nonfips.map{ |p| "pl-#{p}-x86_64" }.join(' ')
+      fips_rpms = rpm_fips.map{ |p| "pl-#{p}-x86_64" }.join(' ')
+
+      [debs, nonfips_rpms, fips_rpms]
     end
     # The deps must be built in this order due to dependencies between them.
     # There is a circular dependency between clj-http-client and trapperkeeper-webserver-jetty10,
@@ -63,6 +65,8 @@ module Vox
       @tag = tag
       @runner = Vox::DockerRunner.new(container_name: 'openvoxdb-builder', image: 'ezbake-builder')
       @deps_tmp = Dir.mktmpdir('deps')
+      @debs, @nonfips_rpms, @fips_rpms = platform_targets
+      @fips_only_build = !@fips_rpms.empty? && @debs.empty? && @nonfips_rpms.empty?
     end
 
     def build
@@ -158,23 +162,35 @@ module Vox
     end
 
     def build_project
-      debs, rpms = platform_targets
-      fips = !ENV['FIPS'].nil?
       ezbake_version_var = ENV['EZBAKE_VERSION'] ? "EZBAKE_VERSION=#{ENV['EZBAKE_VERSION']}" : ""
 
       puts 'Building openvoxdb'
       @runner.exec('cd /code && rm -rf ruby output && bundle install --without test && lein install')
-      @runner.exec(
-        "cd /code && COW=\"#{debs}\" MOCK=\"#{rpms}\" GEM_SOURCE='https://rubygems.org' #{ezbake_version_var} " \
-        "EZBAKE_ALLOW_UNREPRODUCIBLE_BUILDS=true EZBAKE_NODEPLOY=true LEIN_PROFILES=ezbake " \
-        "lein with-profile #{fips ? "fips," : ""}user,ezbake,provided,internal ezbake local-build"
-      )
+
+      unless @debs.empty? && @nonfips_rpms.empty?
+        @runner.exec(
+          "cd /code && COW=\"#{@debs}\" MOCK=\"#{@nonfips_rpms}\" GEM_SOURCE='https://rubygems.org' #{ezbake_version_var} " \
+          "EZBAKE_ALLOW_UNREPRODUCIBLE_BUILDS=true EZBAKE_NODEPLOY=true LEIN_PROFILES=ezbake " \
+          "lein with-profile user,ezbake,provided,internal ezbake local-build"
+        )
+      end
+
+      unless @fips_rpms.empty?
+        @runner.exec(
+          "cd /code && COW= MOCK=\"#{@fips_rpms}\" GEM_SOURCE=\"https://rubygems.org\" #{ezbake_version_var} " \
+          "EZBAKE_ALLOW_UNREPRODUCIBLE_BUILDS=true EZBAKE_NODEPLOY=true LEIN_PROFILES=ezbake " \
+          "lein with-profile fips,user,ezbake-fips,provided ezbake local-build"
+        )
+      end
     end
 
     def postprocess_output
       Vox::Shell.run("sudo chown -R $USER output", print_command: true)
       Dir.glob("output/**/*i386*").each { |f| FileUtils.rm_rf(f) }
       Dir.glob("output/puppetdb-*.tar.gz").each { |f| FileUtils.mv(f, f.sub('puppetdb', 'openvoxdb')) }
+      # If this is a FIPS-only build, we don't want the upload task to overwrite the existing tarball on S3.
+      # This tarball should be basically identical, but we want to keep both for clarity.
+      Dir.glob('output/openvox-server-*.tar.gz').each { |f| FileUtils.mv(f, f.sub('.tar.gz','-fips_build.tar.gz'))} if @fips_only_build
     end
   end
 end

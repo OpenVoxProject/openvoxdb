@@ -314,10 +314,21 @@
                                     [org.bouncycastle/bc-fips]
                                     [org.bouncycastle/bctls-fips]]
 
-                    :vars {:java-args ~(str "-Xmx192m "
-                                            "-Djdk.tls.ephemeralDHKeySize=2048 "
-                                            "-Djava.security.properties==/opt/puppetlabs/server/data/puppetdb/java.security.fips")}
-
+                    :lein-ezbake {:vars {:java-args ~(str
+                                                        "-Xmx192m "
+                                                        "-Djdk.tls.ephemeralDHKeySize=2048 "
+                                                        "-Djava.security.properties==/opt/puppetlabs/server/data/puppetdb/java.security.fips")}
+                                         :classpath-jars [{:artifact org.bouncycastle/bc-fips
+                                                           :install {:path "/opt/puppetlabs/server/data/puppetdb/jars"
+                                                                     :mode "0644"}}
+                                                          {:artifact org.bouncycastle/bcpkix-fips
+                                                           :install {:path "/opt/puppetlabs/server/data/puppetdb/jars"
+                                                                     :mode "0644"}}
+                                                          {:artifact org.bouncycastle/bctls-fips
+                                                           :install {:path "/opt/puppetlabs/server/data/puppetdb/jars"
+                                                                     :mode "0644"}}]
+                                          :project-files [{:file "resources/ext/java.security.fips"
+                                                           :install {:path "/opt/puppetlabs/server/data/puppetdb"}}]}
                     ;; this only ensures that we run with the proper profiles
                     ;; during testing. This JVM opt will be set in the puppet module
                     ;; that sets up the JVM classpaths during installation.
@@ -357,7 +368,15 @@
                                       ;; in the final package.
                                       [org.openvoxproject/puppetdb ~pdb-version]]
               :name "puppetdb"
-              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.7.1")]]}
+              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.7.3")]]}
+    :ezbake-fips {:dependencies ^:replace [[org.bouncycastle/bcpkix-fips]
+                                           [org.bouncycastle/bc-fips]
+                                           [org.bouncycastle/bctls-fips]
+                                           [org.clojure/clojure]
+                                           [org.openvoxproject/puppetdb ~pdb-version]]
+              :name "puppetdb"
+              :uberjar-exclusions [#"^org/bouncycastle/.*"]
+              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.7.3")]]}
     :testutils {:source-paths ^:replace ["test"]
                 :resource-paths ^:replace []
                 ;; Something else may need adjustment, but
