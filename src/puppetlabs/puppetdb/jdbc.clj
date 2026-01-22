@@ -449,8 +449,8 @@
                             (.getName (class ex)) (.getMessage ex) (.getSQLState ex)
                             i max-attempts)))
           ;; i.e. approx sleeps of: 0 300 690 1197 1856 ...
-          (Thread/sleep (* (dec (Math/pow 1.3 (dec i)))
-                           1000))
+          (Thread/sleep (long (* (dec (Math/pow 1.3 (dec i)))
+                                 1000)))
           (recur (attempt) (inc i)))))))
 
 (defn with-transacted-connection-fn
