@@ -1,5 +1,3 @@
-(def pdb-version "8.12.0-SNAPSHOT")
-
 (defn true-in-env? [x]
   (#{"true" "yes" "1"} (System/getenv x)))
 
@@ -101,7 +99,10 @@
 (def i18n-version "1.0.3")
 (def jackson-version "2.21.0")
 (def slf4j-version "2.0.17")
-(defproject org.openvoxproject/puppetdb pdb-version
+
+;; If you modify the version manually, run release_scripts/sync_ezbake_dep.rb to keep
+;; the ezbake dependency in sync.
+(defproject org.openvoxproject/puppetdb "8.12.0-SNAPSHOT"
   :description "OpenVox-integrated catalog and fact storage"
 
   :license {:name "Apache License, Version 2.0"
@@ -261,8 +262,8 @@
                                      :password :env/CLOJARS_PASSWORD
                                      :sign-releases false}]]
 
-  :plugins [[lein-release "1.1.3" :exclusions [org.clojure/clojure]]
-            [lein-cloverage "1.2.4"]
+  :plugins [[lein-cloverage "1.2.4"]
+            [lein-shell "0.5.0"]
             [org.openvoxproject/i18n ~i18n-version]]
 
   :lein-release {:scm        :git
@@ -366,14 +367,19 @@
                                       ;; This circular dependency is required because of a bug in
                                       ;; ezbake (EZ-35); without it, bootstrap.cfg will not be included
                                       ;; in the final package.
-                                      [org.openvoxproject/puppetdb ~pdb-version]]
+                                      ;;
+                                      ;; Do not modify this line. It is managed by the release process
+                                      ;; via the release_scripts/sync_ezbake_dep.rb script.
+                                      [org.openvoxproject/puppetdb "8.12.0-SNAPSHOT"]]
               :name "puppetdb"
               :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.7.3")]]}
     :ezbake-fips {:dependencies ^:replace [[org.bouncycastle/bcpkix-fips]
                                            [org.bouncycastle/bc-fips]
                                            [org.bouncycastle/bctls-fips]
                                            [org.clojure/clojure]
-                                           [org.openvoxproject/puppetdb ~pdb-version]]
+                                           ;; Do not modify this line. It is managed by the release process
+                                           ;; via the release_scripts/sync_ezbake_dep.rb script.
+                                           [org.openvoxproject/puppetdb "8.12.0-SNAPSHOT"]]
               :name "puppetdb"
               :uberjar-exclusions [#"^org/bouncycastle/.*"]
               :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.7.3")]]}
@@ -409,6 +415,22 @@
                                        (fn [new prev]
                                          (if (map? prev) [new prev] (conj prev new)))
                                        #(spit %1 (pr-str %2))]}
+
+  ;; We define our own release tasks here, rather than the default that 'lein release' does,
+  ;; so that we can keep the necessary org.openvoxproject/puppetdb ezbake dependency in sync.
+  ;; This also makes it always bump the minor version rather than patch, since we rarely end up
+  ;; releasing patch versions.
+  :release-tasks [["vcs" "assert-committed"]
+                  ["change" "version" "leiningen.release/bump-version" "release"]
+                  ["shell" "ruby" "release_scripts/sync_ezbake_dep.rb"]
+                  ["vcs" "commit"]
+                  ["vcs" "tag"]
+                  ["deploy"]
+                  ["change" "version" "leiningen.release/bump-version" ":minor"]
+                  ["shell" "ruby" "release_scripts/sync_ezbake_dep.rb"]
+                  ["vcs" "commit"]
+                  ["vcs" "push"]]
+
 
 
   :eastwood {:config-files ["eastwood.clj"]
