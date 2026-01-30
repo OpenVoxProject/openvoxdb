@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Creates a local PuppetDB sandbox directory
 # Also creates a PostgreSQL sandbox inside of new PuppetDB sandbox in directory "pg"
