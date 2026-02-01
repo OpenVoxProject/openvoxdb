@@ -86,11 +86,11 @@ cat "$PDBBOX/conf.d/"*
 set +x
 
 # Use upgrade command to init pdb and apply all migrations
-./pdb upgrade -c "$PDBBOX/conf.d"
+./uberjar upgrade -c "$PDBBOX/conf.d"
 
 # Start pdb in the background
 touch "$tmpdir/pdb-out" "$tmpdir/pdb-err"
-./pdb services -c "$PDBBOX/conf.d" 1>"$tmpdir/pdb-out" 2>"$tmpdir/pdb-err"  & pdb_pid=$!
+./uberjar services -c "$PDBBOX/conf.d" 1>"$tmpdir/pdb-out" 2>"$tmpdir/pdb-err"  & pdb_pid=$!
 
 # Allow time for pdb to start before changing migration level
 while ! grep -F "PuppetDB finished starting" "$tmpdir/pdb-out" > /dev/null

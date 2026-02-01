@@ -8,6 +8,10 @@ PuppetDB is the fast, scalable, and reliable data warehouse for Puppet. It cache
 
 For documentation on this product, consult the [latest documentation][docs].
 
+## Development
+
+For local development setup, see [dev-docs/local-dev.md](dev-docs/local-dev.md).
+
 ## Contributing
 
 If you would like to contribute to PuppetDB, please take a look at our [contributing doc][contributing].

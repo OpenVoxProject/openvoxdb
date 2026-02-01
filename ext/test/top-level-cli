@@ -37,7 +37,7 @@ trap "$(printf 'rm -rf %q' "$tmpdir")" EXIT
 
 # Test if unknown command produces correct output and exit status
 rc=0
-./pdb frobnicate ... 1>"$tmpdir/out" 2>"$tmpdir/err" || rc=$?
+./uberjar frobnicate ... 1>"$tmpdir/out" 2>"$tmpdir/err" || rc=$?
 cat "$tmpdir/out" "$tmpdir/err"
 test "$rc" -eq 2
 grep -F 'Available subcommands:' "$tmpdir/err"
@@ -45,7 +45,7 @@ grep -E 'Display version information' "$tmpdir/err"
 
 # Test if help subcommand produces correct outout
 rc=0
-./pdb help 1>"$tmpdir/out" 2>"$tmpdir/err" || rc=$?
+./uberjar help 1>"$tmpdir/out" 2>"$tmpdir/err" || rc=$?
 cat "$tmpdir/out" "$tmpdir/err"
 test "$rc" -eq 0
 grep -F 'Available subcommands:' "$tmpdir/out"
@@ -60,7 +60,7 @@ fi
 
 # Test if version subcommand produces correct output
 rc=0
-./pdb version 1>"$tmpdir/out" 2>"$tmpdir/err" || rc=$?
+./uberjar version 1>"$tmpdir/out" 2>"$tmpdir/err" || rc=$?
 cat "$tmpdir/out" "$tmpdir/err"
 test "$rc" -eq 0
 grep -E '^version=' "$tmpdir/out"

@@ -78,7 +78,7 @@ grep 'No relations found' "$tmpdir/out" \
     || grep 'Did not find any tables' "$tmpdir/err"
 
 # Run upgrade
-./pdb upgrade -c "$PDBBOX/conf.d"
+./uberjar upgrade -c "$PDBBOX/conf.d"
 
 # Ensure maximum migration id matches most recent migration id
 psql -U puppetdb puppetdb -c 'select max(version) from schema_migrations;' \

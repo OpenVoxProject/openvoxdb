@@ -15,7 +15,7 @@ Usage: [PDB_JAR=JAR] PDBBOX=BOX_DIR $(basename "$0") STOCKPILE_ARCHIVE"
   endpoint. See info at:
   https://puppet.com/docs/puppetdb/latest/api/metrics/v1/mbeans.html#re-enable-metrics-v1-endpoint
 
-  The version of pdb will be the one run via ./pdb which defaults to
+  The version of pdb will be the one run via ./uberjar which defaults to
   the uberjar in target/.
 
 EOF
@@ -81,7 +81,7 @@ echo "Running PDB" 1>&2
 tmpdir="$(mktemp -d "test-command-performance-XXXXXX")"
 tmpdir="$(cd "$tmpdir" && pwd)"
 
-./pdb services -c "$PDBBOX/conf.d" >"$tmpdir/log.txt" 2>&1 &
+./uberjar services -c "$PDBBOX/conf.d" >"$tmpdir/log.txt" 2>&1 &
 pdb_id=$!
 
 printf "Waiting for PDB startup (log: %q)\n" "$tmpdir/log.txt" 1>&2
