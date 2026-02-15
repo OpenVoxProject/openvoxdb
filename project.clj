@@ -193,7 +193,7 @@
                          [org.openvoxproject/trapperkeeper-status "1.3.2" :exclusions [io.dropwizard.metrics/metrics-core]]
                          [org.openvoxproject/trapperkeeper-webserver-jetty10 "1.1.4"]
                          [org.openvoxproject/trapperkeeper-webserver-jetty10 "1.1.4" :classifier "test"]
-                         [org.postgresql/postgresql "42.7.9"]
+                         [org.postgresql/postgresql "42.7.10"]
                          [org.yaml/snakeyaml "2.5"]
                          [prismatic/schema "1.4.1"]
                          [riddley "0.2.1"]
