@@ -196,7 +196,7 @@
                          [org.postgresql/postgresql "42.7.9"]
                          [org.yaml/snakeyaml "2.5"]
                          [prismatic/schema "1.4.1"]
-                         [riddley "0.2.0"]
+                         [riddley "0.2.1"]
                          [ring/ring-codec "1.3.0"]
                          [ring/ring-core "1.14.2"]
                          [ring/ring-mock "0.6.2"]
