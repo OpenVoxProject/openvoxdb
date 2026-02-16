@@ -156,7 +156,7 @@
                          [com.rpl/specter "1.1.6"]
                          [com.taoensso/nippy "3.6.0" :exclusions [org.tukaani/xz]]
                          [com.zaxxer/HikariCP "5.1.0"]
-                         [commons-codec "1.20.0"]
+                         [commons-codec "1.21.0"]
                          [commons-io "2.21.0"]
                          [compojure "1.7.2"]
                          [digest "1.4.10"]
