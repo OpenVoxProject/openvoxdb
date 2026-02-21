@@ -160,7 +160,7 @@
                          [commons-io "2.21.0"]
                          [compojure "1.7.2"]
                          [digest "1.4.10"]
-                         [fast-zip "0.4.0"]
+                         [fast-zip "0.7.0"]
                          [instaparse "1.5.0"]
                          [joda-time "2.14.0"]
                          [metrics-clojure "2.10.0"]
