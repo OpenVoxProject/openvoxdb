@@ -131,7 +131,7 @@
                          [org.clojure/test.check "1.1.3"]
                          [org.clojure/tools.logging "1.3.1"]
                          [org.clojure/tools.macro "0.2.2"]
-                         [org.clojure/tools.namespace "0.3.1"]
+                         [org.clojure/tools.namespace "1.5.1"]
                          [org.clojure/tools.nrepl "0.2.13"]
                          [org.clojure/tools.reader "1.6.0"]
                          [bidi "2.1.6"]
