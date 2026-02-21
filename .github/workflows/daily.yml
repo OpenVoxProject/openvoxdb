@@ -76,7 +76,7 @@ jobs:
         run: ci/bin/prep-and-run-in github ${{ matrix.flavor }}
       - uses: actions/upload-artifact@v6
         with:
-          name: "${{ steps.computed.outputs.pdb-job-id }}"
+          name: "${{ steps.computed.outputs.pdb-job-id }}.zip"
           path: |
             pg.log
             test.log

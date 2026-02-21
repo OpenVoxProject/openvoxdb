@@ -111,7 +111,7 @@ jobs:
         run: ci/bin/prep-and-run-in github ${{ matrix.flavor }}
       - uses: actions/upload-artifact@v6
         with:
-          name: "${{ steps.computed.outputs.pdb-job-id }}"
+          name: "${{ steps.computed.outputs.pdb-job-id }}.zip"
           path: |
             pg.log
             test.log
@@ -159,7 +159,7 @@ jobs:
         id: upload
         uses: actions/upload-artifact@v6
         with:
-          name: openvoxdb-${{ steps.version.outputs.describe }}
+          name: openvoxdb-${{ steps.version.outputs.describe }}.zip
           path: output/
           retention-days: 1 # quite low retention, because the artifacts are quite large
           overwrite: true # overwrite old artifacts if a PR runs again (artifacts are per PR * per project)
