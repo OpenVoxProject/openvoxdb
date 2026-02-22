@@ -124,7 +124,7 @@
   :managed-dependencies [[org.clojure/clojure "1.12.4"]
                          [org.clojure/core.async "1.8.741"]
                          [org.clojure/core.match "1.1.1"]
-                         [org.clojure/core.memoize "1.2.273"]
+                         [org.clojure/core.memoize "1.2.278"]
                          [org.clojure/data.generators "1.1.1"]
                          [org.clojure/java.jdbc "0.7.12"]
                          [org.clojure/math.combinatorics "0.3.2"]
