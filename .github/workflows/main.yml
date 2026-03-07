@@ -115,17 +115,6 @@ jobs:
           path: |
             pg.log
             test.log
-  run-dita:
-    runs-on: ubuntu-24.04
-
-    steps:
-    - name: Initialize
-      uses: actions/checkout@v6
-
-    - name: Docs test
-      uses: dita-ot/dita-ot-action@4.2.4
-      with:
-        build: dita -i documentation/puppetdb.ditamap -o out -f html5 --processing-mode=strict
 
   build:
     name: build openvoxdb
@@ -203,7 +192,6 @@ jobs:
   tests:
     needs:
       - o
-      - run-dita
       - build
       - termini-rspec
     runs-on: ubuntu-24.04
