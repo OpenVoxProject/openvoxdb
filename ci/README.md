@@ -32,10 +32,10 @@ Creates symbolic link to a relative path. Relative path is forced even if absolu
 ### `ext/bin/sha256sum`
 Outputs sha256 checksum of STDIN
 
-### `ext/bin/config-puppet-test-ref`
+### `ext/bin/config-openvox-test-ref`
 Modify local testing environment to use specific version of Puppet.
 
-### `ext/bin/config-puppetserver-test-ref`
+### `ext/bin/config-openvox-server-test-ref`
 Modify local testing environment to use specific version of Puppet Server.
 
 ### `ext/bin/test-config`

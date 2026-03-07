@@ -4,8 +4,8 @@
 # With no arguments, uses default Puppet Server version
 # With one arguments, uses that as Puppet Server version
 # Creates a symlink to bundler-installed Puppet Server repo at vendor/puppet used for testing
-# Ex: config-puppetserver-test-ref
-# Ex: config-puppetserver-test-ref 6.27.0
+# Ex: config-openvox-server-test-ref
+# Ex: config-openvox-server-test-ref 6.27.0
 
 set -euo pipefail
 
@@ -37,17 +37,17 @@ fi
 set -x
 
 # Remove old Puppet Server version test configuration
-rm -f ext/test-conf/puppetserver-ref-requested ext/test-conf/puppetserver-dep
+rm -f ext/test-conf/openvox-server-ref-requested ext/test-conf/openvox-server-dep
 
 case "$#" in
     0)
         # If no arguments provided, set Puppet Server version to default
-        pupsrv_ref="$(cat ext/test-conf/puppetserver-ref-default)"
+        pupsrv_ref="$(cat ext/test-conf/openvox-server-ref-default)"
         ;;
     1)
         # If one argument provided, set Puppet Server version to that value
         pupsrv_ref="$1"
-        echo "$pupsrv_ref" > ext/test-conf/puppetserver-ref-requested
+        echo "$pupsrv_ref" > ext/test-conf/openvox-server-ref-requested
         ;;
     *)
         # If more than one argument provided, exit with error status
@@ -55,19 +55,19 @@ case "$#" in
         exit 2
 esac
 
-# Check if puppetserver repository exists at top-level of PuppetDB source tree
-if test -d puppetserver; then
+# Check if openvox-server repository exists at top-level of PuppetDB source tree
+if test -d openvox-server; then
    # If repo exists, checkout the requested version number
-   git -C puppetserver checkout "$pupsrv_ref"
+   git -C openvox-server checkout "$pupsrv_ref"
    # Remove all files in repository not managed by git
-   git -C puppetserver clean -fdx
+   git -C openvox-server clean -fdx
 else
    # If repo doesn't exist, clone from GitHub
-   git clone -b "$pupsrv_ref" https://github.com/OpenVoxProject/openvox-server puppetserver
+   git clone -b "$pupsrv_ref" https://github.com/OpenVoxProject/openvox-server
 fi
 
 (export PUPPETSERVER_HEAP_SIZE=1G
- cd puppetserver
+ cd openvox-server
  # Install Puppet Server dependencies
  # If we're not testing against the git tree (say in jenkins), don't install.
  if test -z "$PDB_NO_PUPPETSERVER_INSTALL"; then
@@ -80,7 +80,7 @@ fi
  fi
  # Cache Puppet Server version in a file in ext/test-conf directory
  dep_ver="$(lein-pprint :version)"
- echo "$dep_ver" > "$top/ext/test-conf/puppetserver-dep")
+ echo "$dep_ver" > "$top/ext/test-conf/openvox-server-dep")
 
 gem_list=()
 while read LINE
@@ -88,10 +88,10 @@ do
   gem_name=$(echo $LINE |awk '{print $1}')
   gem_version=$(echo $LINE |awk '{print $2}')
   gem_list+=("$gem_name:$gem_version")
-done < ./puppetserver/resources/ext/build-scripts/jruby-gem-list.txt
+done < ./openvox-server/resources/ext/build-scripts/jruby-gem-list.txt
 
 gem-install() {
-  java -cp puppetserver/target/puppet-server-release.jar clojure.main \
+  java -cp openvox-server/target/puppet-server-release.jar clojure.main \
     -m puppetlabs.puppetserver.cli.gem \
     --config ./test-resources/puppetserver/puppetserver.conf -- install --no-document "$@"
 }

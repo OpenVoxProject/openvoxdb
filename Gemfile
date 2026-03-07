@@ -4,10 +4,10 @@ source ENV['GEM_SOURCE'] || 'https://rubygems.org'
 oldest_supported_openvox = '8.19.0'
 beaker_version = ENV['BEAKER_VERSION']
 
-puppet_ref = if File.exist?(gemfile_home + '/ext/test-conf/puppet-ref-requested')
-               File.read(gemfile_home + '/ext/test-conf/puppet-ref-requested').strip
-            elsif File.exist?(gemfile_home + '/ext/test-conf/puppet-ref-default')
-              File.read(gemfile_home + '/ext/test-conf/puppet-ref-default').strip
+puppet_ref = if File.exist?(gemfile_home + '/ext/test-conf/openvox-ref-requested')
+               File.read(gemfile_home + '/ext/test-conf/openvox-ref-requested').strip
+            elsif File.exist?(gemfile_home + '/ext/test-conf/openvox-ref-default')
+              File.read(gemfile_home + '/ext/test-conf/openvox-ref-default').strip
             else
               'main'
             end

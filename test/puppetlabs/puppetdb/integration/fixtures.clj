@@ -167,9 +167,9 @@
 
 (defn pup-srv-version []
   (try
-    (string/trim (slurp "./ext/test-conf/puppetserver-dep"))
+    (string/trim (slurp "./ext/test-conf/openvox-server-dep"))
     (catch FileNotFoundException e
-      (log/error "No ext/test-conf/puppetserver-dep file found. Did you run ext/bin/config-puppetserver-test-ref ?")
+      (log/error "No ext/test-conf/openvox-server-dep file found. Did you run ext/bin/config-openvox-server-test-ref ?")
       (throw e))))
 
 (def dev-config-file "./test-resources/puppetserver/puppetserver.conf")
@@ -255,7 +255,7 @@
           dev-bootstrap-file (if (string/starts-with? (pup-srv-version) "7.")
                                "./test-resources/puppetserver/bootstrap-7.x.cfg"
                                "./test-resources/puppetserver/bootstrap.cfg")
-          cmd ["java" "-cp" "puppetserver/target/puppet-server-release.jar"
+          cmd ["java" "-cp" "openvox-server/target/puppet-server-release.jar"
                "clojure.main" "-m" "puppetlabs.trapperkeeper.main"
                "services"
                "--bootstrap-config" dev-bootstrap-file

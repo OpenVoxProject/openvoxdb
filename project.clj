@@ -66,10 +66,10 @@
          "Gemfile.lock"
          "ext/test-conf/pgbin-requested"
          "ext/test-conf/pgport-requested"
-         "ext/test-conf/puppet-ref-requested"
-         "ext/test-conf/puppetserver-dep"
-         "ext/test-conf/puppetserver-ref-requested"
-         "puppetserver"
+         "ext/test-conf/openvox-ref-requested"
+         "ext/test-conf/openvox-server-dep"
+         "ext/test-conf/openvox-server-ref-requested"
+         "openvox-server"
          "vendor"]))
 
 (def pdb-aot-classes
