@@ -37,17 +37,17 @@ fi
 set -x
 
 # Remove old Puppet Server version test configuration
-rm -f ext/test-conf/puppetserver-ref-requested ext/test-conf/puppetserver-dep
+rm -f ext/test-conf/openvox-server-ref-requested ext/test-conf/openvox-server-dep
 
 case "$#" in
     0)
         # If no arguments provided, set Puppet Server version to default
-        pupsrv_ref="$(cat ext/test-conf/puppetserver-ref-default)"
+        pupsrv_ref="$(cat ext/test-conf/openvox-server-ref-default)"
         ;;
     1)
         # If one argument provided, set Puppet Server version to that value
         pupsrv_ref="$1"
-        echo "$pupsrv_ref" > ext/test-conf/puppetserver-ref-requested
+        echo "$pupsrv_ref" > ext/test-conf/openvox-server-ref-requested
         ;;
     *)
         # If more than one argument provided, exit with error status
@@ -80,7 +80,7 @@ fi
  fi
  # Cache Puppet Server version in a file in ext/test-conf directory
  dep_ver="$(lein-pprint :version)"
- echo "$dep_ver" > "$top/ext/test-conf/puppetserver-dep")
+ echo "$dep_ver" > "$top/ext/test-conf/openvox-server-dep")
 
 gem_list=()
 while read LINE

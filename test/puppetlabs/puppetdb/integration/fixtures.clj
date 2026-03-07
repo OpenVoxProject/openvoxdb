@@ -167,9 +167,9 @@
 
 (defn pup-srv-version []
   (try
-    (string/trim (slurp "./ext/test-conf/puppetserver-dep"))
+    (string/trim (slurp "./ext/test-conf/openvox-server-dep"))
     (catch FileNotFoundException e
-      (log/error "No ext/test-conf/puppetserver-dep file found. Did you run ext/bin/config-openvox-server-test-ref ?")
+      (log/error "No ext/test-conf/openvox-server-dep file found. Did you run ext/bin/config-openvox-server-test-ref ?")
       (throw e))))
 
 (def dev-config-file "./test-resources/puppetserver/puppetserver.conf")

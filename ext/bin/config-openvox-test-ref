@@ -30,7 +30,7 @@ fi
 set -x
 
 # Remove old Puppet version test configuration
-rm -f ext/test-conf/puppet-ref-requested
+rm -f ext/test-conf/openvox-ref-requested
 
 case "$#" in
     0)
@@ -40,7 +40,7 @@ case "$#" in
     1)
         # If one argument provided, set Puppet version to that value
         puppet_ref="$1"
-        echo "$puppet_ref" > ext/test-conf/puppet-ref-requested
+        echo "$puppet_ref" > ext/test-conf/openvox-ref-requested
         ;;
     *)
         # If more than one argument provided, exit with error status
