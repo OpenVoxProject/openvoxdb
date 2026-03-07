@@ -55,19 +55,19 @@ case "$#" in
         exit 2
 esac
 
-# Check if puppetserver repository exists at top-level of PuppetDB source tree
-if test -d puppetserver; then
+# Check if openvox-server repository exists at top-level of PuppetDB source tree
+if test -d openvox-server; then
    # If repo exists, checkout the requested version number
-   git -C puppetserver checkout "$pupsrv_ref"
+   git -C openvox-server checkout "$pupsrv_ref"
    # Remove all files in repository not managed by git
-   git -C puppetserver clean -fdx
+   git -C openvox-server clean -fdx
 else
    # If repo doesn't exist, clone from GitHub
-   git clone -b "$pupsrv_ref" https://github.com/OpenVoxProject/openvox-server puppetserver
+   git clone -b "$pupsrv_ref" https://github.com/OpenVoxProject/openvox-server
 fi
 
 (export PUPPETSERVER_HEAP_SIZE=1G
- cd puppetserver
+ cd openvox-server
  # Install Puppet Server dependencies
  # If we're not testing against the git tree (say in jenkins), don't install.
  if test -z "$PDB_NO_PUPPETSERVER_INSTALL"; then
@@ -88,10 +88,10 @@ do
   gem_name=$(echo $LINE |awk '{print $1}')
   gem_version=$(echo $LINE |awk '{print $2}')
   gem_list+=("$gem_name:$gem_version")
-done < ./puppetserver/resources/ext/build-scripts/jruby-gem-list.txt
+done < ./openvox-server/resources/ext/build-scripts/jruby-gem-list.txt
 
 gem-install() {
-  java -cp puppetserver/target/puppet-server-release.jar clojure.main \
+  java -cp openvox-server/target/puppet-server-release.jar clojure.main \
     -m puppetlabs.puppetserver.cli.gem \
     --config ./test-resources/puppetserver/puppetserver.conf -- install --no-document "$@"
 }

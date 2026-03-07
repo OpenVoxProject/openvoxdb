@@ -69,7 +69,7 @@
          "ext/test-conf/puppet-ref-requested"
          "ext/test-conf/puppetserver-dep"
          "ext/test-conf/puppetserver-ref-requested"
-         "puppetserver"
+         "openvox-server"
          "vendor"]))
 
 (def pdb-aot-classes

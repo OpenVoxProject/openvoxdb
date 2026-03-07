@@ -65,6 +65,7 @@ checkouts
 /ext/test-conf/puppetserver-ref-requested
 /puppet/state/
 /puppetserver/
+/openvox-server/
 
 /.clj-kondo/.cache/
 /.eastwood
