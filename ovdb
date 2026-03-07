@@ -402,8 +402,8 @@ function config_test_refs {
       ;;
   esac
 
-  ext/bin/config-puppet-test-ref $puppet_ref
-  ext/bin/config-puppetserver-test-ref $puppetserver_ref
+  ext/bin/config-openvox-test-ref $puppet_ref
+  ext/bin/config-openvox-server-test-ref $puppetserver_ref
 }
 
 case $subcommand in

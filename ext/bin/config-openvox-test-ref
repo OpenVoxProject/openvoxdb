@@ -4,8 +4,8 @@
 # With no arguments, uses default Puppet version
 # With one argument, uses argument as Puppet version
 # Creates a symlink to bundler-installed Puppet repo at vendor/puppet used for testing
-# Ex: config-puppet-test-ref
-# Ex: config-puppet-test-ref 6.27.0
+# Ex: config-openvox-test-ref
+# Ex: config-openvox-test-ref 6.27.0
 
 set -euo pipefail
 

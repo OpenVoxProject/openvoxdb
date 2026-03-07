@@ -83,16 +83,16 @@ def reset_requested(what):
 
 # Use external scripts to set up Puppet and Puppetserver environments
 def set_puppet_ref(what, value):
-    check_call(['ext/bin/config-puppet-test-ref', value])
+    check_call(['ext/bin/config-openvox-test-ref', value])
 
 def reset_puppet_ref(what):
-    check_call(['ext/bin/config-puppet-test-ref'])
+    check_call(['ext/bin/config-openvox-test-ref'])
 
 def set_puppetserver_ref(what, value):
-    check_call(['ext/bin/config-puppetserver-test-ref', value])
+    check_call(['ext/bin/config-openvox-server-test-ref', value])
 
 def reset_puppetserver_ref(what):
-    check_call(['ext/bin/config-puppetserver-test-ref'])
+    check_call(['ext/bin/config-openvox-server-test-ref'])
 
 get_val = {}
 get_val['pgbin'] = get_pgbin

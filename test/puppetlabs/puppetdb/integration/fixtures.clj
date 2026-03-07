@@ -169,7 +169,7 @@
   (try
     (string/trim (slurp "./ext/test-conf/puppetserver-dep"))
     (catch FileNotFoundException e
-      (log/error "No ext/test-conf/puppetserver-dep file found. Did you run ext/bin/config-puppetserver-test-ref ?")
+      (log/error "No ext/test-conf/puppetserver-dep file found. Did you run ext/bin/config-openvox-server-test-ref ?")
       (throw e))))
 
 (def dev-config-file "./test-resources/puppetserver/puppetserver.conf")
