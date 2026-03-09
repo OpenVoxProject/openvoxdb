@@ -11,6 +11,7 @@
             [puppetlabs.puppetdb.middleware :as mid]
             [clojure.core.async :as async]
             [puppetlabs.kitchensink.core :as kitchensink]
+            [puppetlabs.puppetdb.time :as time]
             [puppetlabs.comidi :as cmdi]
             [puppetlabs.i18n.core :refer [trs tru]]
             [puppetlabs.ring-middleware.core :as rmc])
@@ -300,7 +301,7 @@
 (defn- add-received-param
   [handle]
   (fn [req]
-    (handle (assoc-in req [:params "received"] (kitchensink/timestamp)))))
+    (handle (assoc-in req [:params "received"] (time/to-string (time/now))))))
 
 (defn routes [enqueue-fn max-command-size]
   (cmdi/context "/v1"

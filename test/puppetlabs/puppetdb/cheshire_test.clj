@@ -14,14 +14,13 @@
             spit-json]]
    [puppetlabs.puppetdb.time :as time])
   (:import [java.io StringWriter StringReader]
-           [java.sql Timestamp]
-           [org.joda.time DateTime]))
+           [java.sql Timestamp]))
 
 (deftest test-generate-string
   (testing "should generate a json string"
     (is (= (generate-string (sorted-map :a 1 :b 2))
            "{\"a\":1,\"b\":2}")))
-  (testing "should generate a json string that has a Joda DataTime object in it and not explode"
+  (testing "should generate a json string that has an Instant in it and not explode"
     (is (= (generate-string (sorted-map :a 1 :b (time/date-time 1986 10 14 4 3 27 456)))
            "{\"a\":1,\"b\":\"1986-10-14T04:03:27.456Z\"}"))))
 
@@ -29,7 +28,7 @@
   (testing "should generate a json string"
     (is (= (generate-pretty-string (sorted-map :a 1 :b 2))
            "{\n  \"a\" : 1,\n  \"b\" : 2\n}")))
-  (testing "should generate a json string that has a Joda DataTime object in it and not explode"
+  (testing "should generate a json string that has an Instant in it and not explode"
     (is (= (generate-pretty-string (sorted-map :a 1 :b (time/date-time 1986 10 14 4 3 27 456)))
            "{\n  \"a\" : 1,\n  \"b\" : \"1986-10-14T04:03:27.456Z\"\n}"))))
 
@@ -51,7 +50,7 @@
   (let [t (java.util.Date. 5928174905781)]
     (is (= "\"2157-11-09T03:15:05.781Z\""
            (generate-string t))))
-  (let [t (DateTime. 5928174905781)]
+  (let [t (time/from-long 5928174905781)]
     (is (= "\"2157-11-09T03:15:05.781Z\""
            (generate-string t))))
   (let [t (Timestamp. 5928174905781)]

@@ -1638,7 +1638,7 @@
           certname (:certname catalog)]
       (add-certname! certname)
       (replace-catalog! (assoc catalog :producer_timestamp (now)) (now))
-      (is (= [] (expire-stale-nodes (-> 3 days .toPeriod))))
+      (is (= [] (expire-stale-nodes (-> 3 days))))
       (is (= (map :certname (query-to-vec "select certname from certnames"))
              [certname])))))
 
@@ -1659,7 +1659,7 @@
           (add-certname! "node1")
           (dorun (map #((mutators %)) ops))
           (is (= [ops ["node1"]]
-                 [ops (expire-stale-nodes (-> 1 days .toPeriod))])))))))
+                 [ops (expire-stale-nodes (-> 1 days))])))))))
 
 (deftest-db node-with-only-fresh-report-is-not-expired
   (testing "does not expire a node with a recent report and nothing else"
@@ -1668,7 +1668,7 @@
                      (assoc :end_time (now))
                      (assoc :producer_timestamp (now)))]
       (store-example-report! report (now))
-      (is (= [] (expire-stale-nodes (-> 1 days .toPeriod)))))))
+      (is (= [] (expire-stale-nodes (-> 1 days)))))))
 
 (deftest stale-nodes-expiration-via-reports
   (let [report-at #(assoc (:basic reports)
@@ -1681,15 +1681,15 @@
     (with-test-db
       (testing "doesn't return node with a recent report and nothing else"
         (store-example-report! (report-at stamp) stamp)
-        (is (= []  (expire-stale-nodes (-> 1 days .toPeriod)))))
+        (is (= []  (expire-stale-nodes (-> 1 days)))))
       (testing "doesn't return node with a recent report and a stale report"
         (store-example-report! (report-at stale-stamp-1) stale-stamp-1)
-        (is (= []  (expire-stale-nodes (-> 1 days .toPeriod))))))
+        (is (= []  (expire-stale-nodes (-> 1 days))))))
     (with-test-db
       (testing "returns a node with only stale reports"
         (store-example-report! (report-at stale-stamp-1) stale-stamp-1)
         (store-example-report! (report-at stale-stamp-2) stale-stamp-2)
-        (is (= ["foo.local"] (expire-stale-nodes (-> 1 days .toPeriod))))))))
+        (is (= ["foo.local"] (expire-stale-nodes (-> 1 days))))))))
 
 (deftest-db stale-nodes-expiration-via-catalogs
   (let [repcat (fn [type stamp]
@@ -1703,12 +1703,12 @@
       (testing "doesn't return node with a recent catalog and nothing else"
         (add-certname! "node1")
         (repcat :empty stamp)
-        (is (= [] (expire-stale-nodes (-> 1 days .toPeriod))))))
+        (is (= [] (expire-stale-nodes (-> 1 days))))))
     (with-test-db
       (testing "returns a node with only a stale catalog"
         (add-certname! "node1")
         (repcat :empty stale-stamp)
-        (is (= ["node1"] (expire-stale-nodes (-> 1 days .toPeriod))))))))
+        (is (= ["node1"] (expire-stale-nodes (-> 1 days))))))))
 
 (deftest-db only-nodes-older-than-max-age-expired
   (testing "should only return nodes older than max age, and leave others alone"
@@ -1723,7 +1723,7 @@
                                :certname "node2"
                                :producer_timestamp (now))
                         (now))
-      (is (= ["node1"] (expire-stale-nodes (-> 1 days .toPeriod)))))))
+      (is (= ["node1"] (expire-stale-nodes (-> 1 days)))))))
 
 (deftest-db node-purge
   (testing "should purge nodes which were deactivated before the specified date"

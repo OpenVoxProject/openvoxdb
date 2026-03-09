@@ -59,7 +59,7 @@
             [puppetlabs.puppetdb.cheshire :as json]
             [puppetlabs.kitchensink.core :as kitchensink]
             [puppetlabs.puppetdb.scf.storage-utils :as sutils]
-            [puppetlabs.puppetdb.time :refer [in-millis interval now to-timestamp]]
+            [puppetlabs.puppetdb.time :refer [to-millis interval now to-timestamp]]
             [puppetlabs.puppetdb.jdbc :as jdbc :refer [query-to-vec]]
             [puppetlabs.i18n.core :refer [trs]]
             [puppetlabs.puppetdb.scf.hash :as hash]
@@ -2709,7 +2709,7 @@
                                  result (migration)]
                              (record-migration! version)
                              (log/info (trs "Applied database migration version {0} in {1} ms"
-                                            version (in-millis (interval t0 (now)))))
+                                            version (to-millis (interval t0 (now)))))
                              result)))
                     (filter map?)
                     (map ::vacuum-analyze)

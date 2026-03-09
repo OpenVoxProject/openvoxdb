@@ -39,7 +39,7 @@
                               (update :producer_timestamp time/to-string))
 
         plan-report-ts (-> 1 time/days time/ago time/to-string)
-        test-report (tu/change-report-time example-report (time/unparse (time/formatters :date-time) current-time))
+        test-report (tu/change-report-time example-report (time/to-string current-time))
         plan-report (assoc test-report :type "plan" :producer_timestamp (time/to-string plan-report-ts))]
     (svc-utils/call-with-single-quiet-pdb-instance
      (fn []
@@ -155,7 +155,7 @@
     (let [export-out-file (tu/temp-file "export-test" ".tar.gz")
           anon-out-file (tu/temp-file "anon-test" ".tar.gz")
           current-time (time/now)
-          test-report (tu/change-report-time example-report (time/unparse (time/formatters :date-time) current-time))]
+          test-report (tu/change-report-time example-report (time/to-string current-time))]
 
       (svc-utils/call-with-single-quiet-pdb-instance
        (fn []

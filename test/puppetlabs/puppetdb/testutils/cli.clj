@@ -10,7 +10,7 @@
             [puppetlabs.puppetdb.testutils.catalogs :as tuc]
             [puppetlabs.puppetdb.testutils.facts :as tuf]
             [puppetlabs.puppetdb.testutils.services :as svc-utils]
-            [puppetlabs.puppetdb.time :as time-coerce :refer [now]]))
+            [puppetlabs.puppetdb.time :as time :refer [now]]))
 
 
 (defn get-nodes [&{:keys [include-facts-expiration]}]
@@ -58,7 +58,7 @@
             :bar "the bar"
             :baz "the baz"
             :biz {:a [3.14 2.71] :b "the b" :c [1 2 3] :d {:e nil}}}
-   :producer_timestamp (time-coerce/to-string (now))
+   :producer_timestamp (time/to-string (now))
    :producer example-producer})
 
 (def example-catalog
@@ -80,20 +80,20 @@
 (def example-nodes
   [{:certname example-certname
     :expires_facts false
-    :expires_facts_updated (time-coerce/to-string node-expiration-timestamp)}
+    :expires_facts_updated (time/to-string node-expiration-timestamp)}
    {:certname example-certname2
     :expires_facts true
-    :expires_facts_updated (time-coerce/to-string node-expiration-timestamp)}])
+    :expires_facts_updated (time/to-string node-expiration-timestamp)}])
 
 (def example-configure-expiration-false
   {:certname example-certname
    :expire {:facts false}
-   :producer_timestamp (time-coerce/to-string node-expiration-timestamp)})
+   :producer_timestamp (time/to-string node-expiration-timestamp)})
 
 (def example-configure-expiration-true
   {:certname example-certname2
    :expire {:facts true}
-   :producer_timestamp (time-coerce/to-string node-expiration-timestamp)})
+   :producer_timestamp (time/to-string node-expiration-timestamp)})
 
 (defn munge-tar-map
   [tar-map]

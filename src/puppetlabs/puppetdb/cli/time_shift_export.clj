@@ -24,8 +24,7 @@
    [puppetlabs.kitchensink.core :as kitchensink]
    [clojure.java.io :as io]
    [puppetlabs.puppetdb.archive :as archive]
-   [puppetlabs.puppetdb.time :refer [parse-wire-datetime after? now interval plus]]
-   [clj-time.coerce :as time-coerce]
+   [puppetlabs.puppetdb.time :as time :refer [wire-datetime->instant after? now interval plus to-long]]
    [puppetlabs.puppetdb.cheshire :as json]
    [clojure.string :as str]))
 
@@ -37,7 +36,7 @@
 (defn time-shift-timestamp
   [timestamp-string shift-period]
   (-> timestamp-string
-      parse-wire-datetime
+      wire-datetime->instant
       (plus shift-period)))
 
 (defn time-shift-resources
@@ -96,7 +95,7 @@
             command-type (if (= command-type "facts") command-type (str/join "" (drop-last command-type)))
             filename (clojure.core/format "%s-%s_%s_%s_%s.json"
                                           (next-command-index)
-                                          (time-coerce/to-long (:producer_timestamp shifted-data))
+                                          (to-long (:producer_timestamp shifted-data))
                                           command-type
                                           (str (get command-type-versions command-type))
                                           (:certname shifted-data))]
@@ -152,12 +151,12 @@
                 (json-data :end_time)]
                (map #(:time %) (json-data :logs))
                (get-resources-timestamps (json-data :resources)))
-       (map parse-wire-datetime)
+       (map wire-datetime->instant)
        (reduce get-newest-timestamp)))
 
 (defn entry-producer-timestamp
   [json-data]
-  (parse-wire-datetime (:producer_timestamp json-data)))
+  (wire-datetime->instant (:producer_timestamp json-data)))
 
 (defn compare-command-versions
   [command-type actual-version]
@@ -190,7 +189,7 @@
 
 (defn newest-timestamp-from-archive
   [archive-path]
-  (let [newest-timestamp (atom (parse-wire-datetime "1000-01-01T11:11:11.111Z"))]
+  (let [newest-timestamp (atom (wire-datetime->instant "1000-01-01T11:11:11.111Z"))]
 
     (with-open [tar-reader (archive/tarball-reader archive-path)]
       (doseq [tar-entry (archive/all-entries tar-reader)]
@@ -203,12 +202,12 @@
 (defn time-shift-export
   [args]
   (let [newest-timestamp (newest-timestamp-from-archive (:input args))
-        shift-period (.toPeriod (interval newest-timestamp (:shift-to-time args)))]
+        shift-period (interval newest-timestamp (:shift-to-time args))]
     (time-shift-input-archive (assoc args :shift-to-time shift-period))))
 
 (defn parse-time-shift-parameter
   [time-string]
-  (let [parsed-time (parse-wire-datetime time-string)]
+  (let [parsed-time (wire-datetime->instant time-string)]
     (when-not parsed-time
       (utils/throw-sink-cli-error (str "\nError: time shift date: " time-string ", must be in UTC format!\n")))
     parsed-time))

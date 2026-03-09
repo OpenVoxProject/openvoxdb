@@ -25,7 +25,7 @@
    [puppetlabs.puppetdb.utils :refer [utf8-length utf8-truncate]]
    [puppetlabs.puppetdb.command.constants :as cconst]
    [puppetlabs.puppetdb.time :as time
-    :refer [now parse-wire-datetime seconds]]))
+    :refer [now wire-datetime->instant seconds]]))
 
 (defn catalog->command-req [version {:keys [certname name] :as catalog}]
   (create-command-req "replace catalog"
@@ -133,8 +133,8 @@
               :certname "foo.com"
               :payload {:message "payload"}}
              (select-keys command [:command :version :certname :payload])))
-      (is (time/before? start (-> (get-in command [:annotations :received])
-                                  parse-wire-datetime))))))
+      (is (time/before? start (-> (:received command)
+                                  wire-datetime->instant))))))
 
 (deftest test-sorted-command-buffer
   (testing "newer catalogs/facts cause older catalogs to be deleted"
@@ -438,7 +438,7 @@
     (is (= {:certname "foo.com"
             :command "replace catalog"
             :version cconst/latest-catalog-version
-            :received (kitchensink/timestamp received)
+            :received (time/to-string received)
             :producer-ts producer-ts
             :compression compression}
            (parse-metadata (serialize-metadata received req false)))))
@@ -452,7 +452,7 @@
     (is (= {:certname "foo.com"
             :command "replace facts"
             :version cconst/latest-facts-version
-            :received (kitchensink/timestamp received)
+            :received (time/to-string received)
             :producer-ts producer-ts
             :compression compression}
            (parse-metadata (serialize-metadata received req false)))))
@@ -466,7 +466,7 @@
     (is (= {:certname "foo.com"
             :command "store report"
             :version cconst/latest-report-version
-            :received (kitchensink/timestamp received)
+            :received (time/to-string received)
             :producer-ts producer-ts
             :compression compression}
            (parse-metadata (serialize-metadata received req false))))))

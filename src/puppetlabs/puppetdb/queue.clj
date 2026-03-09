@@ -13,7 +13,7 @@
    [puppetlabs.puppetdb.lint :refer [ignore-value]]
    [puppetlabs.puppetdb.nio :refer [get-path]]
    [puppetlabs.puppetdb.schema :as pls]
-   [puppetlabs.puppetdb.time :as time :refer [now parse-wire-datetime]]
+   [puppetlabs.puppetdb.time :as time :refer [now wire-datetime->instant]]
    [puppetlabs.puppetdb.utils
     :refer [compression-file-extension-schema
             content-encodings->file-extensions
@@ -206,7 +206,7 @@
            (and certname
                 {:received (-> received-time-long
                                time/from-long
-                               kitchensink/timestamp)
+                               time/to-string)
                  :producer-ts (some-> producer-offset
                                       (+ received-time-long)
                                       time/from-long)
@@ -243,7 +243,7 @@
   {:command command
    :version version
    :certname certname
-   :producer-ts (some-> producer-ts parse-wire-datetime)
+   :producer-ts (some-> producer-ts wire-datetime->instant)
    :compression compression
    :callback callback
    :command-stream command-stream})
@@ -315,7 +315,7 @@
 
 (defn cons-attempt [cmdref exception]
   (update cmdref :attempts conj {:exception exception
-                                 :time (kitchensink/timestamp)}))
+                                 :time (time/to-string (now))}))
 
 (s/defn store-in-stockpile
   [q

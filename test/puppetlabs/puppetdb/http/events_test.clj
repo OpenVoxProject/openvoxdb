@@ -231,7 +231,7 @@
             response  (query-result method endpoint ["=" "certname" "foo.local"]
                                     {:distinct_resources true
                                      :distinct_start_time 0
-                                     :distinct_end_time (now)}
+                                     :distinct_end_time (to-string (now))}
                                     munge-event-values)]
         (is (= expected response))))
 
@@ -241,7 +241,7 @@
                                     {:distinct_resources true
                                      :distinct_start_time 0
                                      :include_total true
-                                     :distinct_end_time (now)}
+                                     :distinct_end_time (to-string (now))}
                                     munge-event-values)]
         (is (= expected response))))
 
@@ -250,7 +250,7 @@
             response (query-result method endpoint ["=" "latest_report?" true]
                                    {:distinct_resources true
                                     :distinct_start_time 0
-                                    :distinct_end_time (now)}
+                                    :distinct_end_time (to-string (now))}
                                    munge-event-values)]
         (is (= expected response))))
 
@@ -270,7 +270,7 @@
                                                     ["=" "resource_title" "notify, yar"]]
                                    {:distinct_resources true
                                     :distinct_start_time 0
-                                    :distinct_end_time (now)}
+                                    :distinct_end_time (to-string (now))}
                                    munge-event-values)]
         (is (= expected response))))))
 

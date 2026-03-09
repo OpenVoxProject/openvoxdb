@@ -1,289 +1,239 @@
 (ns puppetlabs.puppetdb.time
   "Time-related Utility Functions
 
-   This namespace contains some utility functions for working with objects
-   related to time; it is mostly based off of the `Period` class from
-   Java's JodaTime library."
-  (:import (org.joda.time.format PeriodFormatterBuilder PeriodFormatter DateTimeFormatter)
-           (org.joda.time Period ReadablePeriod PeriodType DateTime DateTimeZone)
-           (java.time ZonedDateTime ZoneId))
-  (:require [clj-time.coerce :as tc]
-            [clj-time.core]
-            [clj-time.format :as tf]
-            [schema.core :as s]))
+   This namespace contains utility functions for working with time objects,
+   built on java.time.Instant (timestamps) and java.time.Duration (periods)."
+  (:import (java.time Instant Duration ZonedDateTime ZoneOffset DateTimeException)
+           (java.time.format DateTimeFormatter DateTimeFormatterBuilder DateTimeParseException)
+           (java.time.temporal ChronoUnit)
+           (java.sql Timestamp))
+  (:require [schema.core :as s]))
 
-(def ago clj-time.core/ago)
-(def now clj-time.core/now)         ; ~= java.time: OffsetDateTime/now
-(def days clj-time.core/days)       ; ~= java.time: Period/ofDays
-;; No direct java.time equivalents (Periods have day granularity there)
-(def hours clj-time.core/hours)
-(def minutes clj-time.core/minutes)
-(def seconds clj-time.core/seconds)
-(def millis clj-time.core/millis)
+(declare wire-datetime->instant)
 
-(def date-time clj-time.core/date-time)
-(def equal? clj-time.core/equal?)
-(def before? clj-time.core/before?)
-(def after? clj-time.core/after?)
-(def plus clj-time.core/plus)
-(def minus clj-time.core/minus)
-(def from-now clj-time.core/from-now)
-(def interval clj-time.core/interval)
-(def in-millis clj-time.core/in-millis)
-(def in-seconds clj-time.core/in-seconds)
-(def in-minutes clj-time.core/in-minutes)
+;; Instant constructors
 
-(def to-date-time tc/to-date-time)
-(def to-long tc/to-long)
-(def to-string tc/to-string)
-(def from-long tc/from-long)
-(def from-sql-date tc/from-sql-date)
+(defn now [] (.truncatedTo (Instant/now) ChronoUnit/MILLIS))
 
-(def formatters tf/formatters)
-(def parse tf/parse)
-(def unparse tf/unparse)
+(defn date-time
+  "Construct an Instant from year/month/day/hour/minute/second/millis (all UTC)."
+  ([year month day]
+   (date-time year month day 0 0 0 0))
+  ([year month day hour]
+   (date-time year month day hour 0 0 0))
+  ([year month day hour minute]
+   (date-time year month day hour minute 0 0))
+  ([year month day hour minute second]
+   (date-time year month day hour minute second 0))
+  ([year month day hour minute second millis]
+   (-> (ZonedDateTime/of year month day hour minute second (* millis 1000000) ZoneOffset/UTC)
+       .toInstant)))
+
+;; Duration constructors
+
+(defn days [n] (Duration/ofDays n))
+(defn hours [n] (Duration/ofHours n))
+(defn minutes [n] (Duration/ofMinutes n))
+(defn seconds [n] (Duration/ofSeconds n))
+(defn millis [n] (Duration/ofMillis (long n)))
+
+;; Arithmetic
+
+(defn ago [^Duration d] (if d (.minus (now) d) (now)))
+(defn from-now [^Duration d] (if d (.plus (now) d) (now)))
+(defn plus [t d] (.plus t d))
+(defn minus [t d] (.minus t d))
+
+(defn interval
+  "Returns the Duration between two Instants."
+  [^Instant start ^Instant end]
+  (Duration/between start end))
+
+;; Truncation
+
+(defn truncate-to-day
+  "Truncate an Instant to the start of the day (UTC)."
+  [^Instant t]
+  (-> t (.atZone ZoneOffset/UTC) (.truncatedTo ChronoUnit/DAYS) .toInstant))
+
+;; Comparison
+
+(defn equal? [^Instant a ^Instant b] (.equals a b))
+(defn before? [^Instant a ^Instant b] (.isBefore a b))
+(defn after? [^Instant a ^Instant b] (.isAfter a b))
+
+;; Predicates
+
+(defn date-time? [x] (instance? Instant x))
+(defn period? [x] (instance? Duration x))
+
+;; Conversion to/from longs
+
+(defn to-long
+  "Convert a timestamp to epoch milliseconds."
+  [t]
+  (cond
+    (instance? Instant t) (.toEpochMilli ^Instant t)
+    (instance? Timestamp t) (.getTime ^Timestamp t)
+    (string? t) (.toEpochMilli (Instant/parse t))
+    (number? t) (long t)
+    :else (throw (IllegalArgumentException.
+                  (str "Cannot convert to long: " (type t))))))
+(defn from-long [n] (Instant/ofEpochMilli (long n)))
+
+;; Conversion from SQL types
+
+(defn from-sql-date [^Timestamp ts] (.toInstant ts))
+
+;; Wire format formatter: always outputs 3-digit milliseconds
+(def ^DateTimeFormatter wire-format-formatter
+  (-> (DateTimeFormatterBuilder.) (.appendInstant 3) .toFormatter))
+
+(defn to-string
+  "Convert a timestamp to ISO-8601 string with mandatory millisecond precision.
+  Accepts Instant, java.sql.Timestamp, or String (parsed and reformatted to
+  normalize timezone offset and precision)."
+  [t]
+  (cond
+    (instance? Instant t) (.format wire-format-formatter ^Instant t)
+    (instance? Timestamp t) (.format wire-format-formatter (.toInstant ^Timestamp t))
+    (string? t) (when-let [parsed (wire-datetime->instant t)]
+                  (.format wire-format-formatter ^Instant parsed))
+    :else nil))
+
+;; to-date-time: coerce various types to Instant
+
+(defn to-date-time
+  "Coerce x to an Instant. Accepts strings, longs, java.sql.Timestamps, and Instants."
+  [x]
+  (cond
+    (instance? Instant x) x
+    (instance? Timestamp x) (.toInstant ^Timestamp x)
+    (string? x) (Instant/parse x)
+    (number? x) (from-long x)
+    :else (throw (IllegalArgumentException.
+                  (str "Cannot convert to Instant: " (type x))))))
+
+;; to-java-date protocol
 
 (defprotocol ToJavaDate
   (to-java-date ^java.util.Date [x] "Converts x to a java.util.Date."))
 
 (extend-protocol ToJavaDate
-  org.joda.time.DateTime
+  java.time.Instant
   (to-java-date [x]
-    ;; Eventually: (Date/from (.toInstant odt))
-    (tc/to-date x)))
+    (java.util.Date/from x)))
 
-(defn date-time? [x]
-  (instance? DateTime x))
-
-;; Functions for parsing Periods from Strings
-
-(defn period?
-  "Returns true if `p` is a ReadablePeriod instance, false otherwise."
-  [p]
-  (instance? ReadablePeriod p))
-
-(defn- build-parser
-  "A utility function that builds up a joda-time `PeriodFormatter` instance that
-  can be used for parsing strings into `Period`s.  The parser returned by this
-  function is intended to parse a single unit of time from a string formatted as
-  `'%i%s'`, where `%i` is a positive integer, and `%s` is a suffix string used
-  to determine what unit of time we're returning.
-
-  `f` - A function that accepts an instance of `PeriodFormatterBuilder` and
-        calls the appropriate `append*` method for the desired unit of time.
-  `suffix` - the suffix string that will cause this parser to match."
-  ([f suffix]
-     (build-parser f suffix suffix))
-  ([f singular-suffix plural-suffix]
-     {:pre   [(fn? f)
-              (string? singular-suffix)
-              (string? plural-suffix)]
-      :post  [(instance? PeriodFormatter %)]}
-     (-> (PeriodFormatterBuilder.)
-         (f)
-         (.appendSuffix singular-suffix plural-suffix)
-         (.toFormatter))))
-
-(def day-parser
-  "A parser that matches strings ending with `d` and returns a `Period` of days"
-  (build-parser #(.appendDays %) "d"))
-
-(def hour-parser
-  "A parser that matches strings ending with `h` and returns a `Period` of hours"
-  (build-parser #(.appendHours %) "h"))
-
-(def minute-parser
-  "A parser that matches strings ending with `m` and returns a `Period` of minutes"
-  (build-parser #(.appendMinutes %) "m"))
-
-(def second-parser
-  "A parser that matches strings ending with `s` and returns a `Period` of seconds"
-  (build-parser #(.appendSeconds %) "s"))
-
-(def millisecond-parser
-  "A parser that matches strings ending with `ms` and returns a `Period` of
-  milliseconds"
-  (build-parser #(.appendMillis %) "ms"))
-
-(def period-parser
-  "A parser that matches strings ending with `d`, `h`, `m`, `s`, or `ms` and
-  returns a `Period` object representing the specified amount of time."
-  (.. (PeriodFormatterBuilder.)
-      ;; it's important that "millisecond" parser comes first in this list,
-      ;; because the suffix string is a superset of the suffix string for
-      ;; "minutes"... so if the "minute" parser is earlier in the list,
-      ;; it will recognize the "m" from a millisecond string, try to parse it,
-      ;; fail, and throw an exception.
-      (append millisecond-parser)
-      (append second-parser)
-      (append minute-parser)
-      (append hour-parser)
-      (append day-parser)
-      (toFormatter)))
+;; Period parsing/formatting
 
 (defn parse-period
-  "Parse a String into an instance of `Period`, representing a duration of time.
-  For example, `(parse-period \"2d\")` returns a `Period` representing a duration
-  of 2 days.  Currently supported suffixes are `'d'`, `'h'`, `'m'`, `'s'`, and
-  `'ms'`."
+  "Parse a String into a Duration. Supported suffixes: d, h, m, s, ms.
+  For example, (parse-period \"2d\") returns a Duration of 2 days."
   [s]
   {:pre  [(string? s)]
    :post [(period? %)]}
-  (.parsePeriod period-parser s))
-
-;; Functions for converting `Period` instances to readable strings
-
-(def day-formatter
-  "A formatter that converts Day `Period` objects to strings formatted as, e.g.,
-  '2 days'."
-  (build-parser #(.appendDays %) " day" " days"))
-
-(def hour-formatter
-  "A formatter that converts Hour `Period` objects to strings formatted as,
-  e.g., '2 hours'."
-  (build-parser #(.appendHours %) " hour" " hours"))
-
-(def minute-formatter
-  "A formatter that converts Minute `Period` objects to strings formatted as,
-  e.g., '2 minutes'."
-  (build-parser #(.appendMinutes %) " minute" " minutes"))
-
-(def second-formatter
-  "A formatter that converts Second `Period` objects to strings formatted as,
-  e.g., '2 seconds'."
-  (build-parser #(.appendSeconds %) " second" " seconds"))
-
-(def millisecond-formatter
-  "A formatter that converts  `Period` objects to strings formatted as, e.g.,
-  '2 milliseconds'."
-  (build-parser #(.appendMillis %) " millisecond" " milliseconds"))
-
-(def period-formatter
-  "A formatter that converts `Period` objects to human-readable strings."
-  (.. (PeriodFormatterBuilder.)
-      ;; it's important that "millisecond" parser comes first in this list,
-      ;; because the suffix string is a superset of the suffix string for
-      ;; "minutes"... so if the "minute" parser is earlier in the list,
-      ;; it will recognize the "m" from a millisecond string, try to parse it,
-      ;; fail, and throw an exception.
-      (append millisecond-formatter)
-      (append second-formatter)
-      (append minute-formatter)
-      (append hour-formatter)
-      (append day-formatter)
-      (toFormatter)))
+  (let [[_ n unit] (re-matches #"(\d+)(ms|[dhms])" s)]
+    (when-not n
+      (throw (IllegalArgumentException. (str "Cannot parse period: " s))))
+    (case unit
+      "d"  (Duration/ofDays (parse-long n))
+      "h"  (Duration/ofHours (parse-long n))
+      "m"  (Duration/ofMinutes (parse-long n))
+      "s"  (Duration/ofSeconds (parse-long n))
+      "ms" (Duration/ofMillis (parse-long n)))))
 
 (defn format-period
-  "Convert a `Period` object into a human-readable String; e.g.:
-
-      `(format-period (clj-time.core/seconds 120))`
-
-  returns '2 minutes'.  The `Period` will only be normalized to
-  the largest round unit; e.g., a `Period` of 121 seconds will
-  not be normalized to minutes."
+  "Convert a Duration into a human-readable String, e.g. '2 minutes'.
+  Normalizes to the largest clean unit."
   [p]
   {:pre  [(period? p)]
    :post [(string? %)]}
-  (let [normalized   (.. p
-                         (toPeriod)
-                         (normalizedStandard (PeriodType/dayTime)))
-        largest-unit (condp > 0
-                       (.getMillis normalized)  (PeriodType/millis)
-                       (.getSeconds normalized) (PeriodType/seconds)
-                       (.getMinutes normalized) (PeriodType/minutes)
-                       (.getHours normalized)   (PeriodType/hours)
-                       (PeriodType/days))
-        normalized   (.normalizedStandard normalized largest-unit)]
-    (.print period-formatter normalized)))
+  (let [total-ms (.toMillis p)
+        ms-per-day 86400000
+        ms-per-hour 3600000
+        ms-per-minute 60000
+        ms-per-second 1000
+        [n unit-s unit-p]
+        (cond
+          (and (pos? total-ms) (zero? (mod total-ms ms-per-day)))
+          [(/ total-ms ms-per-day) "day" "days"]
 
+          (and (pos? total-ms) (zero? (mod total-ms ms-per-hour)))
+          [(/ total-ms ms-per-hour) "hour" "hours"]
 
-;; Comparison and predicate functions
+          (and (pos? total-ms) (zero? (mod total-ms ms-per-minute)))
+          [(/ total-ms ms-per-minute) "minute" "minutes"]
+
+          (and (pos? total-ms) (zero? (mod total-ms ms-per-second)))
+          [(/ total-ms ms-per-second) "second" "seconds"]
+
+          :else
+          [total-ms "millisecond" "milliseconds"])]
+    (str n " " (if (= n 1) unit-s unit-p))))
+
+;; Period comparison
 
 (defn periods-equal?
-  "Given two or more instances of `Period`, returns true if they all represent
-  the same duration of time (regardless of whether or not they are specified in
-  the same units of time... in other words, the following will return `true`:
-
-      `(periods-equal? (days 2) (hours 48))`
-
-  even though this will return `false`:
-
-      `(= (days 2) (hours 48))`"
+  "Returns true if all given Durations represent the same amount of time."
   ([_p] true)
-  ([p1 p2] (= (.toStandardDuration p1) (.toStandardDuration p2)))
+  ([p1 p2] (.equals p1 p2))
   ([p1 p2 & more]
-     (if (periods-equal? p1 p2)
-       (if (next more)
-         (recur p2 (first more) (next more))
-         (periods-equal? p2 (first more)))
-       false)))
+   (if (periods-equal? p1 p2)
+     (if (next more)
+       (recur p2 (first more) (next more))
+       (periods-equal? p2 (first more)))
+     false)))
 
 (defn period-longer?
-  "Given two instances of period, return true if the first Period is longer
-  than then second. Uses .toStandardDuration so it will not be affected by
-  daylight savings time, etc"
-  [^Period p1 ^Period p2]
-    (.isLongerThan (.toStandardDuration p1) (.toStandardDuration p2)))
+  "Returns true if d1 is longer than d2."
+  [^Duration d1 ^Duration d2]
+  (pos? (.compareTo d1 d2)))
 
-;; Conversion functions (convert `Period` instances to numeric values of a
-;; specified time unit)
+;; Period to numeric
 
-(defn- to-unit
-  "Helper function for converting periods to specific units"
-  [f period]
-  {:pre  [(period? period)]
-   :post [(>= % 0)] }
-  (-> period
-      (.toStandardDuration)
-      (f)))
+(defn to-days [^Duration d] (.toDays d))
+(defn to-hours [^Duration d] (.toHours d))
+(defn to-minutes [^Duration d] (.toMinutes d))
+(defn to-seconds [^Duration d] (.toSeconds d))
+(defn to-millis [^Duration d] (.toMillis d))
 
-(def to-days
-  "Given an instance of `Period`, return an integer representing the number of days"
-  (partial to-unit #(.getStandardDays %)))
+;; Ordered formatters for timestamp parsing
 
-(def to-hours
-  "Given an instance of `Period`, return an integer representing the number of hours"
-  (partial to-unit #(.getStandardHours %)))
-
-(def to-minutes
-  "Given an instance of `Period`, return an integer representing the number of minutes"
-  (partial to-unit #(.getStandardMinutes %)))
-
-(def to-seconds
-  "Given an instance of `Period`, return an integer representing the number of seconds"
-  (partial to-unit #(.getStandardSeconds %)))
-
-(def to-millis
-  "Given an instance of `Period`, return an integer representing the number of milliseconds"
-  (partial to-unit #(.getMillis %)))
-
-(def ordered-formatters
-  "Like clj-time.format/formatters but ordered with the more likely
-  successful formats first"
-  (let [likely-formats [:date-time :date :date-time-no-ms :basic-date :basic-date-time]]
-    (map tf/formatters (concat likely-formats
-                               (remove (set likely-formats) (keys tf/formatters))))))
+(def ^:private ordered-format-parsers
+  "Formatters ordered with more likely successful formats first."
+  [DateTimeFormatter/ISO_DATE_TIME
+   DateTimeFormatter/ISO_DATE
+   DateTimeFormatter/BASIC_ISO_DATE])
 
 (s/defn ^:always-validate attempt-date-time-parse
-  "Parses `timestamp-str` using `formatter`. Returns nil if an
-  Exception is thrown, otherwise the parsed DateTime object"
+  "Parses `timestamp-str` using `formatter`. Returns nil if parsing fails."
   [formatter :- DateTimeFormatter
    timestamp-str :- String]
   (try
-    (tf/parse formatter timestamp-str)
-    (catch IllegalArgumentException _ nil)))
+    (let [parsed (.parse formatter timestamp-str)]
+      (or (try (Instant/from parsed) (catch DateTimeException _ nil))
+          (try (.toInstant (.atOffset (java.time.LocalDateTime/from parsed) ZoneOffset/UTC))
+               (catch DateTimeException _ nil))
+          (try (.toInstant (.atStartOfDay (java.time.LocalDate/from parsed) ZoneOffset/UTC))
+               (catch DateTimeException _ nil))))
+    (catch DateTimeParseException _ nil)))
 
 (s/defn ^:always-validate to-timestamp :- (s/maybe java.sql.Timestamp)
-  "Delegates to clj-time's to-timestamp, except when `ts` is a
-  String. When a String, this function will attempt to convert it
-  using a more likely correct date format first (which is faster than
-  to-timestamp's more naive approach)"
+  "Convert to a java.sql.Timestamp. When `ts` is a String, attempts
+  parsing with likely date formats first."
   [ts]
-  (tc/to-timestamp
-   (if (string? ts)
-     (when ts
-       (some #(attempt-date-time-parse % ts) ordered-formatters))
-     ts)))
+  (cond
+    (instance? Timestamp ts) ts
+    (instance? Instant ts) (Timestamp/from ts)
+    (string? ts)
+    (if-let [parsed (some #(attempt-date-time-parse % ts) ordered-format-parsers)]
+      (Timestamp/from parsed)
+      (try
+        (Timestamp/from (from-long (Long/parseLong ts)))
+        (catch NumberFormatException _ nil)))
+    :else
+    (when ts
+      (Timestamp/from (to-date-time ts)))))
 
 ;; Parsing wire datetimes, e.g.
 ;;   api/wire_format/catalog_format_v9.markdown <datetime>
@@ -292,9 +242,8 @@
   "Returns a pdb instant (UTC timestamp) if s represents an ISO
   formatted timestamp like \"2011-12-03T10:15:30Z\" or nil."
   [s]
-  ;; Currently represented as a java Instant via DateTimeFormatter/ISO_INSTANT
   (try
-    (java.time.Instant/parse s)
+    (Instant/parse s)
     (catch java.time.format.DateTimeParseException _
       nil)))
 
@@ -302,7 +251,7 @@
   "Returns a pdb instant (UTC timestamp) if s represents an ISO
   formatted timestamp with offset like \"2011-12-03T10:15:30+01:00\"
   or nil."
-  (let [formatter java.time.format.DateTimeFormatter/ISO_OFFSET_DATE_TIME]
+  (let [formatter DateTimeFormatter/ISO_OFFSET_DATE_TIME]
     (fn [s]
       (try
         (-> (java.time.OffsetDateTime/parse s formatter) .toInstant)
@@ -310,34 +259,14 @@
           nil)))))
 
 (defn wire-datetime->instant
-  "Parses s as a PuppetDB wire format <datetime> and returns a
-  LocalDate, or nil if the string cannot be parsed."
+  "Parses s as a PuppetDB wire format <datetime> and returns an
+  Instant, or nil if the string cannot be parsed."
   [s]
   (when s (or (parse-iso-z s) (parse-offset-iso s))))
-
-(defn parse-wire-datetime
-  "Parses s as a PuppetDB wire format <datetime> and returns a
-  LocalDate, or nil if the string cannot be parsed."
-  [s]
-  ;; temporary migration shim
-  (some-> s wire-datetime->instant .toEpochMilli (DateTime. DateTimeZone/UTC)))
 
 (defn wire-datetime?
   [s]
   (when (string? s) (wire-datetime->instant s)))
-
-(defn joda-datetime->java-zoneddatetime
-  "Convert a org.joda.time.DateTime object to a java.time.ZonedDateTime"
-  [date]
-  (ZonedDateTime/of
-   (.getYear date)
-   (.getMonthOfYear date)
-   (.getDayOfMonth date)
-   (.getHourOfDay date)
-   (.getMinuteOfHour date)
-   (.getSecondOfMinute date)
-   (.getMillisOfSecond date)
-   (ZoneId/of (.getID (.getZone date)))))
 
 (defn ephemeral-now-ns
   "Returns the current time as *signed* integer nanoseconds with respect

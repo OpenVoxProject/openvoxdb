@@ -8,7 +8,7 @@
    [puppetlabs.puppetdb.testutils :as tu]
    [puppetlabs.puppetdb.testutils.db :refer [*db* *read-db* with-test-db]]
    [puppetlabs.puppetdb.testutils.services :as svc-utils :refer [*server*]]
-   [puppetlabs.puppetdb.time :as tc :refer [now parse-wire-datetime]]
+   [puppetlabs.puppetdb.time :as tc :refer [now wire-datetime->instant]]
    [puppetlabs.trapperkeeper.app :refer [get-service]]))
 
 (deftest test-node-ttl
@@ -129,7 +129,7 @@
                (is (= {"certname" "foo" "expired" nil} (second result)))
                (is (= "bar" (-> result first (get "certname"))))
                (is (tc/after? (now)
-                              (-> result first (get "expired") parse-wire-datetime))))
+                              (-> result first (get "expired") wire-datetime->instant))))
              (is (= [{"certname" "bar", "facts" [{"name" "y", "value" 1}]}
                      {"certname" "foo", "facts" [{"name" "x", "value" 1}]}]
                     (facts)))
@@ -145,7 +145,7 @@
                (is (= 1 (count result)))
                (is (= "foo" (-> result first (get "certname"))))
                (is (tc/after? (now)
-                              (-> result first (get "expired") parse-wire-datetime))))
+                              (-> result first (get "expired") wire-datetime->instant))))
              (is (= [{"certname" "foo", "facts" [{"name" "x", "value" 1}]}]
                     (facts)))
              (cli-svc/clean pdb ["purge_nodes"])

@@ -2,13 +2,13 @@
   (:require [puppetlabs.puppetdb.time :as time]
             [schema.core :as s]
             [puppetlabs.i18n.core :refer [trs]]
-            [puppetlabs.kitchensink.core :as kitchensink]
             [schema.coerce :as sc]
             [clojure.string :as str]
             [schema.utils :as su]
             [cheshire.custom :as json]
             [schema.spec.core]
-            [schema.spec.variant]))
+            [schema.spec.variant])
+  (:import (java.time Duration)))
 
 (defrecord DefaultedMaybe [schema default]
   s/Schema
@@ -60,9 +60,9 @@
     :else (throw (Exception. "Invalid facts blocklist format"))))
 
 (defn period?
-  "True if `x` is a JodaTime Period"
+  "True if `x` is a java.time.Duration"
   [x]
-  (instance? org.joda.time.Period x))
+  (instance? java.time.Duration x))
 
 (def Blocklist
   "Schema type for facts-blocklist"
@@ -71,15 +71,17 @@
     s/Str))
 
 (def Timestamp
-  "Schema type for JodaTime timestamps"
-  (s/pred kitchensink/datetime? 'datetime?))
+  "Schema type for timestamps (Instant, sql Timestamp, or parseable string)"
+  (s/cond-pre java.time.Instant
+              java.sql.Timestamp
+              (s/pred time/wire-datetime? 'wire-datetime?)))
 
 (def WireTimestamp
   "Schema type for wire format datetime strings"
   ;; FIXME: drop the classes once we fix the wire-format conversions
   ;; to always produce strings.
   (s/cond-pre java.sql.Timestamp
-              org.joda.time.DateTime
+              java.time.Instant
               (s/pred time/wire-datetime? 'wire-datetime?)))
 
 (def Function
@@ -133,10 +135,15 @@
 (def conversion-fns
   "Basic conversion functions for use by Schema"
   (convert-if-needed
-   {org.joda.time.Minutes (comp time/minutes coerce-to-int)
-    org.joda.time.Period (comp time/parse-period str)
-    org.joda.time.Days (comp time/days coerce-to-int)
-    org.joda.time.Seconds (comp time/seconds coerce-to-int)
+   {java.time.Duration (fn [x]
+                         ;; Bare numbers are treated as minutes for backward
+                         ;; compatibility with config fields (conn-max-age,
+                         ;; conn-lifetime, etc.) that were originally typed as Minutes.
+                         (cond (string? x) (if-let [n (parse-long x)]
+                                             (Duration/ofMinutes n)
+                                             (time/parse-period x))
+                               (number? x) (Duration/ofMinutes (long x))
+                               :else x))
     Boolean (comp #(Boolean/valueOf %) str)
     Long long
     clojure.lang.PersistentVector blocklist->vector}))

@@ -40,11 +40,11 @@
   (testing "should successfully parse a value in milliseconds"
     (is (periods-equal? (parse-period "4000ms") (seconds 4))))
   (testing "should throw an exception if the string is not valid"
-    (is (thrown-with-msg? IllegalArgumentException #"Invalid format: \"foo\""
+    (is (thrown-with-msg? IllegalArgumentException #"Cannot parse period: foo"
                           (parse-period "foo")))
-    (is (thrown-with-msg? IllegalArgumentException #"Invalid format: \"2d 1s\""
+    (is (thrown-with-msg? IllegalArgumentException #"Cannot parse period: 2d 1s"
                           (parse-period "2d 1s")))
-    (is (thrown-with-msg? IllegalArgumentException #"Invalid format: \"2 s\""
+    (is (thrown-with-msg? IllegalArgumentException #"Cannot parse period: 2 s"
                           (parse-period "2 s")))))
 
 (deftest test-format-period

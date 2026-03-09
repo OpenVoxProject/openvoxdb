@@ -10,7 +10,7 @@
             [puppetlabs.puppetdb.jdbc :as jdbc]
             [clojure.walk :refer [keywordize-keys]]
             [flatland.ordered.map :as omap]
-            [puppetlabs.puppetdb.time :as time-coerce]))
+            [puppetlabs.puppetdb.time :as time]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Utility functions for massaging results and example data into formats that
@@ -31,7 +31,7 @@
                             {:scf-read-db *db*
                              :url-prefix "/pdb"
                              :add-agent-report-filter true
-                             :node-purge-ttl (time-coerce/parse-period "14d")})))
+                             :node-purge-ttl (time/parse-period "14d")})))
 
 (defn store-example-report!
   "Store an example report (from examples/report.clj) for use in tests.  Params:
@@ -76,7 +76,7 @@
   (set
    (map (fn [resource-event]
           (-> resource-event
-              (update :timestamp time-coerce/to-string)
+              (update :timestamp time/to-string)
               (dissoc :environment :containing_class :certname)))
         resource-events)))
 
@@ -103,7 +103,7 @@
   become consistent during comparison."
   [report]
   (kitchensink/mapvals
-   time-coerce/to-string
+   time/to-string
    [:start_time :end_time :producer_timestamp]
    report))
 
@@ -143,7 +143,7 @@
 
 (defn munge-resource-events [resource-events]
   (->> resource-events
-       (map #(update % :timestamp time-coerce/to-string))
+       (map #(update % :timestamp time/to-string))
        (sort-by #(mapv % [:timestamp :resource_type :resource_title :name :property]))))
 
 (defn munge-report

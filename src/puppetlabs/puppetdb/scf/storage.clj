@@ -57,7 +57,7 @@
    (java.sql SQLException Timestamp)
    (java.time ZoneId ZonedDateTime)
    (java.util Arrays)
-   (org.joda.time Period)
+   (java.time Instant)
    (puppetlabs.puppetdb.jdbc PDBBytea)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1397,7 +1397,7 @@
 
 (defn resource-event-expired?
   [timestamp resource-events-ttl]
-  (time/after? (org.joda.time.DateTime. timestamp)
+  (time/after? (.toInstant timestamp)
                (.minus (now) resource-events-ttl)))
 
 (defn insert-resource-events [certname cert-id report-id resource-events ttl latest]
@@ -1669,7 +1669,7 @@
   ([parent-table date incremental? update-lock-status status-key just-detach?]
    {:pre [(string? parent-table)]}
    (let [utcz (ZoneId/of "UTC")
-         expire-date (.withZoneSameInstant (time/joda-datetime->java-zoneddatetime date)
+         expire-date (.withZoneSameInstant (.atZone ^Instant date utcz)
                                            utcz)
          expired? (fn [table]
                     (let [parts (str/split table #"_")
@@ -1798,7 +1798,7 @@
   [{:keys [report-ttl resource-events-ttl incremental? update-lock-status]
     :or {incremental? false
          update-lock-status (constantly true)}}]
-  {:pre [(instance? org.joda.time.DateTime report-ttl)
+  {:pre [(instance? java.time.Instant report-ttl)
          (ifn? update-lock-status)]}
   (let [resource-events-ttl (or resource-events-ttl report-ttl)
         effective-resource-events-ttl
@@ -1932,7 +1932,7 @@
 (pls/defn-validated expire-stale-nodes
   "Expires nodes with no activity within the provided horizon (prior
   to now) and returns a collection of the affected certnames."
-  [horizon :- Period]
+  [horizon :- java.time.Duration]
   (let [stale-start-ts (to-timestamp (ago horizon))
         expired-ts (to-timestamp (now))]
     (map :certname
@@ -1989,7 +1989,7 @@
         resource-events-ttl (get options-config :resource-events-ttl)
         save-event (if (nil? resource-events-ttl)
                        true
-                       (not (== 0 (.getSeconds (.toStandardSeconds resource-events-ttl)))))
+                       (not (.isZero resource-events-ttl)))
         store! (fn []
                  (jdbc/retry-with-monitored-connection
                   db conn-status {:isolation :read-committed
