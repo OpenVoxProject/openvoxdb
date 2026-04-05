@@ -16,7 +16,7 @@ module Vox
     end
 
     def container_exists?
-      !`docker container ls --all --filter 'name=#{container_name}' --format json`.strip.empty?
+      !`docker container ls --all --filter 'name=#{container_name}' --format '{{json .ID}}'`.strip.empty?
     end
 
     def teardown
