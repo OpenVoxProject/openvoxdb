@@ -50,7 +50,7 @@ esac
 
 # Install and update Ruby dependencies from top-level Gemfile
 bundle config set --local path vendor/bundle
-bundle config set --local without acceptance
+bundle config set --local without 'acceptance release'
 bundle install --retry=10
 bundle update
 # Print out info on Puppet dependency
