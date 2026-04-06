@@ -10,7 +10,7 @@
             [clojure.walk :as walk]
             [puppetlabs.trapperkeeper.app :as tk-app :refer [get-service]]
             [puppetlabs.trapperkeeper.testutils.bootstrap :as tkbs]
-            [puppetlabs.trapperkeeper.services.webserver.jetty10-service :refer [jetty10-service]]
+            [puppetlabs.trapperkeeper.services.webserver.jetty12-service :refer [jetty12-service]]
             [puppetlabs.trapperkeeper.services.webrouting.webrouting-service :refer [webrouting-service]]
             [puppetlabs.trapperkeeper.services.status.status-service :refer [status-service]]
             [puppetlabs.trapperkeeper.services.scheduler.scheduler-service :refer [scheduler-service]]
@@ -77,7 +77,7 @@
 (def ^:dynamic *server* nil)
 
 (def default-services
-  [#'jetty10-service
+  [#'jetty12-service
    #'webrouting-service
    #'puppetdb-service
    #'command-service
