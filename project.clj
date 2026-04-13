@@ -239,7 +239,6 @@
                  [org.openvoxproject/comidi]
                  [org.openvoxproject/i18n]
                  [org.openvoxproject/kitchensink]
-                 [org.openvoxproject/ssl-utils]
                  [org.openvoxproject/stockpile]
                  [org.openvoxproject/structured-logging]
                  [org.openvoxproject/trapperkeeper]
