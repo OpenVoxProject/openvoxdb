@@ -177,7 +177,7 @@
                          [org.openvoxproject/i18n ~i18n-version]
                          [org.openvoxproject/kitchensink "3.5.6"]
                          [org.openvoxproject/kitchensink "3.5.6" :classifier "test"]
-                         [org.openvoxproject/ssl-utils "3.6.2"]
+                         [org.openvoxproject/ssl-utils "3.6.3"]
                          [org.openvoxproject/stockpile "1.0.1"]
                          [org.openvoxproject/structured-logging "1.0.1"]
                          [org.openvoxproject/trapperkeeper "4.3.4"]
