@@ -196,7 +196,7 @@
                          [prismatic/schema "1.4.1"]
                          [riddley "0.2.2"]
                          [ring/ring-codec "1.3.0"]
-                         [ring/ring-core "1.14.2"]
+                         [ring/ring-core "1.15.4"]
                          [ring/ring-mock "0.6.2"]
                          [robert/hooke "1.3.0"]
                          [timofreiberg/bultitude "0.3.1"]
