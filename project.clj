@@ -122,7 +122,7 @@
   ;; defined under :dependencies ends up causing an error due to :pedantic? :abort,
   ;; because it is a dep of a dep with a different version, move it here.
   :managed-dependencies [[org.clojure/clojure "1.12.4"]
-                         [org.clojure/core.async "1.8.741"]
+                         [org.clojure/core.async "1.9.865"]
                          [org.clojure/core.match "1.1.1"]
                          [org.clojure/core.memoize "1.2.281"]
                          [org.clojure/data.generators "1.1.1"]
