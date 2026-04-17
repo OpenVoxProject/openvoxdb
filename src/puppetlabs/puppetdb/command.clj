@@ -64,7 +64,7 @@
             [puppetlabs.puppetdb.jdbc :as jdbc]
             [puppetlabs.puppetdb.schema :refer [defn-validated]]
             [puppetlabs.puppetdb.time :as time
-             :refer [now in-millis interval]]
+             :refer [now to-millis interval]]
             [puppetlabs.puppetdb.utils :as utils
              :refer [await-scheduler-shutdown
                      call-unless-shutting-down
@@ -298,7 +298,7 @@
    ;; manually stringify these to avoid locale-specific formatting
    (let [id (str id)
          received-time (str (time/to-long received-time))
-         duration (str (in-millis (interval start-time (now))))
+         duration (str (to-millis (interval start-time (now))))
          command-name (command-names command-kw)
          producer-utc-s (or (some-> producer-ts time/to-timestamp .getTime)
                             "nil")
@@ -825,16 +825,14 @@
                (log/info (trs "Revival of delayed message interrupted")))))))
      command-delay-ms)))
 
-(def ^:private iso-formatter (time/formatters :date-time))
-
 (defn process-message
   [{:keys [certname command version received delete? id] :as cmdref}
    q command-chan dlo delay-pool broadcast-pool write-dbs response-chan stats
    options-config maybe-send-cmd-event! shutdown-for-ex]
   (when received
-    (let [q-time (-> (time/parse iso-formatter received)
+    (let [q-time (-> (time/to-date-time received)
                      (time/interval (now))
-                     time/in-seconds)]
+                     time/to-seconds)]
       (create-metrics-for-command! command version)
       (update! (global-metric :queue-time) q-time)
       (update! (cmd-metric command version :queue-time) q-time)))

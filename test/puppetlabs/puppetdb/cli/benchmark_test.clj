@@ -753,10 +753,8 @@
                                              (->> (get report "resources")
                                                   update-timestamps-fn
                                                   (map #(update % "events" update-timestamps-fn)))))
-            ;; Clear out all of the timestamps they don't thaw with nippy 3.1.1, because
-            ;; it doesn't have org.time.joda.DateTime in its allowlists. And even if it did
-            ;; we change all of these values before submitting, so they would be different
-            ;; regardless
+            ;; Clear out all of the timestamps because they don't thaw with
+            ;; nippy 3.1.1, and we replace them before submitting anyway
             clean-hostmaps-fn (fn [host-maps]
                                 (map (fn [m]
                                        (assoc

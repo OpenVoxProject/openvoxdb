@@ -11,7 +11,7 @@
             [puppetlabs.puppetdb.testutils.reports :refer [with-corrective-change
                                                            without-corrective-change
                                                            store-example-report!]]
-            [puppetlabs.puppetdb.time :as coerce :refer [now]])
+            [puppetlabs.puppetdb.time :as time :refer [now]])
   (:import
    (java.net HttpURLConnection)))
 
@@ -82,7 +82,7 @@
    method [:get :post]]
 
   (let [current-time (now)
-        current-time-str (coerce/to-string current-time)
+        current-time-str (time/to-string current-time)
         expected #{{:successes 1
                     :skips 1
                     :failures 1
@@ -108,20 +108,20 @@
                                     {:summarize_by "resource"
                                      :distinct_resources true
                                      :distinct_start_time 0
-                                     :distinct_end_time (now)}))
+                                     :distinct_end_time (time/to-string (now))}))
            nil
            ["=" "certname" "foo.local"]
            ["<=" "report_receive_time" current-time-str]
            ["<=" "run_start_time" current-time-str]
            ["<=" "run_end_time" current-time-str])
-      (store-example-report! (:basic2 reports) (coerce/to-string (now)))
+      (store-example-report! (:basic2 reports) (time/to-string (now)))
 
       (are [result query] (= result
                              (query-result method endpoint query
                                            {:summarize_by "resource"
                                             :distinct_resources true
                                             :distinct_start_time 0
-                                            :distinct_end_time (now)}))
+                                            :distinct_end_time (time/to-string (now))}))
 
            #{{:summarize_by "resource"
               :successes 3
@@ -301,7 +301,7 @@
    method [:get :post]]
 
   (let [current-time (now)
-        current-time-str (coerce/to-string current-time)
+        current-time-str (time/to-string current-time)
         expected #{{:intentional_successes 1
                     :corrective_successes 0
                     :skips 1
@@ -318,20 +318,20 @@
                                     {:summarize_by "resource"
                                      :distinct_resources true
                                      :distinct_start_time 0
-                                     :distinct_end_time (now)}))
+                                     :distinct_end_time (time/to-string (now))}))
            nil
            ["=" "certname" "foo.local"]
            ["<=" "report_receive_time" current-time-str]
            ["<=" "run_start_time" current-time-str]
            ["<=" "run_end_time" current-time-str])
-      (store-example-report! (:basic2 reports) (coerce/to-string (now)))
+      (store-example-report! (:basic2 reports) (time/to-string (now)))
 
       (are [result query] (= result
                              (query-result method endpoint query
                                            {:summarize_by "resource"
                                             :distinct_resources true
                                             :distinct_start_time 0
-                                            :distinct_end_time (now)}))
+                                            :distinct_end_time (time/to-string (now))}))
 
            #{{:summarize_by "resource"
               :intentional_successes 3

@@ -1245,7 +1245,7 @@
   prints it to the console every 5 seconds. Uses run-interval to compute the
   number of nodes that would produce that load."
   [rate-monitor-ch run-interval commands-per-puppet-run _state]
-  (let [run-interval-seconds (time/in-seconds run-interval)
+  (let [run-interval-seconds (time/to-seconds run-interval)
         expected-node-message-rate (/ commands-per-puppet-run run-interval-seconds)]
     (println-err
      (str "q/s - queries per second\n"
@@ -1276,7 +1276,7 @@
                (trs "{0} cmd/s (~{1} nodes @ {2}m) | {3} q/s {4} s/q | {5} err"
                     cmd-per-sec
                     (int (/ cmd-per-sec expected-node-message-rate))
-                    (time/in-minutes run-interval)
+                    (time/to-minutes run-interval)
                     (format "%.2f" query-per-sec)
                     (format "%.2f" (-> @metrics :query-duration timers/mean (/ 1000000000)))
                     errors))
@@ -1387,7 +1387,7 @@
   [numhosts run-interval num-msgs end-commands-in rand-catalogs rand-facts
    simulation-threads sim-ch host-info-ch read-ch
    & {:keys [facts catalogs reports include-edges? storage-dir]}]
-  (let [run-interval-minutes (time/in-minutes run-interval)
+  (let [run-interval-minutes (time/to-minutes run-interval)
         hosts-per-second (/ numhosts (* run-interval-minutes 60))
         ms-per-message (/ 1000 hosts-per-second)
         ms-per-thread (* ms-per-message simulation-threads)

@@ -35,7 +35,7 @@
    (java.nio.channels SelectionKey)
    (java.sql SQLException)
    (org.postgresql.util PGobject PSQLException)
-   (org.joda.time Period)))
+   (java.time Duration)))
 
 (defn query-terminated-msg [id origin]
   (if origin
@@ -214,7 +214,7 @@
 (def query-context-schema
   {:scf-read-db s/Any
    :url-prefix String
-   :node-purge-ttl Period
+   :node-purge-ttl Duration
    :add-agent-report-filter Boolean
    (s/optional-key :warn-experimental) Boolean
    (s/optional-key :pretty-print) (s/maybe Boolean)

@@ -21,7 +21,7 @@
             [puppetlabs.puppetdb.testutils.reports :refer [store-example-report!
                                                            munge-reports-for-comparison]]
             [puppetlabs.puppetdb.time :as tfmt
-             :refer [ago days now to-date-time]])
+             :refer [ago days now]])
   (:import
    (java.net HttpURLConnection)))
 
@@ -670,7 +670,7 @@
     (is (= all-reports (munge-reports-for-comparison [basic basic2])))))
 
 (defn ts->str [ts]
-  (tfmt/unparse (tfmt/formatters :date-time) (to-date-time ts)))
+  (tfmt/to-string ts))
 
 (deftest-http-app query-by-receive-time
   [[_version endpoint] endpoints

@@ -3,7 +3,6 @@
    [clojure.java.io :as io]
    [clojure.test :refer :all]
    [metrics.counters :as counters]
-   [puppetlabs.kitchensink.core :refer [timestamp]]
    [puppetlabs.puppetdb.command.dlo :as dlo]
    [puppetlabs.puppetdb.examples :refer [wire-catalogs]]
    [puppetlabs.puppetdb.metrics.core :refer [new-metrics]]
@@ -12,7 +11,7 @@
    [puppetlabs.puppetdb.testutils :refer [ordered-matches?]]
    [puppetlabs.puppetdb.testutils.nio :refer [call-with-temp-dir-path]]
    [puppetlabs.puppetdb.testutils.queue :refer [catalog->command-req]]
-   [puppetlabs.puppetdb.time :as coerce-time]
+   [puppetlabs.puppetdb.time :as time]
    [puppetlabs.stockpile.queue :as stock]))
 
 (defn reg-counter-val [registry suffix]
@@ -39,8 +38,8 @@
       (re-matches s)))
 
 (deftest parse-cmd-filename-behavior
-  (let [r0 (-> 0 coerce-time/from-long timestamp)
-        r10 (-> 10 coerce-time/from-long timestamp)]
+  (let [r0 (-> 0 time/from-long time/to-string)
+        r10 (-> 10 time/from-long time/to-string)]
 
     (are [cmd-info metadata-str] (= cmd-info (#'dlo/parse-cmd-filename metadata-str))
 
@@ -148,10 +147,10 @@
        (is (not (regval "unknown.filesize")))
        (is (not (metval "unknown" :filesize)))
 
-       (let [attempts [{:time (timestamp) :exception (Exception. "thud-3")}
-                       {:time (timestamp) :exception (Exception. "thud-2")}
-                       {:time (timestamp) :exception (Exception. "thud-1")}]
-             discards (dlo/discard-bytes cmd-bytes 1 (timestamp) attempts dlo)]
+       (let [attempts [{:time (time/to-string (time/now)) :exception (Exception. "thud-3")}
+                       {:time (time/to-string (time/now)) :exception (Exception. "thud-2")}
+                       {:time (time/to-string (time/now)) :exception (Exception. "thud-1")}]
+             discards (dlo/discard-bytes cmd-bytes 1 (time/to-string (time/now)) attempts dlo)]
          (is (ordered-matches?
               [#(err-attempt-line? 3 %)
                #(= "java.lang.Exception: thud-3" %)
@@ -194,10 +193,10 @@
            (reset! cat-size (->> cmdref cmdref->entry (entry->str q) count))
            (dlo/discard-cmdref cmdref q dlo))
          (dlo/discard-bytes unk-bytes
-                            1 (timestamp)
-                            [{:time (timestamp) :exception (Exception. "thud-3")}
-                             {:time (timestamp) :exception (Exception. "thud-2")}
-                             {:time (timestamp) :exception (Exception. "thud-1")}]
+                            1 (time/to-string (time/now))
+                            [{:time (time/to-string (time/now)) :exception (Exception. "thud-3")}
+                             {:time (time/to-string (time/now)) :exception (Exception. "thud-2")}
+                             {:time (time/to-string (time/now)) :exception (Exception. "thud-1")}]
                             dlo))
        ;; See if initialize finds them
        (let [reg (:registry (new-metrics "puppetlabs.puppetdb.dlo" :jmx? false))

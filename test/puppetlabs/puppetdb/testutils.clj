@@ -454,7 +454,7 @@
                  (fn [index resource]
                    (let [current-time (time/to-date-time time)
                          minus (time/minus current-time (time/parse-period (str (- 10 index) "s")))
-                         timestamp (time/unparse (time/formatters :date-time) minus)]
+                         timestamp (time/to-string minus)]
                      (-> resource
                          (assoc :timestamp timestamp)
                          (update :events (fn [events]

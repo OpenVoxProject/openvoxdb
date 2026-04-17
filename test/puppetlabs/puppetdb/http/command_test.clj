@@ -264,7 +264,7 @@
 (deftest wrap-with-request-normalization-all-params
   (let [normalize (#'tgt/wrap-with-request-normalization identity)
         before-params {"certname" "x" "command" "y_z" "version" "1"
-                       "received" (kitchensink/timestamp)}
+                       "received" (time/to-string (time/now))}
         before {:params before-params
                 :body (ByteArrayInputStream. (byte-array 0))}
         after (normalize before)
@@ -377,7 +377,7 @@
 
             ;; test producer-timestamp is included in cmdref
             (is (= "2018-11-01T00:00:00.000Z"
-                   (str (:producer-ts test-cmdref)))))
+                   (time/to-string (:producer-ts test-cmdref)))))
 
           (testing "(with timeout),"
             (testing "when disabled, allows larger size"

@@ -74,10 +74,11 @@
             [puppetlabs.puppetdb.time
              :refer [ago
                      ephemeral-now-ns
-                     to-seconds
-                     to-millis
                      format-period
-                     period?]]
+                     period?
+                     to-millis
+                     to-seconds
+                     truncate-to-day]]
             [puppetlabs.puppetdb.utils :as utils
              :refer [await-scheduler-shutdown
                      call-unless-shutting-down
@@ -101,7 +102,7 @@
    (java.io Closeable)
    (java.sql SQLException)
    [java.util.concurrent.locks ReentrantLock]
-   [org.joda.time Period]))
+))
 
 (def env-monitor-queries?
   ;; Note: theres'a also a :conf/test switch
@@ -211,9 +212,6 @@
 (defn update-db-lock-status [state what f]
   (swap! state update what f))
 
-(defn rounded-date [d]
-  (-> (ago d) .dayOfYear .roundFloorCopy))
-
 (defn sweep-reports!
   "Deletes reports older than than report-ttl.  When resource-events-ttl
   is also provided, deletes events that are older than that
@@ -224,8 +222,8 @@
   [db {:keys [incremental? report-ttl resource-events-ttl db-lock-status]}]
   {:pre [(map? db)
          (period? report-ttl)]}
-  (let [rounded-events-ttl (some-> resource-events-ttl rounded-date)
-        rounded-report-ttl (rounded-date report-ttl)
+  (let [rounded-events-ttl (some-> resource-events-ttl ago truncate-to-day)
+        rounded-report-ttl (truncate-to-day (ago report-ttl))
         update-lock-status (partial update-db-lock-status db-lock-status)
         del-opts (merge {:report-ttl rounded-report-ttl
                          :incremental? incremental?
@@ -268,7 +266,7 @@
   {:pre [(map? db)
          (period? resource-events-ttl)]}
   ;; apply a day floor on this - we can't be more granular than a day here.
-  (let [rounded-ttl (rounded-date resource-events-ttl)
+  (let [rounded-ttl (truncate-to-day (ago resource-events-ttl))
         update-lock-status (partial update-db-lock-status db-lock-status)]
    (try
      (kitchensink/demarcate
@@ -369,10 +367,10 @@
   [db
    lock :- ReentrantLock
    {:keys [node-ttl node-purge-ttl
-           report-ttl resource-events-ttl]} :- {:node-ttl Period
-                                                :node-purge-ttl Period
-                                                :report-ttl Period
-                                                :resource-events-ttl Period
+           report-ttl resource-events-ttl]} :- {:node-ttl java.time.Duration
+                                                :node-purge-ttl java.time.Duration
+                                                :report-ttl java.time.Duration
+                                                :resource-events-ttl java.time.Duration
                                                 s/Keyword s/Any}
    db-lock-status :- clojure.lang.Atom
    ;; Later, the values might be maps, i.e. {:limit 1000}

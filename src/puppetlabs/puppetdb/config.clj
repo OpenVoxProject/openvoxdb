@@ -21,8 +21,8 @@
             [puppetlabs.trapperkeeper.services :refer [service-context]])
   (:import
    (clojure.lang ExceptionInfo)
-   (java.util.regex PatternSyntaxException)
-   (org.joda.time Minutes Period)))
+   (java.time Duration)
+   (java.util.regex PatternSyntaxException)))
 
 (defn throw-cli-error [msg]
   (throw (ex-info msg {:type ::cli-error :message msg})))
@@ -119,7 +119,7 @@
    :classname (pls/defaulted-maybe String "org.postgresql.Driver")
    :subprotocol (pls/defaulted-maybe String "postgresql")
    :subname String
-   :conn-max-age Minutes
+   :conn-max-age Duration
    :read-only? Boolean
    :partition-conn-min s/Int
    :partition-conn-max s/Int
@@ -128,7 +128,7 @@
    :log-statements Boolean
    :connection-timeout s/Int
    :maximum-pool-size s/Int
-   (s/optional-key :conn-lifetime) (s/maybe Minutes)
+   (s/optional-key :conn-lifetime) (s/maybe Duration)
    (s/optional-key :connection-migrator-username) String
    (s/optional-key :connection-username) String
    (s/optional-key :user) String
@@ -141,7 +141,7 @@
    :facts-blocklist-type String
 
    :schema-check-interval s/Int
-   :node-purge-ttl Period})
+   :node-purge-ttl Duration})
 
 (def per-write-database-config-out
   "Schema for parsed/processed database config that includes write database params"
@@ -153,10 +153,10 @@
           (s/optional-key :gc-interval-packages) (s/cond-pre String s/Int)
           (s/optional-key :gc-interval-fact-paths) (s/cond-pre String s/Int)
           (s/optional-key :gc-interval-catalogs) (s/cond-pre String s/Int)
-          :report-ttl Period
+          :report-ttl Duration
           :node-purge-gc-batch-limit (s/constrained s/Int (complement neg?))
-          :node-ttl Period
-          (s/optional-key :resource-events-ttl) Period
+          :node-ttl Duration
+          (s/optional-key :resource-events-ttl) Duration
           :migrate Boolean}))
 
 (defn half-the-cores*
@@ -393,7 +393,7 @@
 
 (defn gc-intervals->periods
   [{:keys [gc-interval] :as config}]
-  (let [one-day  (-> 24 t/hours .toPeriod)
+  (let [one-day  (t/hours 24)
         gc-interval-period (interval->period gc-interval)
         get-period (fn [custom] (interval->period (or custom gc-interval)))
         get-paths-period (fn [custom]

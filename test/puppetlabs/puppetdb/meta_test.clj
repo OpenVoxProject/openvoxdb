@@ -5,7 +5,7 @@
              :refer [assert-success! dotestseq get-request]]
             [puppetlabs.puppetdb.meta :as meta]
             [puppetlabs.puppetdb.time
-             :refer [ago seconds in-seconds interval parse-wire-datetime]]
+             :refer [ago seconds to-seconds interval wire-datetime->instant]]
             [puppetlabs.puppetdb.middleware :as mid]))
 
 (def endpoints [[:v1 "/v1"]])
@@ -29,6 +29,6 @@
       (let [server-time (-> response
                             parsed-body
                             :server_time
-                            parse-wire-datetime)]
-        (is (> (in-seconds (interval test-time server-time)) 0))
-        (is (> 5 (in-seconds (interval test-time server-time))))))))
+                            wire-datetime->instant)]
+        (is (> (to-seconds (interval test-time server-time)) 0))
+        (is (> 5 (to-seconds (interval test-time server-time))))))))

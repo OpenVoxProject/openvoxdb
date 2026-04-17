@@ -1,5 +1,5 @@
 (ns puppetlabs.puppetdb.schema-test
-  (:import [org.joda.time Minutes Days Seconds Period])
+  (:import [java.time Duration])
   (:require
    [clojure.test :refer :all]
    [puppetlabs.puppetdb.schema
@@ -180,16 +180,12 @@
   (are [expected target-schema source-schema value]
     (= expected ((sc/coercer target-schema conversion-fns) value))
 
-    (time/minutes 10) Minutes String "10"
-    (time/minutes 10) Minutes Number 10
+    (time/minutes 10) Duration String "10"
+    (time/minutes 10) Duration Number 10
 
-    (time/seconds 10) Seconds String "10"
-    (time/seconds 10) Seconds Number 10
+    (time/seconds 10) Duration String "10s"
 
-    (time/days 10) Days String "10"
-    (time/days 10) Days Number 10
-
-    (time/parse-period "10d") Period String "10d"
+    (time/parse-period "10d") Duration String "10d"
 
     :foo s/Keyword s/Keyword :foo
     10 s/Int s/Int 10
@@ -203,42 +199,49 @@
     false Boolean String "really false"))
 
 (deftest schema-conversion
-  (testing "conversion of days/minutes/seconds"
-    (let [schema {:foo Days
-                  :bar Minutes
-                  :baz Seconds}
-
-          result {:foo (time/days 10)
-                  :bar (time/minutes 20)
-                  :baz (time/seconds 30)}]
-      (is (= result
-             (convert-to-schema schema {:foo 10
-                                        :bar 20
-                                        :baz 30})))
-      (is (= result
-             (convert-to-schema schema {:foo "10"
-                                        :bar "20"
-                                        :baz "30"})))))
+  (testing "conversion of durations"
+    (let [schema {:foo Duration
+                  :bar Duration
+                  :baz Duration}]
+      (is (= {:foo (time/days 10)
+              :bar (time/minutes 20)
+              :baz (time/seconds 30)}
+             (convert-to-schema schema {:foo "10d"
+                                        :bar "20m"
+                                        :baz "30s"})))
+      (testing "bare numbers are treated as minutes"
+        (is (= {:foo (time/minutes 10)
+                :bar (time/minutes 20)
+                :baz (time/minutes 30)}
+               (convert-to-schema schema {:foo 10
+                                          :bar 20
+                                          :baz 30})))
+        (is (= {:foo (time/minutes 10)
+                :bar (time/minutes 20)
+                :baz (time/minutes 30)}
+               (convert-to-schema schema {:foo "10"
+                                          :bar "20"
+                                          :baz "30"}))))))
   (testing "conversion with time periods"
-    (let [schema {:foo Period
-                  :bar Minutes
-                  :baz Period}
+    (let [schema {:foo Duration
+                  :bar Duration
+                  :baz Duration}
           result {:foo (time/parse-period "10d")
                   :bar (time/minutes 20)
                   :baz (time/parse-period "30s")}]
       (is (= result
              (convert-to-schema schema {:foo "10d"
-                                        :bar "20"
+                                        :bar 20
                                         :baz "30s"})))
       (is (= result
              (convert-to-schema schema {:foo "10d"
-                                        :bar 20
+                                        :bar "20"
                                         :baz "30s"})))))
 
   (testing "partial conversion"
     (let [schema {:foo String
                   :bar Number
-                  :baz Period}
+                  :baz Duration}
           result {:foo "foo"
                   :bar 10
                   :baz (time/parse-period "30s")}]
@@ -250,10 +253,10 @@
   (testing "conversion with an optional and a maybe"
     (let [schema {:foo String
                   :bar Number
-                  (s/optional-key :baz) (s/maybe Period)
+                  (s/optional-key :baz) (s/maybe Duration)
                   (s/optional-key :bog) (s/maybe s/Int)
                   (s/optional-key :taf) (s/maybe s/Keyword)
-                  (s/optional-key :baz-nil) (s/maybe Period)
+                  (s/optional-key :baz-nil) (s/maybe Duration)
                   (s/optional-key :bog-nil) (s/maybe s/Int)
                   (s/optional-key :taf-nil) (s/maybe s/Keyword)}
           result {:foo "foo"

@@ -10,11 +10,10 @@
             [puppetlabs.puppetdb.catalogs :as catalogs]
             [puppetlabs.puppetdb.factsets :as factsets]
             [puppetlabs.puppetdb.reports :as reports]
-            [puppetlabs.puppetdb.time :refer [now]]
+            [puppetlabs.puppetdb.time :as time :refer [now]]
             [puppetlabs.puppetdb.nodes :as nodes]
             [puppetlabs.puppetdb.command.constants :as command-constants]
             [puppetlabs.puppetdb.utils :as utils]
-            [clj-time.coerce :as time-coerce]
             [puppetlabs.puppetdb.schema :as pls]
             [puppetlabs.i18n.core :refer [trs]]))
 
@@ -33,7 +32,7 @@
   (format "%s-%s%s"
           certname
           (-> producer_timestamp
-              time-coerce/to-date-time
+              time/to-date-time
               hash/generic-identity-hash)
           export-file-ext))
 

@@ -408,7 +408,5 @@
              "--vardir" "puppet"
              extra-puppet-args))))
 
-(def date-formatter (time/formatters :date-time))
-
 (defn query-timestamp-str [timestamp-obj]
-  (time/unparse date-formatter timestamp-obj))
+  (time/to-string timestamp-obj))

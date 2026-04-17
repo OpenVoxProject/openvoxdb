@@ -9,7 +9,7 @@
             [puppetlabs.puppetdb.generative.overridable-generators :as gen]
             [puppetlabs.puppetdb.generative.generators :as pdb-gen]
             [puppetlabs.puppetdb.examples.reports :as example-reports]
-            [puppetlabs.puppetdb.time :refer [now parse-wire-datetime parse-period]]))
+            [puppetlabs.puppetdb.time :refer [now wire-datetime->instant parse-period]]))
 
 (def ten-timestamps #{"2016-12-19T23:30:00.000Z"
                       "2016-12-19T23:31:00.000Z"
@@ -23,7 +23,7 @@
                       "2016-12-19T23:39:00.000Z"})
 
 (def timestamp-gen
-  (gen/fmap parse-wire-datetime (gen/elements ten-timestamps)))
+  (gen/fmap wire-datetime->instant (gen/elements ten-timestamps)))
 
 (def overrides {:puppet/certname (gen/elements ["a.com" "b.com" "c.com"])
                 :catalog/version (gen/return "9")

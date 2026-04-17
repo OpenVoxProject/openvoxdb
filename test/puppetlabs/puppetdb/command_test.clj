@@ -65,7 +65,6 @@
              :refer [ago days from-sql-date now seconds to-date-time to-string
                      to-timestamp]]
             [clojure.core.async :as async]
-            [puppetlabs.kitchensink.core :as ks]
             [puppetlabs.puppetdb.nio :refer [get-path]]
             [puppetlabs.puppetdb.testutils.queue :as tqueue
              :refer [catalog->command-req
@@ -84,7 +83,7 @@
    (java.nio.file Files)
    (java.util.concurrent TimeUnit CountDownLatch)
    (java.sql SQLException)
-   (org.joda.time DateTime DateTimeZone)))
+   (java.time Instant)))
 
 (defn cmd-err [msg]
   (ex-info msg {:puppetlabs.puppetdb/known-error? true}))
@@ -462,9 +461,8 @@
     (testing (str (command-names :replace-catalog) " " version)
       (let [catalog-hash (shash/catalog-similarity-hash
                           (catalog/parse-catalog catalog version-num (now)))
-            one-day      (* 24 60 60 1000)
-            yesterday    (to-timestamp (- (System/currentTimeMillis) one-day))
-            tomorrow     (to-timestamp (+ (System/currentTimeMillis) one-day))]
+            yesterday    (to-timestamp (ago (days 1)))
+            tomorrow     (to-timestamp (time/from-now (days 1)))]
 
         (testing "with no catalog should store the catalog"
           (with-message-handler {:keys [handle-message dlo delay-pool q]}
@@ -510,7 +508,7 @@
                                                  (queue/create-command-req "replace catalog"
                                                                            version-num
                                                                            certname
-                                                                           (ks/timestamp (now))
+                                                                           (time/to-string (now))
                                                                            ""
                                                                            identity
                                                                            (tqueue/coerce-to-stream "bad stuff"))))
@@ -932,9 +930,8 @@
                           "b" "2"
                           "c" "3"}
                  :producer_timestamp (to-timestamp (now))}
-      one-day   (* 24 60 60 1000)
-      yesterday (to-timestamp (- (System/currentTimeMillis) one-day))
-      tomorrow  (to-timestamp (+ (System/currentTimeMillis) one-day))]
+      yesterday (to-timestamp (ago (days 1)))
+      tomorrow  (to-timestamp (time/from-now (days 1)))]
 
   (deftest facts-package-deduplication
     (let [version :v5
@@ -1212,7 +1209,7 @@
         (handle-message (queue/store-command q (queue/create-command-req "replace facts"
                                                                          latest-facts-version
                                                                          "foo.example.com"
-                                                                         (ks/timestamp (now))
+                                                                         (time/to-string (now))
                                                                          ""
                                                                          identity
                                                                          (tqueue/coerce-to-stream "bad stuff"))))
@@ -1226,7 +1223,7 @@
       (handle-message (queue/store-command q (queue/create-command-req "replace facts"
                                                                        2
                                                                        "foo.example.com"
-                                                                       (ks/timestamp (now))
+                                                                       (time/to-string (now))
                                                                        ""
                                                                        identity
                                                                        (tqueue/coerce-to-stream "bad stuff"))))
@@ -1243,7 +1240,7 @@
         (handle-message (queue/store-command q (queue/create-command-req "configure expiration"
                                                                          latest-configure-expiration-version
                                                                          "foo.example.com"
-                                                                         (ks/timestamp (now))
+                                                                         (time/to-string (now))
                                                                          ""
                                                                          identity
                                                                          (tqueue/coerce-to-stream bad-command))))
@@ -1259,7 +1256,7 @@
         (handle-message (queue/store-command q (queue/create-command-req "deactivate node"
                                                                          latest-deactivate-node-version
                                                                          "foo.example.com"
-                                                                         (ks/timestamp (now))
+                                                                         (time/to-string (now))
                                                                          ""
                                                                          identity
                                                                          (tqueue/coerce-to-stream bad-command))))
@@ -1464,8 +1461,7 @@
   (deftest deactivate-node-node-inactive
     (doseq [[version orig-command] cases]
       (testing "should leave the node alone"
-        (let [one-day   (* 24 60 60 1000)
-              yesterday (to-timestamp (- (System/currentTimeMillis) one-day))
+        (let [yesterday (to-timestamp (ago (days 1)))
               command (if (#{1 2} version)
                         ;; Can't set the :producer_timestamp for the older
                         ;; versions (so that we can control the deactivation
@@ -1713,9 +1709,9 @@
           enqueue-command (partial enqueue-command dispatcher)
           deactivate-ms 14250331086887
           ;; The problem only occurred if you passed a Date to
-          ;; enqueue, a DateTime wasn't a problem.
+          ;; enqueue, an Instant wasn't a problem.
           input-stamp (java.util.Date. deactivate-ms)
-          expected-stamp (DateTime. deactivate-ms DateTimeZone/UTC)]
+          expected-stamp (Instant/ofEpochMilli deactivate-ms)]
 
       (enqueue-command (command-names :deactivate-node)
                        3
@@ -1744,7 +1740,7 @@
                  :body
                  first
                  :deactivated
-                 time/parse-wire-datetime))))))
+                 time/wire-datetime->instant))))))
 
 (deftest command-response-channel
   (svc-utils/with-puppetdb-instance
@@ -1765,7 +1761,7 @@
       (let [received-ts (async/alt!! response-chan ([msg] (:producer-timestamp msg))
                                        (async/timeout 10000) ::timeout)]
         (is (= producer-ts
-               (-> received-ts time/parse time/to-java-date)))))))
+               (-> received-ts time/to-date-time time/to-java-date)))))))
 
 (defn captured-ack-command [orig-ack-command results-atom]
   (fn [q command]

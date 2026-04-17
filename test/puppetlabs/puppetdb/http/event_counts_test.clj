@@ -15,7 +15,7 @@
             [puppetlabs.puppetdb.testutils.reports :refer [with-corrective-change
                                                            without-corrective-change
                                                            store-example-report!]]
-            [puppetlabs.puppetdb.time :refer [now]])
+            [puppetlabs.puppetdb.time :refer [now to-string]])
   (:import
    (java.net HttpURLConnection)))
 
@@ -286,7 +286,7 @@
                                 {:summarize_by "resource"
                                  :distinct_resources true
                                  :distinct_start_time 0
-                                 :distinct_end_time (now)})))
+                                 :distinct_end_time (to-string (now))})))
 
            ["=" "latest_report?" true]
            #{{:failures 0
@@ -894,7 +894,7 @@
                                 {:summarize_by "resource"
                                  :distinct_resources true
                                  :distinct_start_time 0
-                                 :distinct_end_time (now)})))
+                                 :distinct_end_time (to-string (now))})))
 
 
            ["=" "latest_report?" true]

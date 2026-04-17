@@ -409,7 +409,7 @@
       (let [node (first result)]
         (is (= false (:expires_facts node)))
         (is (= "foo1" (:certname node)))
-        (is (-> node :expires_facts_updated time/parse-wire-datetime time/date-time?)))))
+        (is (-> node :expires_facts_updated time/wire-datetime->instant time/date-time?)))))
 
   (testing "test facts expiring for nodes set to true (default)"
     (let [request (get-request endpoint
@@ -423,7 +423,7 @@
       (let [nodes (sort-by :certname result)]
         (is (= true (:expires_facts (first nodes))))
         (is (= "foo2" (:certname (first nodes))))
-        (is (-> nodes first :expires_facts_updated time/parse-wire-datetime
+        (is (-> nodes first :expires_facts_updated time/wire-datetime->instant
                 time/date-time?))
 
         (is (= true (:expires_facts (second nodes))))
@@ -439,7 +439,7 @@
       (is (= HttpURLConnection/HTTP_OK status))
       (is (= "foo1" (:certname result)))
       (is (= false (:expires_facts result)))
-      (is (-> result :expires_facts_updated time/parse-wire-datetime
+      (is (-> result :expires_facts_updated time/wire-datetime->instant
               time/date-time?)))))
 
 

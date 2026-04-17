@@ -267,7 +267,7 @@
 (defmethod weigh Number [_] 4)
 (defmethod weigh Boolean [_] 1)
 (defmethod weigh nil [_] 0)
-(defmethod weigh org.joda.time.DateTime [_] 8)
+(defmethod weigh java.time.Instant [_] 8)
 (defmethod weigh :default
   [what] (throw (Exception. (format "Don't know how to weigh a %s of type %s" what (type what)))))
 

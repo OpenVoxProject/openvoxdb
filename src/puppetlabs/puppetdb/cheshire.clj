@@ -52,7 +52,7 @@
           (encode-fn obj jsonGenerator))
         (.writeRawValue jsonGenerator (.getValue data)))))
   (add-encoder
-    org.joda.time.DateTime
+    java.time.Instant
     (fn [data ^JsonGenerator jsonGenerator]
       (.writeString jsonGenerator (to-string data))))
   (add-encoder
@@ -70,7 +70,7 @@
 
   Encoders currently include:
 
-  * org.joda.time.DateTime - handled with to-string"}
+  * java.time.Instant - handled with to-string"}
   add-common-json-encoders! (memoize add-common-json-encoders!*))
 
 (add-common-json-encoders!)
