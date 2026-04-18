@@ -35,26 +35,23 @@
 (defn rewrite-service
   [name doc proto dependencies & methods]
   ;; Rewrite as:
-  ;;   (do
-  ;;     (declare DummyProtocol)
-  ;;     (defrecord name
-  ;;         [dependency-service-method ...]
-  ;;       DummyProtocol
-  ;;       ...methods...))
+  ;;   (defrecord name
+  ;;       [dependency-service-method ...]
+  ;;     Object
+  ;;     ...methods...)
+  ;;
+  ;; Using Object (always defined) as a placeholder avoids a redundant
+  ;; (declare DummyProtocol) when a service exposes no protocol methods.
   {:node (list-node
-          (list (token-node 'do)
-                (list-node
-                 (list (token-node 'declare) (token-node 'DummyProtocol)))
-                (list-node
-                 (list* (token-node 'defrecord)
-                        name
-                        (vector-node (->> (sexpr dependencies)
-                                          flatten
-                                          (remove keyword?)
-                                          (map token-node)
-                                          vec))
-                        (token-node 'DummyProtocol)
-                        methods))))})
+          (list* (token-node 'defrecord)
+                 name
+                 (vector-node (->> (sexpr dependencies)
+                                   flatten
+                                   (remove keyword?)
+                                   (map token-node)
+                                   vec))
+                 (token-node 'Object)
+                 methods))})
 
 (defn arrange-service-args
   [args]
