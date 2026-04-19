@@ -46,7 +46,6 @@ module Vox
     # There is a circular dependency between clj-http-client and trapperkeeper-webserver-jetty10,
     # but only for tests, so the build *should* work.
     DEP_BUILD_ORDER = [
-      'clj-parent',
       'clj-kitchensink',
       'clj-i18n',
       'comidi',
