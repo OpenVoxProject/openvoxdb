@@ -23,7 +23,7 @@
 
   clojure.lang.IPersistentVector
   (-branch? [_] true)
-  (-children [x] (when (seq x) x))
+  (-children [x] (when (seq x) (seq x)))
   (-make-node [orig-vec new-children]
     (transfer-meta orig-vec (when (seq new-children)
                               (if (vector? new-children)
@@ -32,7 +32,7 @@
 
   clojure.lang.IPersistentSet
   (-branch? [_] true)
-  (-children [x] (when (seq x) x))
+  (-children [x] (when (seq x) (seq x)))
   (-make-node [orig-set new-children]
     (transfer-meta orig-set (when (seq new-children)
                               (into (empty orig-set) new-children))))
@@ -80,7 +80,7 @@
   (z/zipper -branch? -children -make-node node))
 
 (defn post-order-visit
-  "Does a post-order travsersal of `zipper`. `visitors` is a seq of
+  "Does a post-order traversal of `zipper`. `visitors` is a seq of
   functions that take two args, node and state"
   [zipper initial-state
    visitors]
@@ -105,7 +105,7 @@
                          visitors)))
 
 (defn pre-order-visit
-  "Does a pre-order travsersal of `zipper`. `visitors` is a seq of
+  "Does a pre-order traversal of `zipper`. `visitors` is a seq of
   functions that take two args, node and state"
   [zipper initial-state
    visitors]
