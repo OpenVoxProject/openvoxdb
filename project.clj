@@ -96,7 +96,7 @@
 (def pdb-jvm-opts (when (< 8 (:feature pdb-jvm-ver) 17)
                     ["--illegal-access=deny"]))
 
-(def i18n-version "1.0.3")
+(def i18n-version "1.0.4")
 (def jackson-version "2.21.2")
 (def slf4j-version "2.0.17")
 
