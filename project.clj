@@ -97,7 +97,7 @@
                     ["--illegal-access=deny"]))
 
 (def i18n-version "1.0.4")
-(def jackson-version "2.21.2")
+(def jackson-version "2.21.3")
 (def slf4j-version "2.0.17")
 
 ;; If you modify the version manually, run release_scripts/sync_ezbake_dep.rb to keep
