@@ -104,6 +104,12 @@ jobs:
             ~/Library/Caches/Homebrew
       - name: Gather inital host info
         run: ext/bin/host-info
+      - name: Configure Datadog Test Optimization
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: int128/datadog-actions-metrics@v1
+        with:
+          datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
+          datadog-site: datadoghq.eu
       - env:
           LEIN_PROFILES: ${{ matrix.lein-profile }}
           PDB_QUERY_OPTIMIZE_DROP_UNUSED_JOINS: ${{ matrix.drop-joins }}
