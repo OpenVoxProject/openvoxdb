@@ -98,7 +98,7 @@ permissions:
 
 jobs:
   acceptance:
-    uses: 'openvoxproject/shared-actions/.github/workflows/beaker_acceptance.yml@main'
+    uses: 'openvoxproject/shared-actions/.github/workflows/beaker_acceptance.yml@debian13'
     with:
       suite-name: openvoxdb
       ref: ${{ inputs.ref }}
