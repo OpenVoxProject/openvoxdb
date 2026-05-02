@@ -452,7 +452,7 @@ module PuppetDBExtensions
   end
 
   def install_puppetdb_module(hosts, puppet_platform)
-    on(hosts, 'puppet module install puppetlabs-puppetdb')
+    on(hosts, 'puppet module install puppet-openvoxdb')
   end
 
   def setup_openvoxdb_certs(database)
@@ -479,7 +479,7 @@ module PuppetDBExtensions
   # and packages.
   def configure_openvoxdb(host)
     manifest = <<~EOS
-      class { 'puppetdb':
+      class { 'openvoxdb':
         puppetdb_package    => 'openvoxdb',
         manage_firewall     => false,
         manage_package_repo => true,
@@ -501,7 +501,7 @@ module PuppetDBExtensions
   def configure_openvoxdb_termini(host, databases)
     server_urls = databases.map {|db| "https://#{db.node_name}:8081"}.join(',')
     manifest = <<~EOS
-      class { 'puppetdb::master::config':
+      class { 'openvoxdb::master::config':
         terminus_package         => 'openvoxdb-termini',
         puppetdb_startup_timeout => 120,
         manage_report_processor  => true,
@@ -511,7 +511,7 @@ module PuppetDBExtensions
       ini_setting {'server_urls':
         ensure  => present,
         section => 'main',
-        path    => "${puppetdb::params::puppet_confdir}/puppetdb.conf",
+        path    => "${openvoxdb::params::puppet_confdir}/puppetdb.conf",
         setting => 'server_urls',
         value   => '#{server_urls}',
       }
@@ -521,15 +521,15 @@ module PuppetDBExtensions
 
   def install_puppetdb(host, version=nil)
     manifest = <<-EOS
-    class { 'puppetdb::globals':
+    class { 'openvoxdb::globals':
       version => '#{get_package_version(host, version)}'
     }
-    class { 'puppetdb::server':
+    class { 'openvoxdb::server':
       manage_firewall => false,
       disable_update_checking => true,
     }
     #{postgres_manifest}
-    Class['::puppetdb::database::postgresql'] -> Class['puppetdb::server']
+    Class['::openvoxdb::database::postgresql'] -> Class['openvoxdb::server']
     EOS
     apply_manifest_on(host, manifest)
     print_ini_files(host)
@@ -542,10 +542,10 @@ module PuppetDBExtensions
       installed_version =
         case os
           when :debian
-            result = on host, "dpkg-query --showformat \"\\${Version}\" --show puppetdb"
+            result = on host, "dpkg-query --showformat \"\\${Version}\" --show openvoxdb"
             result.stdout.strip
           when :redhat
-            result = on host, "rpm -q puppetdb --queryformat \"%{VERSION}-%{RELEASE}\""
+            result = on host, "rpm -q openvoxdb --queryformat \"%{VERSION}-%{RELEASE}\""
             result.stdout.strip
           else
             raise ArgumentError, "Unsupported OS family: '#{os}'"
@@ -565,10 +565,10 @@ module PuppetDBExtensions
     # acceptance nodes (they run puppet master from the CLI).
     server_urls = databases.map {|db| "https://#{db.node_name}:8081"}.join(',')
     manifest = <<-EOS
-    class { 'puppetdb::globals':
+    class { 'openvoxdb::globals':
       version => '#{get_package_version(host, version)}'
     }
-    class { 'puppetdb::master::config':
+    class { 'openvoxdb::master::config':
       puppetdb_startup_timeout => 120,
       manage_report_processor  => true,
       enable_reports           => true,
@@ -578,7 +578,7 @@ module PuppetDBExtensions
     ini_setting {'server_urls':
       ensure  => present,
       section => 'main',
-      path    => "${puppetdb::params::puppet_confdir}/puppetdb.conf",
+      path    => "${openvoxdb::params::puppet_confdir}/puppetdb.conf",
       setting => 'server_urls',
       value   => '#{server_urls}',
     }
@@ -631,7 +631,7 @@ module PuppetDBExtensions
 
     manifest = <<~EOS
       # create the puppetdb database
-      class { '::puppetdb::database::postgresql':
+      class { '::openvoxdb::database::postgresql':
         listen_addresses            => 'localhost',
         manage_package_repo         => #{manage_package_repo},
         postgres_version            => '14',
@@ -686,7 +686,7 @@ module PuppetDBExtensions
 
     step "Configure database.ini file" do
       manifest = "
-        class { 'puppetdb::server::database_ini': }"
+        class { 'openvoxdb::server::database_ini': }"
 
       apply_manifest_on(host, manifest)
     end
@@ -702,18 +702,18 @@ module PuppetDBExtensions
 
     server_urls = databases.map {|db| "https://#{db.node_name}:8081"}.join(',')
     manifest = <<-EOS
-      class { 'puppetdb::globals':
+      class { 'openvoxdb::globals':
         version => '#{get_package_version(host)}'
       }
-      include puppetdb::master::routes
-      include puppetdb::master::storeconfigs
-      class { 'puppetdb::master::report_processor':
+      include openvoxdb::master::routes
+      include openvoxdb::master::storeconfigs
+      class { 'openvoxdb::master::report_processor':
         enable => true,
       }
       ini_setting {'server_urls':
         ensure => present,
         section => 'main',
-        path => "${puppetdb::params::puppet_confdir}/puppetdb.conf",
+        path => "${openvoxdb::params::puppet_confdir}/puppetdb.conf",
         setting => 'server_urls',
         value => '#{server_urls}',
       }
