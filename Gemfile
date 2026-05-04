@@ -48,7 +48,7 @@ group :test do
   gem 'syslog'
   gem 'puppet-pson', '~> 1.1'
 
-  gem 'mocha', '~> 1.0'
+  gem 'mocha', '~> 3.1'
 end
 
 group :development do
