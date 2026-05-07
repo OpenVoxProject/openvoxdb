@@ -275,11 +275,11 @@
                        :group "puppetdb"
                        :build-type "foss"
                        :package-name "openvoxdb"
-                       :puppet-platform-version 8
+                       :puppet-platform-version 9
                        :main-namespace "puppetlabs.puppetdb.cli.services"
                        :start-timeout 14400
-                       :repo-target "openvox8"
-                       :nonfinal-repo-target "openvox8-nightly"
+                       :repo-target "openvox9"
+                       :nonfinal-repo-target "openvox9-nightly"
                        :logrotate-enabled false
                        :replaces-pkgs [{:package "puppetdb" :version ""}]
                        :java-args ~(str "-Xmx192m "
