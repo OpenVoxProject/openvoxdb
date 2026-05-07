@@ -42,11 +42,11 @@ jobs:
             flavor: core+ext/openjdk17/pg-16
             lein-profile: fips
 
-          # non-rich variants for main
+          # non-rich variants for 8.x
           - os: ubuntu-24.04
-            branch: main
+            branch: '8.x'
             ruby: '3.2'
-            flavor: int/openjdk17/pup-main/srv-main/pg-16
+            flavor: int/openjdk17/pup-8.x/srv-8.x/pg-16
 
     steps:
       - name: Compute job outputs

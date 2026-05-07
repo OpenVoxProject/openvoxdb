@@ -23,6 +23,6 @@ else
     # otherwise the changelog generate takes a lot amount of time
     config.since_tag = '8.9.1'
     #config.exclude_tags_regex = /\A7\./
-    config.release_branch = 'main'
+    config.release_branch = '8.x'
   end
 end
