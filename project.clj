@@ -102,7 +102,7 @@
 
 ;; If you modify the version manually, run release_scripts/sync_ezbake_dep.rb to keep
 ;; the ezbake dependency in sync.
-(defproject org.openvoxproject/puppetdb "8.14.0-SNAPSHOT"
+(defproject org.openvoxproject/puppetdb "9.0.0-SNAPSHOT"
   :description "OpenVox-integrated catalog and fact storage"
 
   :license {:name "Apache License, Version 2.0"
