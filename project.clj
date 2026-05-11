@@ -369,7 +369,7 @@
                                       ;;
                                       ;; Do not modify this line. It is managed by the release process
                                       ;; via the release_scripts/sync_ezbake_dep.rb script.
-                                      [org.openvoxproject/puppetdb "8.14.0-SNAPSHOT"]]
+                                      [org.openvoxproject/puppetdb "9.0.0-SNAPSHOT"]]
               :name "puppetdb"
               :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.7.4")]]}
     :ezbake-fips {:dependencies ^:replace [[org.bouncycastle/bcpkix-fips]
@@ -378,7 +378,7 @@
                                            [org.clojure/clojure]
                                            ;; Do not modify this line. It is managed by the release process
                                            ;; via the release_scripts/sync_ezbake_dep.rb script.
-                                           [org.openvoxproject/puppetdb "8.14.0-SNAPSHOT"]]
+                                           [org.openvoxproject/puppetdb "9.0.0-SNAPSHOT"]]
               :name "puppetdb"
               :uberjar-exclusions [#"^org/bouncycastle/.*"]
               :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.7.4")]]}
