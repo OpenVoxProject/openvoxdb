@@ -43,7 +43,7 @@ module Vox
       [debs, nonfips_rpms, fips_rpms]
     end
     # The deps must be built in this order due to dependencies between them.
-    # There is a circular dependency between clj-http-client and trapperkeeper-webserver-jetty10,
+    # There is a circular dependency between clj-http-client and trapperkeeper-webserver,
     # but only for tests, so the build *should* work.
     DEP_BUILD_ORDER = [
       'clj-kitchensink',
@@ -52,7 +52,7 @@ module Vox
       'jvm-ssl-utils',
       'trapperkeeper',
       'trapperkeeper-filesystem-watcher',
-      'trapperkeeper-webserver-jetty10',
+      'trapperkeeper-webserver',
       'trapperkeeper-authorization',
       'trapperkeeper-metrics',
       'trapperkeeper-status',
