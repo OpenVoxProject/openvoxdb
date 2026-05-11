@@ -187,7 +187,7 @@
                          [org.openvoxproject/trapperkeeper "5.0.0" :classifier "test"]
                          [org.openvoxproject/trapperkeeper-authorization "2.3.0"]
                          [org.openvoxproject/trapperkeeper-authorization "2.3.0" :exclusions [io.dropwizard.metrics/metrics-core]]
-                         [org.openvoxproject/trapperkeeper-filesystem-watcher "1.5.2"]
+                         [org.openvoxproject/trapperkeeper-filesystem-watcher "1.6.0"]
                          [org.openvoxproject/trapperkeeper-metrics "2.3.0"]
                          [org.openvoxproject/trapperkeeper-metrics "2.3.0" :exclusions [io.dropwizard.metrics/metrics-core]]
                          [org.openvoxproject/trapperkeeper-status "1.5.0"]
