@@ -110,7 +110,7 @@
 
   :url "https://github.com/openvoxproject/openvoxdb/"
 
-  :min-lein-version "2.7.1"
+  :min-lein-version "2.12.0"
 
   ;; Abort when version ranges or version conflicts are detected in
   ;; dependencies. Also supports :warn to simply emit warnings.
