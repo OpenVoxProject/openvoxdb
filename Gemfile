@@ -23,6 +23,7 @@ def location_for(place)
 end
 
 gem 'openfact'
+gem 'ostruct'
 gem 'rake'
 gem 'packaging', '~> 1.0', github: 'OpenVoxProject/packaging'
 
