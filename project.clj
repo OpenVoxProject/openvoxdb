@@ -371,7 +371,7 @@
                                       ;; via the release_scripts/sync_ezbake_dep.rb script.
                                       [org.openvoxproject/puppetdb "9.0.0-SNAPSHOT"]]
               :name "puppetdb"
-              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.7.4")]]}
+              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.7.6")]]}
     :ezbake-fips {:dependencies ^:replace [[org.bouncycastle/bcpkix-fips]
                                            [org.bouncycastle/bc-fips]
                                            [org.bouncycastle/bctls-fips]
@@ -381,7 +381,7 @@
                                            [org.openvoxproject/puppetdb "9.0.0-SNAPSHOT"]]
               :name "puppetdb"
               :uberjar-exclusions [#"^org/bouncycastle/.*"]
-              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.7.4")]]}
+              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.7.6")]]}
     :testutils {:source-paths ^:replace ["test"]
                 :resource-paths ^:replace []
                 ;; Something else may need adjustment, but
