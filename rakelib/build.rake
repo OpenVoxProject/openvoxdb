@@ -164,7 +164,7 @@ module Vox
       ezbake_version_var = ENV['EZBAKE_VERSION'] ? "EZBAKE_VERSION=#{ENV['EZBAKE_VERSION']}" : ""
 
       puts 'Building openvoxdb'
-      @runner.exec('cd /code && rm -rf ruby output && bundle install --without test && lein install')
+      @runner.exec('cd /code && rm -rf ruby output && bundle config set without test && bundle install && lein install')
 
       unless @debs.empty? && @nonfips_rpms.empty?
         @runner.exec(
