@@ -176,7 +176,8 @@ module Puppet::Util::Puppetdb
           raise URI::InvalidURIError.new, "Error parsing URL '#{uri_string}' in PuppetDB 'server_urls', error message was '#{e.message}'"
         end
 
-        if uri.scheme != 'https'
+        allow_http = (uri.scheme == 'http' && uri.host == '127.0.0.1')
+        if uri.scheme != 'https' && !allow_http
           raise "PuppetDB 'server_urls' must be https, found '#{uri_string}'"
         end
 
