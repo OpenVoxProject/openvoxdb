@@ -98,7 +98,7 @@
 
 (def i18n-version "1.0.4")
 (def jackson-version "2.21.3")
-(def slf4j-version "2.0.17")
+(def slf4j-version "2.0.18")
 
 ;; If you modify the version manually, run release_scripts/sync_ezbake_dep.rb to keep
 ;; the ezbake dependency in sync.
@@ -110,7 +110,7 @@
 
   :url "https://github.com/openvoxproject/openvoxdb/"
 
-  :min-lein-version "2.7.1"
+  :min-lein-version "2.12.0"
 
   ;; Abort when version ranges or version conflicts are detected in
   ;; dependencies. Also supports :warn to simply emit warnings.
@@ -121,7 +121,7 @@
   ;; and to avoid having to define versions in multiple places. If a component
   ;; defined under :dependencies ends up causing an error due to :pedantic? :abort,
   ;; because it is a dep of a dep with a different version, move it here.
-  :managed-dependencies [[org.clojure/clojure "1.12.4"]
+  :managed-dependencies [[org.clojure/clojure "1.12.5"]
                          [org.clojure/core.async "1.9.865"]
                          [org.clojure/core.match "1.1.1"]
                          [org.clojure/core.memoize "1.2.281"]
@@ -163,7 +163,7 @@
                          [instaparse "1.5.0"]
                          [metrics-clojure "2.10.0"]
                          [murphy "0.5.3"]
-                         [net.logstash.logback/logstash-logback-encoder "7.4"]
+                         [net.logstash.logback/logstash-logback-encoder "9.0"]
                          [org.apache.commons/commons-lang3 "3.20.0"]
                          [org.bouncycastle/bcpkix-jdk18on "1.84"]
                          [org.bouncycastle/bcpkix-fips "1.0.8"]
@@ -183,23 +183,23 @@
                          [org.openvoxproject/ssl-utils "3.6.4"]
                          [org.openvoxproject/stockpile "1.0.1"]
                          [org.openvoxproject/structured-logging "1.0.1"]
-                         [org.openvoxproject/trapperkeeper "4.3.5"]
-                         [org.openvoxproject/trapperkeeper "4.3.5" :classifier "test"]
-                         [org.openvoxproject/trapperkeeper-authorization "2.2.0"]
-                         [org.openvoxproject/trapperkeeper-authorization "2.2.0" :exclusions [io.dropwizard.metrics/metrics-core]]
-                         [org.openvoxproject/trapperkeeper-filesystem-watcher "1.5.2"]
-                         [org.openvoxproject/trapperkeeper-metrics "2.2.0"]
-                         [org.openvoxproject/trapperkeeper-metrics "2.2.0" :exclusions [io.dropwizard.metrics/metrics-core]]
-                         [org.openvoxproject/trapperkeeper-status "1.4.0"]
-                         [org.openvoxproject/trapperkeeper-status "1.4.0" :exclusions [io.dropwizard.metrics/metrics-core]]
-                         [org.openvoxproject/trapperkeeper-webserver "10.0.0"]
-                         [org.openvoxproject/trapperkeeper-webserver "10.0.0" :classifier "test"]
+                         [org.openvoxproject/trapperkeeper "5.0.0"]
+                         [org.openvoxproject/trapperkeeper "5.0.0" :classifier "test"]
+                         [org.openvoxproject/trapperkeeper-authorization "2.3.0"]
+                         [org.openvoxproject/trapperkeeper-authorization "2.3.0" :exclusions [io.dropwizard.metrics/metrics-core]]
+                         [org.openvoxproject/trapperkeeper-filesystem-watcher "1.6.0"]
+                         [org.openvoxproject/trapperkeeper-metrics "2.3.0"]
+                         [org.openvoxproject/trapperkeeper-metrics "2.3.0" :exclusions [io.dropwizard.metrics/metrics-core]]
+                         [org.openvoxproject/trapperkeeper-status "1.5.0"]
+                         [org.openvoxproject/trapperkeeper-status "1.5.0" :exclusions [io.dropwizard.metrics/metrics-core]]
+                         [org.openvoxproject/trapperkeeper-webserver "12.0.2"]
+                         [org.openvoxproject/trapperkeeper-webserver "12.0.2" :classifier "test"]
                          [org.postgresql/postgresql "42.7.11"]
                          [org.yaml/snakeyaml "2.6"]
                          [prismatic/schema "1.4.1"]
                          [riddley "0.2.2"]
                          [ring/ring-codec "1.3.0"]
-                         [ring/ring-core "1.14.2"]
+                         [ring/ring-core "1.15.4"]
                          [ring/ring-mock "0.6.2"]
                          [robert/hooke "1.3.0"]
                          [timofreiberg/bultitude "0.3.1"]
@@ -371,7 +371,7 @@
                                       ;; via the release_scripts/sync_ezbake_dep.rb script.
                                       [org.openvoxproject/puppetdb "8.14.0-SNAPSHOT"]]
               :name "puppetdb"
-              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.7.4")]]}
+              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.7.7")]]}
     :ezbake-fips {:dependencies ^:replace [[org.bouncycastle/bcpkix-fips]
                                            [org.bouncycastle/bc-fips]
                                            [org.bouncycastle/bctls-fips]
@@ -381,7 +381,7 @@
                                            [org.openvoxproject/puppetdb "8.14.0-SNAPSHOT"]]
               :name "puppetdb"
               :uberjar-exclusions [#"^org/bouncycastle/.*"]
-              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.7.4")]]}
+              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.7.7")]]}
     :testutils {:source-paths ^:replace ["test"]
                 :resource-paths ^:replace []
                 ;; Something else may need adjustment, but
