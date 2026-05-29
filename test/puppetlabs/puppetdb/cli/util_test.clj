@@ -24,4 +24,6 @@
   (is (= :unsupported (jdk-support-status "17.0.4")))
   (is (= :official (jdk-support-status "21")))
   (is (= :official (jdk-support-status "21.0")))
-  (is (= :official (jdk-support-status "21.0.4"))))
+  (is (= :official (jdk-support-status "21.0.4")))
+  (is (= :official (jdk-support-status "25.0")))
+  (is (= :official (jdk-support-status "25.0.3"))))
