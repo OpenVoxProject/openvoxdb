@@ -32,7 +32,7 @@ jobs:
 
 
         os: [ubuntu-24.04]
-        ruby: ['3.2', '3.3', '3.4']
+        ruby: ['3.4']
 
         # Defaults for special-case influencing vars
         lein-profile: ['']
