@@ -14,7 +14,7 @@
             [clojure.walk :as walk])
   (:import
    [clojure.lang ExceptionInfo]
-   [java.net MalformedURLException URISyntaxException URL]
+   [java.net MalformedURLException URI URISyntaxException]
    [java.nio ByteBuffer CharBuffer]
    [java.nio.channels SocketChannel]
    [java.nio.charset Charset CoderResult StandardCharsets]
@@ -190,21 +190,20 @@
   "Converts the `base-url' map to an ASCII URL.  May throw
    MalformedURLException or URISyntaxException."
   [{:keys [protocol host port prefix version] :as _base-url} :- base-url-schema]
-  (-> (URL. protocol host port
-            (str prefix "/" (name (or version :v4))))
-      .toURI .toASCIIString))
+  (-> (URI. protocol nil host port
+            (str prefix "/" (name (or version :v4))) nil nil)
+      .toASCIIString))
 
 (pls/defn-validated base-url->str-no-path :- s/Str
   "Converts the `base-url' map to an ASCII URL minus the path element. This can
   be used to build a full URL when you have an absolute path."
   [{:keys [protocol host port] :as _base-url} :- base-url-schema]
-  (-> (URL. protocol host port "")
-      .toURI .toASCIIString))
+  (-> (URI. protocol nil host port "" nil nil)
+      .toASCIIString))
 
 (defn base-url->str-with-prefix
   [{:keys [protocol host port prefix] :as _base-url}]
-  (-> (java.net.URL. protocol host port prefix)
-      .toURI
+  (-> (URI. protocol nil host port prefix nil nil)
       .toASCIIString))
 
 (defn describe-bad-base-url
