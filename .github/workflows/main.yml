@@ -27,7 +27,6 @@ jobs:
           # terminus rspec tests
           - rspec/pup-main
           # agent, server, db integration tests
-          - int/openjdk21/pup-main/srv-main/pg-17/rich
           - int/openjdk21/pup-main/srv-main/pg-18/rich
           - int/openjdk25/pup-main/srv-main/pg-18/rich
 
@@ -53,12 +52,6 @@ jobs:
             ruby: '3.4'
           # jdk 21
           - flavor: core+ext/openjdk21/pg-18
-            os: ubuntu-24.04
-            ruby: '3.4'
-          - flavor: core+ext/openjdk21/pg-17
-            os: ubuntu-24.04
-            ruby: '3.4'
-          - flavor: core+ext/openjdk21/pg-16
             os: ubuntu-24.04
             ruby: '3.4'
 
