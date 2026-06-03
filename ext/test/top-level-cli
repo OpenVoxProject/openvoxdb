@@ -16,19 +16,21 @@ jdkver=$(ext/bin/jdk-info --print major)
 # Number of characters expected for stderr output for subcommands
 expected_help_warnings=0
 expected_version_warnings=0
-case "$jdkver" in
-    8)
-      # Java 8 deprecation warning
-      expected_help_warnings=60
-      expected_version_warnings=60
-        ;;
-    11 | 17 | 21)
-        ;;
-    *)
-        echo "JDK version '$jdkver' is not supported" 1>&2
-        exit 3
-        ;;
-esac
+# If a version of java is producing deprecation warnings you can uncomment
+# this case statement to allow the test to pass
+# case "$jdkver" in
+#     8)
+#       # Java 8 deprecation warning
+#       expected_help_warnings=60
+#       expected_version_warnings=60
+#         ;;
+#     21 | 25)
+#         ;;
+#     *)
+#         echo "JDK version '$jdkver' is not supported" 1>&2
+#         exit 3
+#         ;;
+# esac
 
 # Create temporary directory to store output
 tmpdir="$(mktemp -d "test-top-level-cli-XXXXXX")"

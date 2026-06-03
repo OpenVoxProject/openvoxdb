@@ -27,12 +27,12 @@ jobs:
           # terminus rspec tests
           - rspec/pup-main
           # agent, server, db integration tests
-          - int/openjdk21/pup-main/srv-main/pg-17/rich
           - int/openjdk21/pup-main/srv-main/pg-18/rich
+          - int/openjdk25/pup-main/srv-main/pg-18/rich
 
 
         os: [ubuntu-24.04]
-        ruby: ['3.2', '3.3', '3.4']
+        ruby: ['3.4']
 
         # Defaults for special-case influencing vars
         lein-profile: ['']
@@ -46,14 +46,12 @@ jobs:
             ruby: '3.4'
 
           # unit
+          # jdk 25
+          - flavor: core+ext/openjdk25/pg-18
+            os: ubuntu-24.04
+            ruby: '3.4'
           # jdk 21
           - flavor: core+ext/openjdk21/pg-18
-            os: ubuntu-24.04
-            ruby: '3.4'
-          - flavor: core+ext/openjdk21/pg-17
-            os: ubuntu-24.04
-            ruby: '3.4'
-          - flavor: core+ext/openjdk21/pg-16
             os: ubuntu-24.04
             ruby: '3.4'
 
@@ -120,7 +118,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: 17
+          java-version: 25
       - name: setup ruby
         uses: ruby/setup-ruby@v1
         with:

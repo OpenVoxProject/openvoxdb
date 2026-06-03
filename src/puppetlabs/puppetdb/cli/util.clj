@@ -21,13 +21,14 @@
     (re-matches #"11($|(\..*))" version) :unsupported
     (re-matches #"17($|(\..*))" version) :unsupported
     (re-matches #"21($|(\..*))" version) :official
+    (re-matches #"25($|(\..*))" version) :official
     :else :unknown))
 
 (defn jdk-unsupported-msg [version]
   (let [status (jdk-support-status version)]
     (case status
-      (:unknown) {:warn (trs "JDK {0} is neither tested nor supported. Please use JDK 21" version)}
-      (:deprecated) {:warn (trs "JDK {0} is deprecated, please upgrade to JDK 21" version)}
+      (:unknown) {:warn (trs "JDK {0} is neither tested nor supported. Please use JDK 21 or 25" version)}
+      (:deprecated) {:warn (trs "JDK {0} is deprecated, please upgrade to JDK 21 or 25" version)}
       (:official :tested) nil
       {:error (trs "PuppetDB doesn''t support JDK {0}" version)})))
 
