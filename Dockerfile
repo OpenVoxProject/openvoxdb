@@ -1,14 +1,11 @@
-FROM ruby:4.0-bookworm
+FROM almalinux:10
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-      openjdk-17-jdk-headless \
-      rpm \
-    && rm -rf /var/lib/apt/lists/*
+WORKDIR /
 
-RUN wget -q https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein -O /usr/local/bin/lein && \
-    chmod a+x /usr/local/bin/lein
-
+RUN dnf install -y --enablerepo=crb vim wget git rpm-build java-21-openjdk-devel libyaml-devel zlib zlib-devel gcc-c++ patch readline readline-devel libffi-devel openssl-devel make bzip2 autoconf automake libtool bison sqlite-devel ruby ruby-devel
+RUN wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
+RUN chmod a+x lein
+RUN mv lein /usr/local/bin
 RUN git config --global user.email "openvox@voxpupuli.org" && \
     git config --global user.name "Vox Pupuli" && \
     git config --global --add safe.directory /code
