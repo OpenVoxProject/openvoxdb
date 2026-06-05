@@ -21,7 +21,6 @@ RUN dnf install -y --enablerepo=crb \
     readline-devel \
     rpm-build \
     ruby \
-    ruby-devel \
     sqlite-devel \
     wget \
     zlib \
