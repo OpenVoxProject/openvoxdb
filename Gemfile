@@ -65,7 +65,7 @@ if ENV['NO_ACCEPTANCE'] != 'true'
       gem 'beaker', *location_for(beaker_version)
     else
       # use the pinned version
-      gem 'beaker', '~> 6.0'
+      gem 'beaker', '~> 6.8'
     end
     gem 'beaker-hostgenerator', '~> 2.4'
     gem 'beaker-puppet', '~> 4.0'
