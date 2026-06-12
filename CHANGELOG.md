@@ -2,7 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
-## [8.13.0](https://github.com/openvoxproject/openvoxdb/tree/8.13.0) (2026-04-30)
+## [8.14.0](https://github.com/openvoxproject/openvoxdb/tree/8.14.0) (2026-06-12)
+
+[Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/8.13.0...8.14.0)
+
+**Implemented enhancements:**
+
+- trapperkeeper: Update 5.0.0-\>5.0.2 & trapperkeeper-webserver 12.0.2-\>12.0.3 [\#315](https://github.com/OpenVoxProject/openvoxdb/pull/315) ([bastelfreak](https://github.com/bastelfreak))
+- Backport Jetty 12 and dep bumps to 8.x [\#286](https://github.com/OpenVoxProject/openvoxdb/pull/286) ([nmburgan](https://github.com/nmburgan))
+- Migrate config to use trapperkeeper-webserver [\#272](https://github.com/OpenVoxProject/openvoxdb/pull/272) ([nmburgan](https://github.com/nmburgan))
+
+**Merged pull requests:**
+
+- \[Backport 8.x\] Update dependency clj-kondo:clj-kondo to v2026.05.25 [\#314](https://github.com/OpenVoxProject/openvoxdb/pull/314) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+- Update dependency com.github.seancorfield:honeysql to v2.7.1388 [\#313](https://github.com/OpenVoxProject/openvoxdb/pull/313) ([bastelfreak](https://github.com/bastelfreak))
+
+## [8.13.0](https://github.com/openvoxproject/openvoxdb/tree/8.13.0) (2026-05-04)
 
 [Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/8.12.1...8.13.0)
 
