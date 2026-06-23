@@ -151,7 +151,7 @@
                          [com.fasterxml.jackson.core/jackson-annotations "2.21"]
                          [com.gfredericks/test.chuck "0.2.15"]
                          [com.github.seancorfield/honeysql "2.7.1390"]
-                         [com.github.seancorfield/next.jdbc "1.3.1108"]
+                         [com.github.seancorfield/next.jdbc "1.3.1118"]
                          [com.rpl/specter "1.1.6"]
                          [com.taoensso/nippy "3.6.2" :exclusions [org.tukaani/xz]]
                          [com.zaxxer/HikariCP "7.0.2"]
