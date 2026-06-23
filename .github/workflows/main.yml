@@ -67,15 +67,15 @@ jobs:
 
           echo "day=$(date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
           echo "pdb-job-id=$pdb_test_gh_job_id" >> "$GITHUB_OUTPUT"
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@9eb537ca036ebaed86729dcb9309076e4c5c3b74 # v1.314.0
         with:
           ruby-version: '${{ matrix.ruby }}'
       - name: Output Ruby Environment
         run: bundle env
-      - uses: actions/cache@v5
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           key: |
             ${{ matrix.flavor }}
@@ -96,7 +96,7 @@ jobs:
           PDB_QUERY_OPTIMIZE_DROP_UNUSED_JOINS: ${{ matrix.drop-joins }}
           NO_ACCEPTANCE: true
         run: ci/bin/prep-and-run-in github ${{ matrix.flavor }}
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: "${{ steps.computed.outputs.pdb-job-id }}.zip"
           path: |
@@ -110,22 +110,22 @@ jobs:
       pull-requests: write
     steps:
       - name: checkout repo
-        uses: actions/checkout@v7
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           submodules: recursive
           fetch-depth: 0 # So we fetch all history and tags and can build non-tagged versions
       - name: setup java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
         with:
           distribution: 'temurin'
           java-version: 25
       - name: setup ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@9eb537ca036ebaed86729dcb9309076e4c5c3b74 # v1.314.0
         with:
           ruby-version: '4.0'
           bundler-cache: true
       - id: docker-cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: /tmp/ezbake-builder.tar
           key: docker-ezbake-${{ hashFiles('Dockerfile') }}
@@ -137,7 +137,7 @@ jobs:
             docker build -t ezbake-builder .
             docker save ezbake-builder -o /tmp/ezbake-builder.tar
           fi
-      - uses: actions/cache/save@v5
+      - uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         if: always() && steps.docker-cache.outputs.cache-hit != 'true'
         with:
           path: /tmp/ezbake-builder.tar
@@ -151,14 +151,14 @@ jobs:
           echo "describe=${DESCRIBE//-/.}" >> $GITHUB_OUTPUT
       - name: Upload build artifacts
         id: upload
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: openvoxdb-${{ steps.version.outputs.describe }}.zip
           path: output/
           retention-days: 1 # quite low retention, because the artifacts are quite large
           overwrite: true # overwrite old artifacts if a PR runs again (artifacts are per PR * per project)
       - name: Find existing comment
-        uses: peter-evans/find-comment@v4
+        uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad # v4.0.0
         if: github.event.pull_request.head.repo.full_name == github.repository
         id: find-comment
         with:
@@ -166,7 +166,7 @@ jobs:
           comment-author: 'github-actions[bot]'
           body-includes: '<!-- build-artifacts -->'
       - name: Add or update comment
-        uses: peter-evans/create-or-update-comment@v5
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
         if: github.event.pull_request.head.repo.full_name == github.repository
         with:
           comment-id: ${{ steps.find-comment.outputs.comment-id }}
@@ -182,11 +182,11 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: checkout repo
-        uses: actions/checkout@v7
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           submodules: recursive
       - name: setup ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@9eb537ca036ebaed86729dcb9309076e4c5c3b74 # v1.314.0
         with:
           ruby-version: '3.2'
           bundler-cache: true
