@@ -31,7 +31,7 @@ jobs:
 
 
         os: [ubuntu-24.04]
-        ruby: ['3.4']
+        ruby: ['4.0']
 
         # Defaults for special-case influencing vars
         lein-profile: ['']
@@ -42,26 +42,26 @@ jobs:
           # lint
           - flavor: lint/openjdk21
             os: ubuntu-24.04
-            ruby: '3.4'
+            ruby: '4.0'
 
           # unit
           # jdk 25
           - flavor: core+ext/openjdk25/pg-18
             os: ubuntu-24.04
-            ruby: '3.4'
+            ruby: '4.0'
           # jdk 21
           - flavor: core+ext/openjdk21/pg-18
             os: ubuntu-24.04
-            ruby: '3.4'
+            ruby: '4.0'
           # Extra tests
           - flavor: core+ext/openjdk21/pg-18
             os: ubuntu-24.04
-            ruby: '3.4'
+            ruby: '4.0'
             drop-joins: by-request
           # FIPS
           - flavor: core+ext/openjdk21/pg-18
             os: ubuntu-24.04
-            ruby: '3.4'
+            ruby: '4.0'
             lein-profile: fips
 
     steps:
@@ -197,7 +197,7 @@ jobs:
       - name: setup ruby
         uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
         with:
-          ruby-version: '3.2'
+          ruby-version: '4.0'
           bundler-cache: true
       - name: Run RSpec
         run: bundle exec rspec spec -fd
