@@ -60,11 +60,11 @@ jobs:
           pdb_test_gh_job_id+="_${{ matrix.deprecated-query-streaming }}"
 
           echo "pdb-job-id=$pdb_test_gh_job_id" >> "$GITHUB_OUTPUT"
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ matrix.branch }}
           persist-credentials: false
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@9eb537ca036ebaed86729dcb9309076e4c5c3b74 # v1.314.0
         with:
           ruby-version: '${{ matrix.ruby }}'
       - name: Gather inital host info
@@ -74,7 +74,7 @@ jobs:
           PDB_QUERY_OPTIMIZE_DROP_UNUSED_JOINS: ${{ matrix.drop-joins }}
           PDB_USE_DEPRECATED_QUERY_STREAMING_METHOD: ${{ matrix.deprecated-query-streaming }}
         run: ci/bin/prep-and-run-in github ${{ matrix.flavor }}
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: "${{ steps.computed.outputs.pdb-job-id }}.zip"
           path: |
