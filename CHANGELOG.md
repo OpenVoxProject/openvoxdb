@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.14.1](https://github.com/openvoxproject/openvoxdb/tree/8.14.1) (2026-06-24)
+
+[Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/8.14.0...8.14.1)
+
+**Merged pull requests:**
+
+- \[Backport 8.x\] Fix Jolokia 2.x configuration [\#339](https://github.com/OpenVoxProject/openvoxdb/pull/339) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+- \[Backport 8.x\] Update dependency ring:ring-core to v1.15.5 [\#330](https://github.com/OpenVoxProject/openvoxdb/pull/330) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+- \[Backport 8.x\] Update dependency com.zaxxer:HikariCP to v7.1.0 [\#328](https://github.com/OpenVoxProject/openvoxdb/pull/328) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+- \[Backport 8.x\] Update dependency com.github.seancorfield:next.jdbc to v1.3.1118 [\#327](https://github.com/OpenVoxProject/openvoxdb/pull/327) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+- \[Backport 8.x\] Update dependency com.github.seancorfield:honeysql to v2.7.1390 [\#325](https://github.com/OpenVoxProject/openvoxdb/pull/325) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+
 ## [8.14.0](https://github.com/openvoxproject/openvoxdb/tree/8.14.0) (2026-06-12)
 
 [Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/8.13.0...8.14.0)
