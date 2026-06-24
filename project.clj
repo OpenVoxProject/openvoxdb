@@ -335,8 +335,8 @@
                     :jvm-opts ~(let [{:keys [feature interim]} pdb-jvm-ver]
                                   (conj pdb-jvm-opts
                                         (case feature
-                                          17 "-Djava.security.properties==resources/ext/build-scripts/java.security.fips"
-                                          21 "-Djava.security.properties==resources/ext/build-scripts/java.security.fips"
+                                          17 "-Djava.security.properties==resources/ext/java.security.fips"
+                                          21 "-Djava.security.properties==resources/ext/java.security.fips"
                                           (do))))}
 
     :fips [:defaults :fips-settings]
