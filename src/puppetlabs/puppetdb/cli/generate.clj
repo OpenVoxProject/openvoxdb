@@ -243,10 +243,7 @@
     [puppetlabs.puppetdb.utils :as utils])
   (:import
     [java.nio.file.attribute FileAttribute]
-    [java.nio.file Files]
-    [org.apache.commons.lang3 RandomStringUtils]))
-
-(declare random-ascii-string)
+    [java.nio.file Files]))
 
 (def resource-fact-path "puppetlabs/puppetdb/generate/samples/facts/baseline-agent-node.json")
 
@@ -337,7 +334,7 @@
         (recur (assoc parameters
                       (parameter-name
                         (rnd/safe-sample-normal 20 5 {:lowerb 5}))
-                      (random-ascii-string
+                      (rnd/random-ascii-string
                         (rnd/safe-sample-normal 50 25 {:upperb (max 50 size)}))))
         parameters))))
 
@@ -463,29 +460,6 @@
    :target (select-keys target [:type :title])
    :relationship relation})
 
-(defn- random-ascii-string
-  "Generate a random ASCII string of the given length.
-
-   Chunks requests to stay within the BouncyCastle FIPS DRBG per-request limit
-   of 262144 bits (32768 bytes). Apache Commons Lang3's RandomStringUtils
-   allocates a CachedRandomBits with size = (count * gapBits + 3) / 5 + 10
-   bytes. For nextAscii (ASCII range 32-127, gap=95, gapBits=7) the maximum
-   count that keeps the cache within 32768 bytes is:
-     (count * 7 + 3) / 5 + 10 <= 32768  =>  count <= 23398"
-  [length]
-  (let [fips-max-chunk 23398
-        ^RandomStringUtils secure-random (RandomStringUtils/secure)]
-    (if (<= length fips-max-chunk)
-      (.nextAscii secure-random length)
-      ;; Build incrementally to avoid intermediate vectors/strings for large values.
-      (let [^StringBuilder builder (StringBuilder. length)]
-        (loop [remaining length]
-          (if (<= remaining 0)
-            (.toString builder)
-            (let [chunk-size (min remaining fips-max-chunk)]
-              (.append builder (.nextAscii secure-random chunk-size))
-              (recur (- remaining chunk-size)))))))))
-
 (defn add-blob
   "Add a large parameter string blob to one of the given catalog's resource parameters.
 
@@ -505,7 +479,7 @@
         bsize (rnd/safe-sample-normal avg-blob-size-in-bytes standard-deviation {:lowerb lowerb :upperb upperb})
         pname (format "content_blob_%s" (rnd/random-pronouncable-word))]
     (update-in catalog [:resources (rand-int (count resources)) :parameters]
-               #(merge % {pname (random-ascii-string bsize)}))))
+               #(merge % {pname (rnd/random-ascii-string bsize)}))))
 
 (defn system-seconds-str
   "Epoch seconds as a string. Used by default as a version string in Puppet
