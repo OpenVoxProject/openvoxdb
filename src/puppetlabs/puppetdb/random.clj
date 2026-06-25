@@ -32,6 +32,29 @@
               (.append builder (.nextAlphabetic secure-random chunk-size))
               (recur (- remaining chunk-size)))))))))
 
+(defn random-ascii-string
+  "Generate a random ASCII string of the given length.
+
+   Chunks requests to stay within the BouncyCastle FIPS DRBG per-request limit
+   of 262144 bits (32768 bytes). Apache Commons Lang3's RandomStringUtils
+   allocates a CachedRandomBits with size = (count * gapBits + 3) / 5 + 10
+   bytes. For nextAscii (ASCII range 32-127, gap=95, gapBits=7) the maximum
+   count that keeps the cache within 32768 bytes is:
+     (count * 7 + 3) / 5 + 10 <= 32768  =>  count <= 23398"
+  [length]
+  (let [fips-max-chunk 23398
+        ^RandomStringUtils secure-random (RandomStringUtils/secure)]
+    (if (<= length fips-max-chunk)
+      (.nextAscii secure-random length)
+      ;; Build incrementally to avoid intermediate vectors/strings for large values.
+      (let [^StringBuilder builder (StringBuilder. length)]
+        (loop [remaining length]
+          (if (<= remaining 0)
+            (.toString builder)
+            (let [chunk-size (min remaining fips-max-chunk)]
+              (.append builder (.nextAscii secure-random chunk-size))
+              (recur (- remaining chunk-size)))))))))
+
 (defn random-string
   "Generate a random string of optional length"
   ([] (.nextAlphabetic (RandomStringUtils/secure) (inc (rand-int 10))))
