@@ -57,13 +57,13 @@
 
 (defn random-string
   "Generate a random string of optional length"
-  ([] (.nextAlphabetic (RandomStringUtils/secure) (inc (rand-int 10))))
+  ([] (alphabetic-string (inc (rand-int 10))))
   ([length]
    (alphabetic-string length)))
 
 (defn random-string-alpha
   "Generate a random string of optional length, only lower case alphabet chars"
-  ([] (random-string (inc (rand-int 10))))
+  ([] (random-string-alpha (inc (rand-int 10))))
   ([length]
    (.toLowerCase (alphabetic-string length))))
 
