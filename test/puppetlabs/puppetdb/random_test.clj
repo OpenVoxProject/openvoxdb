@@ -3,6 +3,7 @@
    [clojure.test :refer :all]
    [puppetlabs.puppetdb.random
     :refer [distribute
+            random-ascii-string
             random-bool
             random-node-name
             random-pp-path
@@ -16,9 +17,14 @@
 
 (deftest test-random-string
   (testing "should return a string of specified length"
+    (is (>= 10 (count (random-string))))
     (is (= 8 (count (random-string 8))))
     (is (= 30 (count (random-string 30))))
     (is (= 100 (count (random-string 100)))))
+
+  (testing "should only contain alphabetic characters"
+    (is (re-matches #"\A[a-zA-Z]+\z" (random-string)))
+    (is (re-matches #"\A[a-zA-Z]{100}\z" (random-string 100))))
 
   (testing "should only accept a positive integer"
     (is (thrown? IllegalArgumentException (random-string -1)))
@@ -26,13 +32,31 @@
 
 (deftest test-random-string-alpha
   (testing "should return a string of specified length"
+    (is (>= 10 (count (random-string-alpha))))
     (is (= 8 (count (random-string-alpha 8))))
     (is (= 30 (count (random-string-alpha 30))))
     (is (= 100 (count (random-string-alpha 100)))))
 
+  (testing "should only contain lowercase alphabetic characters"
+    (is (re-matches #"\A[a-z]+\z" (random-string-alpha)))
+    (is (re-matches #"\A[a-z]{100}\z" (random-string-alpha 100))))
+
   (testing "should only accept a positive integer"
     (is (thrown? IllegalArgumentException (random-string-alpha -1)))
     (is (thrown? ClassCastException (random-string-alpha "asdf")))))
+
+(deftest test-random-ascii-string
+  (testing "should return a string of specified length"
+    (is (= 8 (count (random-ascii-string 8))))
+    (is (= 30 (count (random-ascii-string 30))))
+    (is (= 100 (count (random-ascii-string 100)))))
+
+  (testing "should only contain ascii characters"
+    (is (re-matches #"\A[\x20-\x7E]{100}\z" (random-ascii-string 100))))
+
+  (testing "should only accept a positive integer"
+    (is (thrown? IllegalArgumentException (random-ascii-string -1)))
+    (is (thrown? ClassCastException (random-ascii-string "asdf")))))
 
 (deftest test-random-bool
   (testing "should return a boolean"
