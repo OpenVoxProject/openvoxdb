@@ -10,17 +10,39 @@
 (def ^{:doc "Convenience for java.util.Random"}
   random (java.util.Random.))
 
+(defn- alphabetic-string
+  "Generate a random alphabetic string of the given length.
+
+   Chunks requests to stay within the BouncyCastle FIPS DRBG per-request limit
+   of 262144 bits. Apache Commons Lang3's CachedRandomBits allocates
+   (count * gapBits + 3) / 5 + 10 bytes per call. For nextAlphabetic
+   (A-Z + a-z = 52 chars, gapBits = ceil(log2(52)) = 6) the maximum count per call is:
+   (count * 6 + 3) / 5 + 10 <= 32768  =>  count <= 27298"
+  [length]
+  (let [fips-max-chunk 27298
+        ^RandomStringUtils secure-random (RandomStringUtils/secure)]
+    (if (<= length fips-max-chunk)
+      (.nextAlphabetic secure-random length)
+      ;; Build incrementally to avoid intermediate vectors/strings for large values.
+      (let [^StringBuilder builder (StringBuilder. length)]
+        (loop [remaining length]
+          (if (<= remaining 0)
+            (.toString builder)
+            (let [chunk-size (min remaining fips-max-chunk)]
+              (.append builder (.nextAlphabetic secure-random chunk-size))
+              (recur (- remaining chunk-size)))))))))
+
 (defn random-string
   "Generate a random string of optional length"
   ([] (.nextAlphabetic (RandomStringUtils/secure) (inc (rand-int 10))))
   ([length]
-   (.nextAlphabetic (RandomStringUtils/secure) length)))
+   (alphabetic-string length)))
 
 (defn random-string-alpha
   "Generate a random string of optional length, only lower case alphabet chars"
   ([] (random-string (inc (rand-int 10))))
   ([length]
-   (.toLowerCase (.nextAlphabetic (RandomStringUtils/secure) length))))
+   (.toLowerCase (alphabetic-string length))))
 
 (defn random-bool
   "Generate a random boolean"
