@@ -153,8 +153,7 @@
                          ScheduledThreadPoolExecutor
                          Semaphore
                          TimeUnit)
-   (org.apache.commons.compress.archivers.tar TarArchiveEntry)
-   (org.apache.commons.lang3 RandomStringUtils)))
+   (org.apache.commons.compress.archivers.tar TarArchiveEntry)))
 
 ;; FIXME: make sure --queriers respects DISCARD_ALL_QUERIES
 
@@ -311,9 +310,9 @@
 (defmethod touch-parameter-value String [p]
   (let [len (count p)]
     (if (zero? len)
-      (.nextAscii (RandomStringUtils/secure) 1)  ; empty -> single char
+      (rnd/random-ascii-string 1)  ; empty -> single char
       (loop [attempts 5]
-        (let [new-val (.nextAscii (RandomStringUtils/secure) len)]
+        (let [new-val (rnd/random-ascii-string len)]
           (if (or (not= new-val p) (zero? attempts))
             new-val
             (recur (dec attempts))))))))
