@@ -97,6 +97,10 @@
                     ["--illegal-access=deny"]))
 
 (def i18n-version "1.0.4")
+;; NOTE: Use the 2.21.z release series of Jackson. The Cheshire JSON
+;;       library requires 2.x and 2.21 is the current LTS as of 2026.
+;;
+;;       See: https://github.com/FasterXML/jackson/wiki/Jackson-Releases
 (def jackson-version "2.21.4")
 (def slf4j-version "2.0.18")
 
@@ -163,7 +167,10 @@
                          [instaparse "1.5.0"]
                          [metrics-clojure "2.10.0"]
                          [murphy "0.5.3"]
-                         [net.logstash.logback/logstash-logback-encoder "9.0"]
+                         ;; NOTE: Versions after 8.1 bring in Jackson 3.x.
+                         ;;       Pinned to 8.1 to keep Jackson 2.x as the only
+                         ;;       major versions we have to chase CVEs for.
+                         [net.logstash.logback/logstash-logback-encoder "8.1"]
                          [org.apache.commons/commons-lang3 "3.20.0"]
                          [org.bouncycastle/bcpkix-jdk18on "1.84"]
                          [org.bouncycastle/bcpkix-fips "1.0.8"]
