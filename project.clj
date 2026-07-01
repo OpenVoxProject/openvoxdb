@@ -182,7 +182,7 @@
                          [org.slf4j/log4j-over-slf4j ~slf4j-version]
                          [org.openvoxproject/comidi "1.1.3"]
                          [org.openvoxproject/i18n ~i18n-version]
-                         [org.openvoxproject/http-client "2.3.0"]
+                         [org.openvoxproject/http-client "2.3.1"]
                          [org.openvoxproject/kitchensink "3.5.7"]
                          [org.openvoxproject/kitchensink "3.5.7" :classifier "test"]
                          [org.openvoxproject/rbac-client "1.3.0"]
