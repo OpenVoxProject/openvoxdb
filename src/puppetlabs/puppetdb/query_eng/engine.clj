@@ -38,7 +38,7 @@
 ;; the left in all cases (and so it's the same as a left-join).
 
 (def always-enable-drop-unused-joins?
-  "When set to true, act as if the opimization has been requested for
+  "When set to true, act as if the optimization has been requested for
   every query.  This is only intended for testing.  Will be set to
   true if the environment variable
   PDB_QUERY_OPTIMIZE_DROP_UNUSED_JOINS is set to \"always\" at
@@ -46,7 +46,7 @@
   (= "always" (System/getenv "PDB_QUERY_OPTIMIZE_DROP_UNUSED_JOINS")))
 
 (def enable-drop-unused-joins-by-default?
-  "When true, enable the opimization whenever a query doesn't set the
+  "When true, enable the optimization whenever a query doesn't set the
   optimize_drop_unused_joins parameter.  This will be true if
   PDB_QUERY_OPTIMIZE_DROP_UNUSED_JOINS is unset or is set to
   \"by-default\" at startup, and will be false if it is set to
