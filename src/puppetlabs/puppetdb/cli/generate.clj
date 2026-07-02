@@ -243,8 +243,7 @@
     [puppetlabs.puppetdb.utils :as utils])
   (:import
     [java.nio.file.attribute FileAttribute]
-    [java.nio.file Files]
-    [org.apache.commons.lang3 RandomStringUtils]))
+    [java.nio.file Files]))
 
 (def resource-fact-path "puppetlabs/puppetdb/generate/samples/facts/baseline-agent-node.json")
 
@@ -335,7 +334,7 @@
         (recur (assoc parameters
                       (parameter-name
                         (rnd/safe-sample-normal 20 5 {:lowerb 5}))
-                      (.nextAscii (RandomStringUtils/secure)
+                      (rnd/random-ascii-string
                         (rnd/safe-sample-normal 50 25 {:upperb (max 50 size)}))))
         parameters))))
 
@@ -480,7 +479,7 @@
         bsize (rnd/safe-sample-normal avg-blob-size-in-bytes standard-deviation {:lowerb lowerb :upperb upperb})
         pname (format "content_blob_%s" (rnd/random-pronouncable-word))]
     (update-in catalog [:resources (rand-int (count resources)) :parameters]
-               #(merge % {pname (.nextAscii (RandomStringUtils/secure) bsize)}))))
+               #(merge % {pname (rnd/random-ascii-string bsize)}))))
 
 (defn system-seconds-str
   "Epoch seconds as a string. Used by default as a version string in Puppet

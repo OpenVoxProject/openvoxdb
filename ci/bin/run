@@ -14,6 +14,21 @@ test $# -eq 1 || misuse
 spec="$1"
 flavor=$(ext/bin/flavor-from-spec "$spec")
 
+# Fail fast in FIPS CI when provider wiring is broken, before long-running tests.
+fips-keystore-sanity-check() {
+    local profiles="${LEIN_PROFILES:-dev}"
+    if [[ ! "$profiles" =~ (^|,)(\+)?fips($|,) ]]; then
+        return 0
+    fi
+
+    local cp
+    cp="$(lein with-profiles "$profiles" classpath)"
+    java -Djava.security.properties==resources/ext/java.security.fips \
+         -cp "$cp" clojure.main \
+         -e '(java.security.KeyStore/getInstance "BCFKS")' \
+         >/dev/null
+}
+
 case "$flavor" in
     core|ext|core+ext)
         # Get PostgreSQL version from test spec
@@ -25,6 +40,7 @@ case "$flavor" in
         ext/bin/check-spec-env "$spec"
         case "$flavor" in
             core|core+ext)
+                fips-keystore-sanity-check
                 # Run core lein tests with ephemeral PuppetDB and PostgreSQL sandboxes
                 # Leiningen dev profile adds org.bouncycastle/bcpkix-jdk18on dependency
                 ext/bin/boxed-core-tests --pglog pg.log \

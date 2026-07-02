@@ -10,17 +10,54 @@
 (def ^{:doc "Convenience for java.util.Random"}
   random (java.util.Random.))
 
+(defn- chunked-random-string
+  "Generate a random alphabetic or ascii string of the given length.
+
+   Chunks requests to stay within the BouncyCastle FIPS DRBG per-request limit
+   of 262144 bits (32768 bytes). Apache Commons Lang3's RandomStringUtils
+   allocates a CachedRandomBits with size = (count * gapBits + 3) / 5 + 10
+   bytes.
+
+   For nextAscii (ASCII range 32-127, gap=95, gapBits=7)
+   the maximum count that keeps the cache within 32768 bytes is:
+     (count * 7 + 3) / 5 + 10 <= 32768  =>  count <= 23398
+
+   For nextAlphabetic (A-Z + a-z = 52 chars, gapBits = ceil(log2(52)) = 6)
+   the maximum count per call is:
+     (count * 6 + 3) / 5 + 10 <= 32768  =>  count <= 27298"
+  [method length]
+  (let [^RandomStringUtils secure-random (RandomStringUtils/secure)
+        [gen-fn fips-max-chunk] (case method
+                                  :ascii    [#(.nextAscii ^RandomStringUtils secure-random %) 23398]
+                                  :alphabetic [#(.nextAlphabetic ^RandomStringUtils secure-random %) 27298])]
+    (if (<= length fips-max-chunk)
+      (gen-fn length)
+      ;; Build incrementally to avoid intermediate vectors/strings for large values.
+      (let [^StringBuilder builder (StringBuilder. length)]
+        (loop [remaining length]
+          (if (<= remaining 0)
+            (.toString builder)
+            (let [chunk-size (min remaining fips-max-chunk)]
+              (.append builder (gen-fn chunk-size))
+              (recur (- remaining chunk-size)))))))))
+
+(defn- alphabetic-string [length]
+  (chunked-random-string :alphabetic length))
+
+(defn random-ascii-string [length]
+  (chunked-random-string :ascii length))
+
 (defn random-string
   "Generate a random string of optional length"
-  ([] (.nextAlphabetic (RandomStringUtils/secure) (inc (rand-int 10))))
+  ([] (alphabetic-string (inc (rand-int 10))))
   ([length]
-   (.nextAlphabetic (RandomStringUtils/secure) length)))
+   (alphabetic-string length)))
 
 (defn random-string-alpha
   "Generate a random string of optional length, only lower case alphabet chars"
-  ([] (random-string (inc (rand-int 10))))
+  ([] (random-string-alpha (inc (rand-int 10))))
   ([length]
-   (.toLowerCase (.nextAlphabetic (RandomStringUtils/secure) length))))
+   (.toLowerCase (alphabetic-string length))))
 
 (defn random-bool
   "Generate a random boolean"
