@@ -201,7 +201,7 @@
                          [org.openvoxproject/trapperkeeper-status "1.5.0" :exclusions [io.dropwizard.metrics/metrics-core]]
                          [org.openvoxproject/trapperkeeper-webserver "12.0.3"]
                          [org.openvoxproject/trapperkeeper-webserver "12.0.3" :classifier "test"]
-                         [org.postgresql/postgresql "42.7.12"]
+                         [org.postgresql/postgresql "42.7.13"]
                          [org.yaml/snakeyaml "2.6"]
                          [prismatic/schema "1.4.1"]
                          [riddley "0.2.2"]
