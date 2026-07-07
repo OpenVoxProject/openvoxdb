@@ -97,6 +97,7 @@
                     ["--illegal-access=deny"]))
 
 (def i18n-version "1.0.4")
+(def logback-version "1.5.37")
 ;; NOTE: Use the 2.21.z release series of Jackson. The Cheshire JSON
 ;;       library requires 2.x and 2.21 is the current LTS as of 2026.
 ;;
@@ -162,6 +163,8 @@
                          [commons-codec "1.22.0"]
                          [commons-io "2.22.0"]
                          [compojure "1.7.2"]
+                         [ch.qos.logback/logback-classic ~logback-version]
+                         [ch.qos.logback/logback-core ~logback-version]
                          [digest "1.4.10"]
                          [fast-zip "0.7.0"]
                          [instaparse "1.5.0"]
