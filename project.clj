@@ -97,7 +97,7 @@
                     ["--illegal-access=deny"]))
 
 (def i18n-version "1.0.4")
-(def logback-version "1.5.37")
+(def logback-version "1.5.38")
 ;; NOTE: Use the 2.21.z release series of Jackson. The Cheshire JSON
 ;;       library requires 2.x and 2.21 is the current LTS as of 2026.
 ;;
