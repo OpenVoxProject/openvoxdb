@@ -238,8 +238,8 @@ then
 else
   # This should be run on the host with PuppetDB
   PATH=/opt/puppetlabs/bin:/opt/puppet/bin:$PATH
-  agent_confdir=`puppet agent --configprint confdir`
-  agent_vardir=`puppet agent --configprint vardir`
+  agent_confdir=$(puppet config print confdir)
+  agent_vardir=$(puppet config print vardir)
   user=<%= EZBake::Config[:user] %>
   group=<%= EZBake::Config[:group] %>
 
@@ -248,11 +248,11 @@ fi
 
 set -e
 
-mycertname=`puppet agent --confdir=$agent_confdir --vardir=$agent_vardir --configprint  certname`
+mycertname=$(puppet config print --confdir=$agent_confdir --vardir=$agent_vardir --section=agent certname)
 
-orig_public_file=`puppet agent --confdir=$agent_confdir --vardir=$agent_vardir --configprint  hostcert`
-orig_private_file=`puppet agent --confdir=$agent_confdir --vardir=$agent_vardir --configprint hostprivkey`
-orig_ca_file=`puppet agent --confdir=$agent_confdir --vardir=$agent_vardir --configprint localcacert`
+orig_public_file=$(puppet config print --confdir=$agent_confdir --vardir=$agent_vardir --section=agent hostcert)
+orig_private_file=$(puppet config print --confdir=$agent_confdir --vardir=$agent_vardir --section=agent hostprivkey)
+orig_ca_file=$(puppet config print --confdir=$agent_confdir --vardir=$agent_vardir --section=agent localcacert)
 
 ssl_dir=${puppetdb_confdir}/ssl
 
