@@ -485,7 +485,7 @@ module PuppetDBExtensions
         manage_package_repo => true,
         disable_update_checking => true,
         database_listen_address => 'localhost',
-        postgres_version        => '14',
+        postgres_version        => '17',
         database_name           => 'puppetdb',
         database_username       => 'puppetdb',
         database_password       => 'puppetdb',
@@ -636,7 +636,7 @@ module PuppetDBExtensions
       class { '::openvoxdb::database::postgresql':
         listen_addresses            => 'localhost',
         manage_package_repo         => #{manage_package_repo},
-        postgres_version            => '14',
+        postgres_version            => '17',
         database_name               => 'puppetdb',
         database_username           => 'puppetdb',
         database_password           => 'puppetdb',
