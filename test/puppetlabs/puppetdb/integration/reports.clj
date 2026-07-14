@@ -105,9 +105,9 @@
     [
      ; for undef and false a wrapper is required or message is interpreted as 'absent' and no change occurs
      {:name "literal_undef" :code "{ 'wrapper' => [undef] }"
-      :expected "{\"wrapper\"=>[nil]}"}
+      :expected "{\"wrapper\" => [nil]}"}
      {:name "literal_false" :code "{ 'wrapper' => false }"
-      :expected "{\"wrapper\"=>false}"}
+      :expected "{\"wrapper\" => false}"}
 
      {:name "literal_default" :code "default" :expected "default"}
      {:name "literal_integer" :code "47" :expected "47"}
@@ -126,15 +126,15 @@
      {:name "timestamp" :code "Timestamp('2012-10-10')"
       :expected "2012-10-10T00:00:00.000000000 UTC"}
      {:name "hash_and_array" :code "{'a' => [1, 2, 3], 'b' => 'hello'}"
-      :expected "{\"a\"=>[1, 2, 3], \"b\"=>\"hello\"}"}
+      :expected "{\"a\" => [1, 2, 3], \"b\" => \"hello\"}"}
      {:name "special_key" :code "{ ['special', 'key'] => 10 }"
-      :expected "{\"[\\\"special\\\", \\\"key\\\"]\"=>10}"}
+      :expected "{\"[\\\"special\\\", \\\"key\\\"]\" => 10}"}
      {:name "hash_with_sensitive_val" :code "{ x => Sensitive(hush) }"
-      :expected #"\{\"x\"=>\"#<Sensitive \[value redacted\]:[0-9]+>\"}"}
+      :expected #"\{\"x\" => \"#<Sensitive \[value redacted\]:[0-9]+>\"}"}
      {:name "hash_with_sensitive_key" :code "{Sensitive(hush) => 42 }"
-      :expected #"\{\"#<Sensitive \[value redacted\]:[0-9]+>\"=>42\}"}
+      :expected #"\{\"#<Sensitive \[value redacted\]:[0-9]+>\" => 42\}"}
      {:name "hash_ptype_key" :code "{'__ptype' => 10}"
-      :expected "{\"reserved key: __ptype\"=>10}"}
+      :expected "{\"reserved key: __ptype\" => 10}"}
      {:name "binary_value" :code "Binary(\"hello\", \"%s\")" :expected "aGVsbG8="}
      {:name "a_type" :code "Integer[0,100]" :expected "Integer[0, 100]"}
 
