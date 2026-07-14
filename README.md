@@ -1,4 +1,4 @@
-# OpenVoxDB [![Build Status](https://github.com/OpenVoxProject/openvoxdb/actions/workflows/main.yml/badge.svg)](https://github.com/OpenVoxProject/openvoxdb/actions/workflows/main.yml)
+# OpenVoxDB [![Build Status main](https://github.com/OpenVoxProject/openvoxdb/actions/workflows/main.yml/badge.svg)](https://github.com/OpenVoxProject/openvoxdb/actions/workflows/main.yml)  [![Build Status daily](https://github.com/OpenVoxProject/openvoxdb/actions/workflows/daily.yml/badge.svg)](https://github.com/OpenVoxProject/openvoxdb/actions/workflows/daily.yml) 
 
 [docs]: https://docs.openvoxproject.org/openvoxdb/latest/
 [contributing]: https://github.com/OpenVoxProject/.github/blob/main/CONTRIBUTING.md
