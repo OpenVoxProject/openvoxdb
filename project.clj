@@ -107,7 +107,7 @@
 
 ;; If you modify the version manually, run release_scripts/sync_ezbake_dep.rb to keep
 ;; the ezbake dependency in sync.
-(defproject org.openvoxproject/puppetdb "9.1.0-SNAPSHOT"
+(defproject org.openvoxproject/puppetdb "9.0.0-beta2-SNAPSHOT"
   :description "OpenVox-integrated catalog and fact storage"
 
   :license {:name "Apache License, Version 2.0"
@@ -379,19 +379,19 @@
                                       ;;
                                       ;; Do not modify this line. It is managed by the release process
                                       ;; via the release_scripts/sync_ezbake_dep.rb script.
-                                      [org.openvoxproject/puppetdb "9.1.0-SNAPSHOT"]]
+                                      [org.openvoxproject/puppetdb "9.0.0-beta2-SNAPSHOT"]]
               :name "puppetdb"
-              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.8.0")]]}
+              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.9.0")]]}
     :ezbake-fips {:dependencies ^:replace [[org.bouncycastle/bcpkix-fips]
                                            [org.bouncycastle/bc-fips]
                                            [org.bouncycastle/bctls-fips]
                                            [org.clojure/clojure]
                                            ;; Do not modify this line. It is managed by the release process
                                            ;; via the release_scripts/sync_ezbake_dep.rb script.
-                                           [org.openvoxproject/puppetdb "9.1.0-SNAPSHOT"]]
+                                           [org.openvoxproject/puppetdb "9.0.0-beta2-SNAPSHOT"]]
               :name "puppetdb"
               :uberjar-exclusions [#"^org/bouncycastle/.*"]
-              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.8.0")]]}
+              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.9.0")]]}
     :testutils {:source-paths ^:replace ["test"]
                 :resource-paths ^:replace []
                 ;; Something else may need adjustment, but
