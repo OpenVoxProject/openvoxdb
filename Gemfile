@@ -34,7 +34,7 @@ group :test do
 
   # FIXME: going to version 1.0.0 breaks a lot of rspec tests. The changelog
   # doesn't list any breaking changes, so we'll need to investigate more.
-  gem 'puppetlabs_spec_helper', '0.10.3'
+  gem 'puppetlabs_spec_helper', '1.1.1'
 
   case puppet_ref
   when 'latest'
