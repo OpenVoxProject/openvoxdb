@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.15.0](https://github.com/openvoxproject/openvoxdb/tree/8.15.0) (2026-07-22)
+
+[Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/8.14.1...8.15.0)
+
+**Security fixes:**
+
+- Update dependency org.bouncycastle:bcpkix-jdk18on to v1.85 \(8.x\) [\#397](https://github.com/OpenVoxProject/openvoxdb/pull/397) ([renovate[bot]](https://github.com/apps/renovate))
+- Update jackson updates to v2.21.5 \(8.x\) [\#383](https://github.com/OpenVoxProject/openvoxdb/pull/383) ([renovate[bot]](https://github.com/apps/renovate))
+
+**Merged pull requests:**
+
+- \[Backport 8.x\] Manage logback dependency [\#384](https://github.com/OpenVoxProject/openvoxdb/pull/384) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+- Backport random util fips fixes to 8.x [\#367](https://github.com/OpenVoxProject/openvoxdb/pull/367) ([jpartlow](https://github.com/jpartlow))
+- \[Backport 8.x\] Downgrade logstash-logback-encoder 9.0-\>8.1 [\#361](https://github.com/OpenVoxProject/openvoxdb/pull/361) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+
 ## [8.14.1](https://github.com/openvoxproject/openvoxdb/tree/8.14.1) (2026-06-24)
 
 [Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/8.14.0...8.14.1)

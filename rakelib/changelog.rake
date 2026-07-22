@@ -22,7 +22,7 @@ else
     # we limit the changelog to all new openvox releases, to skip perforce onces
     # otherwise the changelog generate takes a lot amount of time
     config.since_tag = '8.9.1'
-    #config.exclude_tags_regex = /\A7\./
+    config.include_tags_regex = /\A8\./
     config.release_branch = '8.x'
   end
 end
