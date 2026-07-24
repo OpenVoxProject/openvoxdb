@@ -81,7 +81,7 @@
         total-footprint (reduce + footprints)
         avg-footprint (quot total-footprint (count resources))]
     (is (= 100 (count resources)))
-    (is (< 400 avg-footprint 600))
+    (is (< 380 avg-footprint 580))
     (is (< 40000 total-footprint  60000))))
 
 (deftest add-blob-test
