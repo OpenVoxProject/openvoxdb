@@ -39,6 +39,7 @@
       (is (thrown? AssertionError (resource-spec-to-map "Class[Foo")))
       (is (thrown? AssertionError (resource-spec-to-map "ClassFoo]")))
       (is (thrown? AssertionError (resource-spec-to-map "ClassFoo")))
+      #_{:clj-kondo/ignore [:type-mismatch]}
       (is (thrown? AssertionError (resource-spec-to-map nil))))
 
     (testing "should correctly parse well-formed input"

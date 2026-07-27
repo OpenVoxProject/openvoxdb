@@ -28,6 +28,7 @@
 
   (testing "should only accept a positive integer"
     (is (thrown? IllegalArgumentException (random-string -1)))
+    #_{:clj-kondo/ignore [:type-mismatch]}
     (is (thrown? ClassCastException (random-string "asdf")))))
 
 (deftest test-random-string-alpha
@@ -43,6 +44,7 @@
 
   (testing "should only accept a positive integer"
     (is (thrown? IllegalArgumentException (random-string-alpha -1)))
+    #_{:clj-kondo/ignore [:type-mismatch]}
     (is (thrown? ClassCastException (random-string-alpha "asdf")))))
 
 (deftest test-random-ascii-string
@@ -56,6 +58,7 @@
 
   (testing "should only accept a positive integer"
     (is (thrown? IllegalArgumentException (random-ascii-string -1)))
+    #_{:clj-kondo/ignore [:type-mismatch]}
     (is (thrown? ClassCastException (random-ascii-string "asdf")))))
 
 (deftest test-random-bool
