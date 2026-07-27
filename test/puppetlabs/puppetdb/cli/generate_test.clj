@@ -82,7 +82,7 @@
         avg-footprint (quot total-footprint (count resources))]
     (is (= 100 (count resources)))
     (is (< 380 avg-footprint 580))
-    (is (< 40000 total-footprint  60000))))
+    (is (< 38000 total-footprint  58000))))
 
 (deftest add-blob-test
   (let [catalog (generate/generate-catalog "host-1" {:num-classes 2 :num-resources 10 :title-size 20 :resource-size 200 :additional-edge-percent 50})
