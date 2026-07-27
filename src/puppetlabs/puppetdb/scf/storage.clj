@@ -1980,7 +1980,7 @@
 (s/defn add-report! :- processing-status-schema
   "Add a report and all of the associated events to the database."
   ([report received-timestamp db conn-status]
-   (add-report! report received-timestamp db conn-status true))
+   (add-report! report received-timestamp db conn-status nil))
   ([{:keys [certname producer_timestamp] :as report} :- reports/report-wireformat-schema
    received-timestamp :- pls/Timestamp
    db conn-status

@@ -114,7 +114,7 @@
   was successful; throws an exception with a useful error message otherwise."
   [order_by]
   (if-let [bad-order-by (some
-                         (fn [x] (when (keys (dissoc x :field :order)) x))
+                         (fn [x] (when (seq (dissoc x :field :order)) x))
                          order_by)]
     (throw (bad-query-ex
             (tru "Illegal value ''{0}'' in :order_by; unknown key ''{1}''."
