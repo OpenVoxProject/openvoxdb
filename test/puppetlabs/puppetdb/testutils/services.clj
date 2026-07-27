@@ -458,7 +458,7 @@
   "Returns the number of messages discarded from the command queue by
   the current PuppetDB instance."
   []
-  (-> (pdb-metrics-url "/mbeans/puppetlabs.puppetdb.command:type=global,name=discarded")
+  (-> (metrics-url-str "/mbeans/puppetlabs.puppetdb.command:type=global,name=discarded")
       get-or-throw
       (get-in [:body :Count])))
 
