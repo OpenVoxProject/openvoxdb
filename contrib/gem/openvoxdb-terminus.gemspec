@@ -17,6 +17,8 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
+  # dependencies here don't really matter because we currently package the terminus only as openvoxdb-termini deb/rpm.
+  # not as gem
   gem.add_runtime_dependency 'json'
-  gem.add_runtime_dependency 'openvox', '> 8.19', '< 9'
+  gem.add_runtime_dependency 'openvox', '> 8.19', '< 10'
 end
