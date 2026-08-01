@@ -45,8 +45,8 @@ See [the AST query language page][ast].
 * `timestamp` (string): the most recent time of fact submission from the
    associated certname.
 * `producer_timestamp` (string): the most recent time of fact submission for
-  the relevant certname from the Puppet Server.
-* `producer` (string): the certname of the Puppet Server that sent the factset to PuppetDB.
+  the relevant certname from the OpenVox Server.
+* `producer` (string): the certname of the OpenVox Server that sent the factset to OpenVoxDB.
 * `hash` (string): a hash of the factset's certname, environment,
   timestamp, facts, and producer_timestamp.
 
@@ -55,7 +55,7 @@ See [the AST query language page][ast].
 The following list contains related entities that can be used to constrain the result set using implicit subqueries. For more information, consult the documentation for [subqueries][subqueries].
 
 * [`environments`][environments]: the environment a factset was received from.
-* [`producers`][producers]: the Puppet Server that sent the factset to PuppetDB.
+* [`producers`][producers]: the OpenVox Server that sent the factset to OpenVoxDB.
 
 ### Response format
 
@@ -69,8 +69,8 @@ the form:
       "certname": <node name>,
       "environment": <node environment>,
       "timestamp": <time of last fact submission>,
-      "producer_timestamp": <time of command submission from Puppet Server>,
-      "producer": <Puppet Server certname>
+      "producer_timestamp": <time of command submission from OpenVox Server>,
+      "producer": <OpenVox Server certname>
       "facts": <expanded facts>,
       "hash": <sha1 sum of "facts" value>
     }
@@ -201,6 +201,6 @@ used to return a subset of the information normally returned by this route.
 
 ## Paging
 
-This query endpoint supports paged results via the common PuppetDB paging
+This query endpoint supports paged results via the common OpenVoxDB paging
 URL parameters. For more information, see the documentation
 on [paging][paging].

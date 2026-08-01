@@ -11,24 +11,24 @@ canonical: "/puppetdb/latest/api/overview.html"
 [ast]: ./query/v4/ast.markdown
 [pql]: ./query/v4/pql.markdown
 
-Because PuppetDB collects lots of data from Puppet, it's an ideal platform for new tools and applications that use that data. You can use the HTTP API described in these pages to interact with PuppetDB's data.
+Because OpenVoxDB collects lots of data from OpenVox, it's an ideal platform for new tools and applications that use that data. You can use the HTTP API described in these pages to interact with OpenVoxDB's data.
 
 ## Summary
 
-PuppetDB's API uses a Command/Query Responsibility Separation (CQRS) pattern. This means:
+OpenVoxDB's API uses a Command/Query Responsibility Separation (CQRS) pattern. This means:
 
 * Data can be **queried** using a standard REST-style API. Queries are processed immediately.
 * When **making changes** to data (facts, catalogs, etc.), you must send an explicit **command** (as opposed to submitting data without comment and letting the receiver determine intent). Commands are processed asynchronously in FIFO order.
 
-The PuppetDB API consists of the following parts:
+The OpenVoxDB API consists of the following parts:
 
 * [The REST interface for queries](#queries)
 * [The HTTP command submission interface](#commands)
-* [The wire formats that PuppetDB requires for incoming data](#wire-formats)
+* [The wire formats that OpenVoxDB requires for incoming data](#wire-formats)
 
 ## Queries
 
-PuppetDB's data can be queried with a REST API.
+OpenVoxDB's data can be queried with a REST API.
 
 * [Specification of the general query structure](./query/v4/query.markdown)
 * [AST query language][ast]
@@ -62,15 +62,15 @@ Version 2 of the query API has been retired. Please use v4.
 
 Commands are sent via HTTP but do not use a REST-style interface.
 
-PuppetDB supports a relatively small number of commands. The command submission interface and all available commands are described at the [commands page][commands].
+OpenVoxDB supports a relatively small number of commands. The command submission interface and all available commands are described at the [commands page][commands].
 
-Unlike the query API, these commands are generally only useful to Puppet itself, and all format conversion and command submission is handled by the [PuppetDB-termini][termini] on your Puppet Server.
+Unlike the query API, these commands are generally only useful to OpenVox itself, and all format conversion and command submission is handled by the [OpenVoxDB-termini][termini] on your OpenVox Server.
 
 The "replace" commands all require data in one of the wire formats described below.
 
 ## Wire formats
 
-All of PuppetDB's "replace" commands contain payload data, which must be in one of the following formats. These formats are also linked from the [commands](#commands) that use them.
+All of OpenVoxDB's "replace" commands contain payload data, which must be in one of the following formats. These formats are also linked from the [commands](#commands) that use them.
 
 * [Facts wire format version 4](./wire_format/facts_format_v4.markdown)
 * [Catalog wire format version 6](./wire_format/catalog_format_v6.markdown)

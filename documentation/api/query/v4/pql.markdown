@@ -15,27 +15,27 @@ layout: default
 
 > **Experimental Feature**: This featureset is experimental and is subject to rapid development and change.
 
-Puppet Query Language (PQL) is a query language designed with PuppetDB and
-Puppet data in mind. It provides a string-based query language as an alternative
-to the [AST query language][ast] PuppetDB has always supported.
+Puppet Query Language (PQL) is a query language designed with OpenVoxDB and
+OpenVox data in mind. It provides a string-based query language as an alternative
+to the [AST query language][ast] OpenVoxDB has always supported.
 
 Other resources you may also find useful include:
 
 * [PQL tutorial][tutorial]
 * [PQL examples][examples]
 
-## Executing PQL queries using the PuppetDB CLI
+## Executing PQL queries using the OpenVoxDB CLI
 
-[See the PuppetDB CLI documentation for more on its usage.][client-tools]
+[See the OpenVoxDB CLI documentation for more on its usage.][client-tools]
 
-The following examples use the PuppetDB CLI to execute a query:
+The following examples use the OpenVoxDB CLI to execute a query:
 
 **Without SSL:**
 
     puppet query 'nodes { certname = "macbook-pro.local" }' \
       --urls http://puppetdb.example.com:8080
 
-This requires that PuppetDB be
+This requires that OpenVoxDB be
 [configured to accept non-SSL connections][config_jetty]. By default, it will
 only accept unencrypted traffic from `localhost`.
 
@@ -47,10 +47,10 @@ only accept unencrypted traffic from `localhost`.
       --cert /etc/puppetlabs/puppet/ssl/certs/thisnode.pem \
       --key /etc/puppetlabs/puppet/ssl/private_keys/thisnode.pem
 
-This requires that you specify a certificate (issued by the same CA PuppetDB
+This requires that you specify a certificate (issued by the same CA OpenVoxDB
 trusts), a private key, and a CA certificate.
 
-> **Note**: The PuppetDB CLI can be configured using a config file at
+> **Note**: The OpenVoxDB CLI can be configured using a config file at
 `$HOME/.puppetlabs/client-tools/puppetdb.conf` with default values for the
 server urls and SSL credentials.
 
@@ -191,7 +191,7 @@ Returns the maximum value for all the values held in the `<field>` argument.
 
 ## Filter
 
-Filtering a query allows you to reduce the number of responses from PuppetDB
+Filtering a query allows you to reduce the number of responses from OpenVoxDB
 based on a filter.
 
 In a basic query, a filter is optional, and is provided in the `<filter>` area
@@ -279,7 +279,7 @@ fields being matched and the subqueries projection fields match:
 
 #### Null detection: `is null`, `is not null`
 
-Null values in PuppetDB are treated differently to other values. So to detect if
+Null values in OpenVoxDB are treated differently to other values. So to detect if
 a field is a null, instead of doing an exact match comparison, you must use
 either the `is null` or `is not null` operator.
 
@@ -308,7 +308,7 @@ The following example will match against the size of any disk on the system:
 ### Boolean operators
 
 Boolean operators are used within PQL filters to join conditons together to
-perform the filtering test within PuppetDB.
+perform the filtering test within OpenVoxDB.
 
 There are only 3 boolean operators today, in order of natural precedence:
 
@@ -474,7 +474,7 @@ precedence over limit:
 
     reports {certname = "foo.com" offset 10 limit 10}
 
-Note that because there is no default ordering for results returned by PuppetDB,
+Note that because there is no default ordering for results returned by OpenVoxDB,
 `limit` and `offset` are generally only useful in combination with `order by`.
 
 ### `order by`

@@ -51,7 +51,7 @@ describe Puppet::Resource::Catalog::Puppetdb do
       save
     end
 
-    it "should log a deprecation warning if one is returned from PuppetDB" do
+    it "should log a deprecation warning if one is returned from OpenVoxDB" do
       nethttpok['x-deprecation'] = 'A horrible deprecation warning!'
 
       Puppet.expects(:deprecation_warning).with do |msg|

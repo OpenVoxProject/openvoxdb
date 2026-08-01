@@ -44,10 +44,10 @@ locales/$(POT_NAME): $(shell $(FIND_SOURCES)) | locales
 	@tmp=$$(mktemp $@.tmp.XXXX);                                            \
 	$(FIND_SOURCES)                                                         \
 	    | xgettext --from-code=UTF-8 --language=lisp                        \
-	               --copyright-holder='Puppet <docs@puppet.com>'            \
+	               --copyright-holder='Vox Pupuli; portions Copyright (C) Puppet, Inc.' \
 	               --package-name="$(BUNDLE)"                               \
 	               --package-version="$(BUNDLE_VERSION)"                    \
-	               --msgid-bugs-address="docs@puppet.com"                   \
+	               --msgid-bugs-address="https://github.com/OpenVoxProject/openvoxdb/issues" \
 	               -k                                                       \
 	               -kmark:1 -ki18n/mark:1                                   \
 	               -ktrs:1 -ki18n/trs:1                                     \

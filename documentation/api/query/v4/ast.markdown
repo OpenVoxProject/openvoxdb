@@ -29,9 +29,9 @@ canonical: "/puppetdb/latest/api/query/v4/ast.html"
 
 ## Summary
 
-The AST (abstract syntax tree) query language for PuppetDB is a language that presents
+The AST (abstract syntax tree) query language for OpenVoxDB is a language that presents
 itself as a raw AST format. It can be used to provide complex querying via REST on each of
-PuppetDB's query [endpoints][entities].
+OpenVoxDB's query [endpoints][entities].
 
 This document outlines the operator syntax for this query language.
 
@@ -135,7 +135,7 @@ If you want to match any index for an array path element, you can use regular ex
 > like `"^sda.*"` may never match an array element.  Currently
 > those expressions will match for queries against the
 > [fact-contents][fact-contents], but for now, that should not be
-> considered reliable across PuppetDB upgrades.
+> considered reliable across OpenVoxDB upgrades.
 
 ### `null?` (is null)
 
@@ -230,7 +230,7 @@ function][to-char]. For instance, to get the full lower case month name of the
 ["extract", [["function", "to_string", "producer_timestamp", "month"]]]
 ```
 
-To get the last 2 digits of the year a report was submitted  from the Puppet Server:
+To get the last 2 digits of the year a report was submitted  from the OpenVox Server:
 
 ```
 ["extract", [["function", "to_string", "producer_timestamp", "YY"]]]]
@@ -268,7 +268,7 @@ full support on the `facts` and `trusted` response keys of the `inventory`
 endpoint, and partial support on the `parameters` column of the resources
 endpoint. It may be expanded to other endpoints in the future based on demand.
 
-Certain types of JSON data returned by PuppetDB can be queried in a structured
+Certain types of JSON data returned by OpenVoxDB can be queried in a structured
 way using `dot notation`. The rules for dot notation are:
 * Hash descendence is represented by a period-separated sequence of key names
 * Array indexing (`inventory` only) is represented with brackets (`[]`) on the
@@ -418,7 +418,7 @@ context explicitly.
 
 ## Paging operators (`limit`, `offset`, `order_by`)
 
-PuppetDB allows specification of paging clauses within a "from" clause in a
+OpenVoxDB allows specification of paging clauses within a "from" clause in a
 query or subquery. The `limit` and `offset` operators both accept an
 integer-valued argument, and `order_by` accepts a vector of either column names
 or vector pairs containing a column name and an ordering of "asc" or "desc".
@@ -490,7 +490,7 @@ all entities are implicitly relatable to all other entities, as not every relati
 Consult the documentation for the chosen [`<ENTITY>`][entities] for details on what
 implicit relationships are supported.
 
-In PuppetDB, we keep a map of how different entities relate to each
+In OpenVoxDB, we keep a map of how different entities relate to each
 other, and therefore no data beyond the entity is needed in this case. This is
 different from explicit subqueries, where you must specify how
 two entities are related. Implicit subqueries can be used to join any two
@@ -543,7 +543,7 @@ That is:
 
 These statements work together as follows (working "outward" and starting with the subquery):
 
-* The subquery collects a group of PuppetDB objects (specifically, a group of [resources][resources], [facts][facts], [fact-contents][fact-contents], or [nodes][nodes]). Each of these objects has many **fields.**
+* The subquery collects a group of OpenVoxDB objects (specifically, a group of [resources][resources], [facts][facts], [fact-contents][fact-contents], or [nodes][nodes]). Each of these objects has many **fields.**
 * The `extract` statement collects the value of one or more **fields** across every object returned by the subquery.
 * The `in` statement **matches** if its field values are present in the list returned by the `extract` statement.
 
@@ -639,9 +639,9 @@ Subquery statements are **non-transitive** and take two arguments:
 * The first argument **must** be the **name** of one of the available subqueries (listed below).
 * The second argument **must** be a **full query string** that makes sense for the endpoint being subqueried.
 
-As the second argument of an `extract` statement, a subquery statement acts as a collection of PuppetDB objects. Each of the objects returned by the subquery has many fields; the `extract` statement takes the value of one field from each of those objects, and passes that list of values to the `in` statement that contains it.
+As the second argument of an `extract` statement, a subquery statement acts as a collection of OpenVoxDB objects. Each of the objects returned by the subquery has many fields; the `extract` statement takes the value of one field from each of those objects, and passes that list of values to the `in` statement that contains it.
 
-Each subquery acts as a normal query to one of the PuppetDB endpoints. For info on constructing useful queries, see the docs page for the endpoint matching the subquery:
+Each subquery acts as a normal query to one of the OpenVoxDB endpoints. For info on constructing useful queries, see the docs page for the endpoint matching the subquery:
 
 * [`select_catalogs`][catalogs]
 * [`select_edges`][edges]

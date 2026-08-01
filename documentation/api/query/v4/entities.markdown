@@ -26,8 +26,8 @@ canonical: "/puppetdb/latest/api/query/v4/entities.html"
 [from]: ast.markdown#context-operators
 [subquery]: ast.markdown#subquery-operators
 
-The PuppetDB API provides access to a series of data entities that map to the Puppet ecosystem
-and the data that PuppetDB stores.
+The OpenVoxDB API provides access to a series of data entities that map to the OpenVox ecosystem
+and the data that OpenVoxDB stores.
 
 ![erd](../../../images/pdb_erd.png)
 

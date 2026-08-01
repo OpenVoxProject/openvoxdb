@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Creates a PuppetDB uberjar and runs tests against it
+# Creates an OpenVoxDB uberjar and runs tests against it
 
 set -ueo pipefail
 
@@ -33,7 +33,7 @@ run() {
     fi
 }
 
-# Create a PuppetDB uberjar
+# Create an OpenVoxDB uberjar
 run lein uberjar
 
 unset PDBBOX

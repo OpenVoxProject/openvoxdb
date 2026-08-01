@@ -6,10 +6,10 @@ Puppet::Face.define(:node, '0.0.1') do
   CommandDeactivateNode = Puppet::Util::Puppetdb::CommandNames::CommandDeactivateNode
 
   action :deactivate do
-    summary "Deactivate a set of nodes in PuppetDB"
+    summary "Deactivate a set of nodes in OpenVoxDB"
     arguments "<node> [<node> ...]"
     description <<-DESC
-      This will issue '#{CommandDeactivateNode}' commands to the PuppetDB server for
+      This will issue '#{CommandDeactivateNode}' commands to the OpenVoxDB server for
       each node specified. The server is found by looking in
       $confdir/puppetdb.conf. If any command submissions fail, the process will
     be aborted.

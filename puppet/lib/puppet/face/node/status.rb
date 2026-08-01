@@ -1,11 +1,11 @@
 Puppet::Face.define(:node, '0.0.1') do
   action :status do
-    summary "Fetch the current status for a set of nodes in PuppetDB"
+    summary "Fetch the current status for a set of nodes in OpenVoxDB"
     arguments "<node> [<node> ...]"
     description <<-DESC
       This action will retrieve the current status of a set of nodes from
-      PuppetDB. The information provided includes whether the node is active,
-      and the timestamps of its last catalog and facts. The PuppetDB server is
+      OpenVoxDB. The information provided includes whether the node is active,
+      and the timestamps of its last catalog and facts. The OpenVoxDB server is
       found by looking in $confdir/puppetdb.conf.
     DESC
 

@@ -49,7 +49,7 @@ bundle exec rake release:reconcile[6.4.0,6.3.1]
 Environment variables all have a default value in the rake task,
 but are also configurable on the command line.
 
-* `PDB_PATH` - path to the PuppetDB repo (Default: `./`)
+* `PDB_PATH` - path to the OpenVoxDB repo (Default: `./`)
 * `PDB_PE_PATH` - path to the pe-puppetdb-extensions repo (Default `../pe-puppetdb-extensions`)
 
 ## Output

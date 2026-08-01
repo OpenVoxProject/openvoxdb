@@ -1,8 +1,8 @@
 (ns puppetlabs.puppetdb.nodes
-  "Puppet nodes parsing
+  "OpenVox nodes parsing
 
    Functions that handle conversion of nodes from wire format to
-   internal PuppetDB format, including validation."
+   internal OpenVoxDB format, including validation."
   (:require
    [puppetlabs.puppetdb.schema :as pls]
    [schema.core :as s]))

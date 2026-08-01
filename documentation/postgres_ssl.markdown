@@ -6,12 +6,12 @@ canonical: "/puppetdb/latest/postgres_ssl.html"
 # Setting up SSL for PostgreSQL
 ## Talking to PostgreSQL using SSL/TLS
 
-This guide will help you configure SSL/TLS-secured connectivity between PuppetDB and PostgreSQL.
+This guide will help you configure SSL/TLS-secured connectivity between OpenVoxDB and PostgreSQL.
 
 When configuring SSL, you need to decide whether you will use:
 
-1. A self-signed certificate on the PuppetDB server (for example, the Puppet CA)
-2. A publicly signed certificate on the PuppetDB server
+1. A self-signed certificate on the OpenVoxDB server (for example, the OpenVox CA)
+2. A publicly signed certificate on the OpenVoxDB server
 
 Both methodologies are valid, but while self-signed certificates are far more common in the real world, this type of configuration must be set up with care.
 
@@ -19,20 +19,20 @@ Before beginning, take a look at PostgreSQL's [secure TCP/IP connections with SS
 
 *Note:* Our guide focuses on server-based SSL. Client certificate support is not documented at this time.
 
-### Using Puppet Agent certificates for SSL
+### Using OpenVox Agent certificates for SSL
 
-If you don't have a signed Puppet certificate on your PostgreSQL server, see the [ssl documentaion](https://jdbc.postgresql.org/documentation/head/ssl-client.html) for
+If you don't have a signed OpenVox certificate on your PostgreSQL server, see the [ssl documentaion](https://jdbc.postgresql.org/documentation/head/ssl-client.html) for
 alternate SSL connection options.
 
-Using Puppet certificates to secure your PostgreSQL server has the following benefits:
+Using OpenVox certificates to secure your PostgreSQL server has the following benefits:
 
-* Because you are using PuppetDB, we can presume that you are using Puppet on each server. This means you can reuse the local Puppet agent certificate for PostgreSQL.
-* Because your local Puppet agent's certificate must be signed for Puppet to work, you likely have an established workflow for getting these signed.
-* We also recommend this methodology for securing the HTTPS interface for PuppetDB.
-* You can remove the plaintext password from your PuppetDB config files if you
-    also [configure database authorization using agent certificates](#using-puppet-agent-certificates-for-database-authorization)
+* Because you are using OpenVoxDB, we can presume that you are using OpenVox on each server. This means you can reuse the local OpenVox agent certificate for PostgreSQL.
+* Because your local OpenVox agent's certificate must be signed for OpenVox to work, you likely have an established workflow for getting these signed.
+* We also recommend this methodology for securing the HTTPS interface for OpenVoxDB.
+* You can remove the plaintext password from your OpenVoxDB config files if you
+    also [configure database authorization using agent certificates](#using-openvox-agent-certificates-for-database-authorization)
 
-To begin, configure your PostgreSQL server to use the host's Puppet server certificate and key. The location of these files can be found by using the following commands:
+To begin, configure your PostgreSQL server to use the host's OpenVox Server certificate and key. The location of these files can be found by using the following commands:
 
     # Certificate
     puppet config print hostcert
@@ -43,26 +43,26 @@ Copy these files to the relevant directories as specified by the PostgreSQL conf
 
 Make sure that `ssl` is set to `on` in `postgresql.conf`, and then restart PostgreSQL.
 
-After this is complete, modify the database JDBC connection URL in your PuppetDB configuration as follows:
+After this is complete, modify the database JDBC connection URL in your OpenVoxDB configuration as follows:
 
     [database]
     subname = //<HOST>:<PORT>/<DATABASE>?ssl=true&sslfactory=org.postgresql.ssl.LibPQFactory&sslmode=verify-full&sslrootcert=/etc/puppetlabs/puppetdb/ssl/ca.pem
     username = <USERNAME>
     password = <PASSWORD>
 
-Restart PuppetDB and monitor your logs for errors. Your connection should now
+Restart OpenVoxDB and monitor your logs for errors. Your connection should now
 be SSL (but you will still be authorizing your database connection using a
 plaintext password).
 
-### Using Puppet Agent certificates for database authorization
+### Using OpenVox Agent certificates for database authorization
 
-To use Puppet's signed certificates to authenticate PuppetDB's database
+To use OpenVox's signed certificates to authenticate OpenVoxDB's database
 connection (instead of using a password in the database config section), you
 need to follow the above instructions for setting up an SSL connection between
-PuppetDB and Postgres and then change the `pg_hba.conf` and `pg_ident.conf`
-settings to allow your PuppetDB service to access the `puppetdb` database using
+OpenVoxDB and Postgres and then change the `pg_hba.conf` and `pg_ident.conf`
+settings to allow your OpenVoxDB service to access the `puppetdb` database using
 its certificate.  Also, your PostgreSQL server will need to be able to validate
-the certificate of your PuppetDB server, so copy the `ca.pem` (which can be
+the certificate of your OpenVoxDB server, so copy the `ca.pem` (which can be
 found with `puppet config print localcacert` over to the directory of your
 `ssl_cert_file` and `ssl_key_file`, and set the `ssl_ca_file` in your
 `postgresql.conf`.
@@ -93,14 +93,14 @@ puppetdb-puppetdb-migrator-map HOSTNAME puppetdb_migrator
 puppetdb-puppetdb-read-map HOSTNAME puppetdb_read
 ```
 
-Finally, configure PuppetDB's `subname` to include its private key and
+Finally, configure OpenVoxDB's `subname` to include its private key and
 certificate.
 
 ```
 subname = //<HOST>:<PORT>/<DATABASE>?ssl=true&sslfactory=org.postgresql.ssl.LibPQFactory&sslmode=verify-full&sslrootcert=/etc/puppetlabs/puppetdb/ssl/ca.pem&sslkey=/tmp/private_key.pk8&sslcert=/etc/puppetlabs/puppetdb/ssl/public.pem
 ```
 
-### Setting up SSL with a publicly signed certificate on the PuppetDB server
+### Setting up SSL with a publicly signed certificate on the OpenVoxDB server
 
 First, obtain your signed certificate using the process required by your commercial Certificate Authority. 
 
@@ -108,7 +108,7 @@ First, obtain your signed certificate using the process required by your commerc
 
 Follow the documentation for [secure TCP/IP connections with SSL](http://www.postgresql.org/docs/current/static/ssl-tcp.html), which explains in detail how to configure SSL on the server. Make sure you place your signed certificate and private key in the locations specified by the `ssl_cert_file` and `ssl_key_file` locations, and that you change the `ssl` setting to `on` in your `postgresql.conf`. Don't forget to give the correct permissions for each file (such as `chmod 0600 file`). Otherwise, PostgreSQL will reject the key and cert files.
 
-Because the JDBC PostgreSQL driver utilizes the Java's system KeyStore, and because the system KeyStore usually contains all public CAs, there should be no trust issues with the client configuration. Simply modify the JDBC URL as provided in the database configuration section for PuppetDB.
+Because the JDBC PostgreSQL driver utilizes the Java's system KeyStore, and because the system KeyStore usually contains all public CAs, there should be no trust issues with the client configuration. Simply modify the JDBC URL as provided in the database configuration section for OpenVoxDB.
 
 For example:
 
@@ -117,12 +117,12 @@ For example:
     username = <USERNAME>
     password = <PASSWORD>
 
-Restart PuppetDB and monitor your logs for errors. Your connection should now be SSL.
+Restart OpenVoxDB and monitor your logs for errors. Your connection should now be SSL.
 
 #### Using a custom Java keystore
 
 If your CA cert is not in Java's default keystore, it may be necessary to create your own. Create a
-TrustStore containing your CA certificate. If you have been using PuppetDB for a while, you might
+TrustStore containing your CA certificate. If you have been using OpenVoxDB for a while, you might
 already have such a file in `/etc/puppetdb/ssl/truststore.jks`. If not, the quickest way to create
 this file is:
 
@@ -130,7 +130,7 @@ this file is:
 
 Tell Java to use this TrustStore instead of the system's default by specifying values for the
 properties for `trustStore` and `trustStorePassword`. These properties can be applied by modifying
-your service settings for PuppetDB and appending the required settings to the JAVA_ARGS variable.
+your service settings for OpenVoxDB and appending the required settings to the JAVA_ARGS variable.
 In Red Hat, the path to this file is `/etc/sysconfig/puppetdb`. In Debian, use
 `/etc/default/puppetdb`. For example:
 
@@ -140,14 +140,14 @@ In Red Hat, the path to this file is `/etc/sysconfig/puppetdb`. In Debian, use
 *Note:* Replace `<PASSWORD>` with the password you used to create the KeyStore, or the one found in
 `/etc/puppetdb/ssl/puppetdb_keystore_pw.txt`.
 
-After this is complete, modify the database JDBC connection URL in your PuppetDB configuration as
+After this is complete, modify the database JDBC connection URL in your OpenVoxDB configuration as
 the documentation describes above for publicly signed certificates.
 
 ### Disabling SSL verification
 
 **Warning: This is not recommended.** SSL connections offer a higher level of security. Disabling SSL verification effectively removes the ability for the SSL client to detect man-in-the-middle attacks.
 
-However, if you wish to disable SSL verification, you can do so by simply modifying your JDBC URL in the database configuration section of PuppetDB as follows:
+However, if you wish to disable SSL verification, you can do so by simply modifying your JDBC URL in the database configuration section of OpenVoxDB as follows:
 
 {% comment %}This code block broke Jekyll for some reason. I'm using a pre-formatted version of it instead of chasing down the problem. -NF{% endcomment %}
 
@@ -157,4 +157,4 @@ username = &lt;USERNAME&gt;
 password = &lt;PASSWORD&gt;
 </code></pre>
 
-Restart PuppetDB and monitor your logs for errors. Your connection should now be SSL, with validation disabled.
+Restart OpenVoxDB and monitor your logs for errors. Your connection should now be SSL, with validation disabled.

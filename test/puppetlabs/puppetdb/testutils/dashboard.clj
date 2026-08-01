@@ -8,4 +8,4 @@
       .toASCIIString))
 
 (defn dashboard-page? [{:keys [body] :as _req}]
-  (.contains body "<title>OpenvoxDB: Dashboard</title>"))
+  (.contains body "<title>OpenVoxDB: Dashboard</title>"))

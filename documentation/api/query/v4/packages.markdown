@@ -21,8 +21,10 @@ canonical: "/puppetdb/latest/api/query/v4/packages.html"
 [resources]: ./resources.markdown
 [inventory]: inventory.markdown
 
-> **PE feature**: Package metadata collection, storage, and querying is
-> a Puppet Enterprise-only feature.
+> **Note**: These endpoints only return data if package inventory is
+> submitted as part of a node's factset (the `package_inventory` field of the
+> [facts wire format](../../wire_format/facts_format_v5.markdown)). The OpenVox
+> agent does not collect package inventory by default.
 
 ## `/pdb/query/v4/packages`
 
@@ -106,6 +108,6 @@ exactly like a call to `/pdb/query/v4/packages` with a query string of `["=",
 
 ## Paging
 
-These query endpoints support paged results via the common PuppetDB paging
+These query endpoints support paged results via the common OpenVoxDB paging
 URL parameters. For more information, please see the documentation
 on [paging][paging].

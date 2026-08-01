@@ -228,7 +228,7 @@ describe Puppet::Node::Facts::Puppetdb do
       }.to raise_error Puppet::Error, /Everything is terrible!/
     end
 
-    it "should log a deprecation warning if one is returned from PuppetDB" do
+    it "should log a deprecation warning if one is returned from OpenVoxDB" do
       nethttp = Net::HTTPOK.new('1.1', 200, 'OK')
       nethttp['x-deprecation'] = "This is deprecated!"
 
@@ -387,7 +387,7 @@ describe Puppet::Node::Facts::Puppetdb do
 
     end
 
-    it "should log a deprecation warning if one is returned from PuppetDB" do
+    it "should log a deprecation warning if one is returned from OpenVoxDB" do
       nethttpok['x-deprecation'] = "This is deprecated!"
       responseok.stubs(:body).returns '[]'
 

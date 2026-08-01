@@ -1,12 +1,12 @@
 ---
 layout: default
-title: "PuppetDB: Metrics API v2"
+title: "OpenVoxDB: Metrics API v2"
 canonical: "/puppetdb/latest/api/metrics/v2/jolokia.html"
 ---
 
 # Metrics API v2
 
-The Jolokia API is enabled by default. You must use `https://` to access `metrics/v2` for any service, and you must present authorization in the form of a Puppet certificate.
+The Jolokia API is enabled by default. You must use `https://` to access `metrics/v2` for any service, and you must present authorization in the form of an OpenVox certificate.
 
 ## Jolokia endpoints
 
@@ -14,7 +14,7 @@ The v2 metrics endpoint uses the [Jolokia](https://jolokia.org) library, an
 extensive open-source metrics library with its own documentation.
 
 The documentation below provides only the information you need to use the metrics
-as configured by default for PuppetDB, but Jolokia offers more features than
+as configured by default for OpenVoxDB, but Jolokia offers more features than
 are described below. Consult the [Jolokia documentation](https://jolokia.org/documentation.html)
 for more information.
 
@@ -215,8 +215,8 @@ curl https://localhost:8081/metrics/v2/list \
   --cacert path/to/ca.pem
 ```
 
-Puppet's configuration also has enough information to construct the command for
-you. From the appropriate server with a Puppet Agent configured, the following
+OpenVox's configuration also has enough information to construct the command for
+you. From the appropriate server with an OpenVox Agent configured, the following
 command should populate the necessary information. For repeated querying, you
 should save the output of each command because printing the necessary configs
 is _much_ slower than a simple curl command.
@@ -243,7 +243,7 @@ curl "https://$(puppet config print server):8081/metrics/v2/list" \
 
 ### Database Metrics
 
-PuppetDB relies on the HikariCP connection pool. The complete list of
+OpenVoxDB relies on the HikariCP connection pool. The complete list of
 HikariCP metrics and their names can be found in
 [their documentation](https://github.com/brettwooldridge/HikariCP/wiki/Dropwizard-Metrics).
 All the database metrics have the following naming convention:
@@ -255,7 +255,7 @@ puppetlabs.puppetdb.database:PDBReadPool.<HikariCP metric>
 
 ### Message queue metrics
 
-PuppetDB maintains various command processing metrics, all computed
+OpenVoxDB maintains various command processing metrics, all computed
 with respect to the last restart.  There are `global` statistics,
 aggregated across all commands, and individual statistics, computed
 for each version of each command.
@@ -303,7 +303,7 @@ For example: `puppetlabs.puppetdb.mq:name=replace catalog.9.processed`.
 
 ### HTTP metrics
 
-PuppetDB automatically collects metrics about every URL it has served
+OpenVoxDB automatically collects metrics about every URL it has served
 to clients. You can see things like the average response time on a
 per-URL basis, or see how many requests against a particular URL
 resulted in a HTTP 400 response code. Each of the following metrics is
@@ -315,7 +315,7 @@ Additionally, we also support the following explicit names:
 >**Note:** The use of these explicit names is deprecated; please use, for example, `/pdb/cmd/v1` instead.
 
 * `commands`: stats relating to the command processing REST
-  endpoint. The PuppetDB-termini in Puppet talk to this endpoint to
+  endpoint. The OpenVoxDB-termini in OpenVox talk to this endpoint to
   submit new catalogs, facts, etc.
 * `metrics`: stats relating to the metrics REST endpoint. This is the
   endpoint you're reading about right now!
@@ -336,13 +336,13 @@ independent counters and statistics.
 
 ### Storage metrics
 
-Metrics involving the PuppetDB storage subsystem all begin with the
+Metrics involving the OpenVoxDB storage subsystem all begin with the
 `puppetlabs.puppetdb.storage:name=` prefix. There are
 a number of metrics concerned with individual storage operations (storing
 resources, storing edges, etc.). Metrics of particular note include:
 
 * `puppetlabs.puppetdb.storage:name=duplicate-pct`:
-  the percentage of catalogs that PuppetDB determines to be
+  the percentage of catalogs that OpenVoxDB determines to be
   duplicates of existing catalogs.
 * `puppetlabs.puppetdb.storage:name=gc-time`: states
   about how long it takes to do storage compaction.

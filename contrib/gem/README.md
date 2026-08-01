@@ -1,4 +1,4 @@
-# PuppetDB Terminus Gemspec
+# OpenVoxDB Terminus Gemspec
 
 The files in this directory are intended to provide a starting point for
 building a gem package of the puppetdb terminus code.  This will be useful

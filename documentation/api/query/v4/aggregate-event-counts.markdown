@@ -14,13 +14,13 @@ canonical: "/puppetdb/latest/api/query/v4/aggregate-event-counts.html"
 > **Experimental endpoint**: The aggregate-event-counts endpoint is designated
 > as experimental. It may be altered or removed in a future release.
 
-Puppet agent nodes submit reports after their runs, and the Puppet Server forwards these to PuppetDB. Each report includes:
+OpenVox agent nodes submit reports after their runs, and the OpenVox Server forwards these to OpenVoxDB. Each report includes:
 
 * Data about the entire run.
 * Metadata about the report.
 * Many _events,_ describing what happened during the run.
 
-After this information is stored in PuppetDB, it can be queried in various ways.
+After this information is stored in OpenVoxDB, it can be queried in various ways.
 
 * You can query **data about the run** and **report metadata** by making an HTTP request to the [`/reports`](./reports.markdown) endpoint.
 * You can query **data about individual events** by making an HTTP request to the [`/events`][events] endpoint.
@@ -72,25 +72,6 @@ event-count results that were aggregated.
         "skips": 1,
         "total": 3
     } ]
-
-#### Puppet Enterprise
-
-In PE, the `successes` and `noops` counts are subdivided into intentional and corrective parts.
-Events are mapped to the corresponding counts based on the value of `corrective_change` flag.
-
-    [ {
-        "summarize_by": "containing_class",
-        "intentional_successes": 2,
-        "corrective_successes": 0,
-        "failures": 0,
-        "intentional_noops": 0,
-        "corrective_noops": 0,
-        "skips": 1,
-        "total": 3
-    } ]
-
-`intentional_successes`, `corrective_successes`, `intentional_noops`, and `corrective_noops` fields
-can be used in `counts_filter` too.
 
 ### Examples
 

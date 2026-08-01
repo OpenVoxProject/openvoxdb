@@ -104,7 +104,7 @@
 
 (defn transform-integer
   ;; 64-bit
-  ;; https://puppet.com/docs/puppet/5.3/lang_data_number.html#the-integer-data-type
+  ;; https://docs.openvoxproject.org/openvox/latest/lang_data_number.html#the-integer-data-type
   ([int]
    (Long/valueOf int))
   ([neg int]

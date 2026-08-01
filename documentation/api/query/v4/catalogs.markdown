@@ -42,15 +42,15 @@ See [the AST query language page][ast].
 * `version` (string): an arbitrary string that uniquely identifies each catalog for a node.
 * `environment` (string): the environment associated with the catalog's certname.
 * `transaction_uuid` (string): a string used to tie a catalog to a report from
-  the same Puppet run (use `catalog_uuid` when running off a cached catalog).
+  the same OpenVox run (use `catalog_uuid` when running off a cached catalog).
 * `catalog_uuid` (string): a string used to tie a catalog to a report to the
-  catalog used from that Puppet run.
+  catalog used from that OpenVox run.
 * `code_id` (string): a string used to tie a catalog to the Puppet code which generated the catalog.
 * `hash` (string): SHA-1 hash of the resources of associated with a node's most
   recent catalog.
 * `producer_timestamp` (string): a string representing the time at which the
-  `replace_catalog` command for a given catalog was submitted from the Puppet Server.
-* `producer` (string): the certname of the Puppet Server that sent the catalog to PuppetDB.
+  `replace_catalog` command for a given catalog was submitted from the OpenVox Server.
+* `producer` (string): the certname of the OpenVox Server that sent the catalog to OpenVoxDB.
 
 ### Subquery relationships
 
@@ -58,7 +58,7 @@ The following list contains related entities that can be used to constrain the
 result set using implicit subqueries. For more information consult the
 documentation for [subqueries][subqueries].
 
-* [`producers`][producers]: the Puppet Server that sent the catalog to PuppetDB.
+* [`producers`][producers]: the OpenVox Server that sent the catalog to OpenVoxDB.
 * [`environments`][environments]: environment for a catalog.
 
 ### Response format
@@ -75,8 +75,8 @@ the form:
       "hash" : <sha1 sum of catalog resources>,
       "transaction_uuid" : <string to identify puppet run>,
       "code_id" : <string to identify puppet code>,
-      "producer_timestamp": <time of transmission by Puppet Server>,
-      "producer": <Puppet Server certname>
+      "producer_timestamp": <time of transmission by OpenVox Server>,
+      "producer": <OpenVox Server certname>
       "resources" : <expanded resources>,
       "edges" : <expanded edges>
     }

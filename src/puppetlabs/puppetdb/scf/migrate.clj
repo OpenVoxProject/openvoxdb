@@ -2605,7 +2605,7 @@
    ;; cli command.
 
 (defn desired-schema-version
-  "The newest migration this PuppetDB instance knows about.  Anything
+  "The newest migration this OpenVoxDB instance knows about.  Anything
   newer is considered invalid as far as this instance is concerned."
   []
   (apply max (keys migrations)))
@@ -2649,7 +2649,7 @@
 
 (defn unrecognized-migrations
   "Returns a set of migrations, likely created by a future version of
-  PuppetDB"
+  OpenVoxDB"
   [applied-migrations]
   (set/difference applied-migrations
                   (set (range 0 (inc (desired-schema-version))))))
@@ -2667,14 +2667,14 @@
               (str
                (trs "Found an old and unsupported database migration (migration number {0})." latest-applied-migration)
                " "
-               (trs "PuppetDB only supports upgrading from the previous major version to the current major version.")
+               (trs "OpenVoxDB only supports upgrading from the previous major version to the current major version.")
                " "
                (trs "As an example, users wanting to upgrade from 2.x to 4.x should first upgrade to 3.x.")))))
 
     (when-let [unexpected (-> (unrecognized-migrations applied-migration-versions)
                               sort first)]
       (throw (IllegalStateException.
-              (trs "Your PuppetDB database contains a schema migration numbered {0}, but this version of PuppetDB does not recognize that version."
+              (trs "Your OpenVoxDB database contains a schema migration numbered {0}, but this version of OpenVoxDB does not recognize that version."
                    unexpected))))
     true))
 
@@ -2779,8 +2779,8 @@
 
 (defn- require-extensions []
   (when-not (sutils/pg-extension? "pg_trgm")
-    (let [msg (str (trs "PuppetDB requires the PostgreSQL `pg_trgm` extension.\n")
-                   (trs "Please connect to the PuppetDB database and run this:\n")
+    (let [msg (str (trs "OpenVoxDB requires the PostgreSQL `pg_trgm` extension.\n")
+                   (trs "Please connect to the OpenVoxDB database and run this:\n")
                    (trs "    CREATE EXTENSION pg_trgm;\n"))]
       (log/error msg)
       (throw (ex-info ""

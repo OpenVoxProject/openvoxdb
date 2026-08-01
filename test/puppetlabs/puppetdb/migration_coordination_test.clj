@@ -36,8 +36,8 @@
            "puppetlabs.puppetdb.middleware"
            (not
             (or (str/includes? m "terminating connection due to administrator command")
-                (str/includes? m "migration 86 which is too new for this version of PuppetDB")
-                (str/includes? m "Please run PuppetDB with the migrate option set to true")))
+                (str/includes? m "migration 86 which is too new for this version of OpenVoxDB")
+                (str/includes? m "Please run OpenVoxDB with the migrate option set to true")))
            true))))
 
 (deftest schema-mismatch-causes-new-connections-to-throw-expected-errors
@@ -84,8 +84,8 @@
                                     (svc-utils/query-url-str "/facts"))))
                    resp (-> ex ex-data :response)
                    err-msg (if db-upgraded?
-                             "ERROR: Please upgrade PuppetDB"
-                             "ERROR: Please run PuppetDB with the migrate option set to true")]
+                             "ERROR: Please upgrade OpenVoxDB"
+                             "ERROR: Please run OpenVoxDB with the migrate option set to true")]
                (is (#{500 503} (:status resp)))
                (cond
                  (some? (re-find (re-pattern err-msg) (:body resp))) :found

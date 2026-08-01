@@ -5,10 +5,10 @@
    numbers of various fun things."
    (:require [trptcolin.versioneer.core :as version]))
 
-;; ### PuppetDB current version
+;; ### OpenVoxDB current version
 
 (defn version
-  "Get the version number of this PuppetDB installation."
+  "Get the version number of this OpenVoxDB installation."
   []
   {:post [(string? %)]}
   (version/get-version "org.openvoxproject" "puppetdb"))

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-# Creates a local PuppetDB sandbox directory
-# Also creates a PostgreSQL sandbox inside of new PuppetDB sandbox in directory "pg"
-# These sandboxes contain all PuppetDB and PostgreSQL configuration and data storage
+# Creates a local OpenVoxDB sandbox directory
+# Also creates a PostgreSQL sandbox inside of new OpenVoxDB sandbox in directory "pg"
+# These sandboxes contain all OpenVoxDB and PostgreSQL configuration and data storage
 # All flags are required
 # Sandbox directory must not already exist
 
@@ -69,7 +69,7 @@ export PGUSER=postgres
 
 mkdir "$pdbbox"
 
-# Create PostgreSQL sandbox inside PuppetDB sandbox with pgbox
+# Create PostgreSQL sandbox inside OpenVoxDB sandbox with pgbox
 # Relies on the PGBOX environment variable to know where sandbox should go
 pgbox init --pgbin "$pgbin" --port "$pgport" "${bind_args[@]}" -- -E UTF8 --locale=C
 
@@ -121,7 +121,7 @@ set-passwd() {
     pgbox env psql -f "$tmp_cmds"
 }
 
-# Save newly created passwords to filesystem inside PuppetDB sandbox
+# Save newly created passwords to filesystem inside OpenVoxDB sandbox
 save-passwd "$passwd" "$tmp_dir" "$pdbbox/test-pass"
 save-passwd "$migrator_passwd" "$tmp_dir" "$pdbbox/test-pass-migrator"
 save-passwd "$admin_passwd" "$tmp_dir" "$pdbbox/test-pass-admin"
@@ -175,7 +175,7 @@ set-passwd pdb_test_read "$pdbbox/test-pass-read" "$tmp_dir"
 
 setup-roles pdb_test_read pdb_test pdb_test_migrator
 
-# Creates a PuppetDB database. Loads necessary extensions, sets permissions
+# Creates an OpenVoxDB database. Loads necessary extensions, sets permissions
 setup-pdb()
 {
   local dbname="$1"
@@ -200,14 +200,14 @@ ADMIN
 MIGRATOR
 }
 
-# Create main PuppetDB postgres roles
+# Create main OpenVoxDB postgres roles
 pgbox env createuser -DRS puppetdb
 pgbox env createuser -DRS puppetdb_read
 pgbox env createuser -DRS puppetdb_migrator
 
 setup-roles puppetdb_read puppetdb puppetdb_migrator
 
-# Set passwords for main PuppetDB postgres roles
+# Set passwords for main OpenVoxDB postgres roles
 set-passwd puppetdb "$pdbbox/test-pass" "$tmp_dir"
 set-passwd puppetdb_read "$pdbbox/test-pass-read" "$tmp_dir"
 set-passwd puppetdb_migrator "$pdbbox/test-pass-migrator" "$tmp_dir"
@@ -254,7 +254,7 @@ EOF
 
 host=${bind_addr[${#bind_addr[@]}-1]}
 
-# Create PuppetDB main config file
+# Create OpenVoxDB main config file
 confdir="$pdbbox/conf.d"
 mkdir "$confdir"
 cat > "$confdir/pdb.ini" <<EOF
@@ -287,7 +287,7 @@ ssl-key = test-resources/localhost.key
 client-auth = want
 EOF
 
-# Create PuppetDB auth config file
+# Create OpenVoxDB auth config file
 cat > "$confdir/auth.conf" <<EOF
 authorization: {
     version: 1
@@ -390,5 +390,5 @@ work_mem = 96MB
 wal_buffers = 8MB
 EOF
 
-# Make empty pdbbox file to signify that this directory is a PuppetDB sandbox
+# Make empty pdbbox file to signify that this directory is an OpenVoxDB sandbox
 touch "$pdbbox/pdbbox"

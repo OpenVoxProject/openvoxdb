@@ -8,7 +8,7 @@ canonical: "/puppetdb/latest/api/query/v4/nodes.html"
 
 [resource]: ./resources.markdown
 [curl]: ../curl.markdown#using-curl-from-localhost-non-sslhttp
-[statuses]: https://puppet.com/docs/puppet/latest/format_report.html#puppettransactionreport
+[statuses]: https://docs.openvoxproject.org/openvox/latest/format_report.html#puppettransactionreport
 [paging]: ./paging.markdown
 [query]: query.markdown
 [8601]: http://en.wikipedia.org/wiki/ISO_8601
@@ -63,7 +63,7 @@ The below fields are allowed as filter criteria and are returned in all response
 * `report_timestamp` (timestamp): the last time a report run was complete. Timestamps are always [ISO-8601][8601] compatible date/time strings.
 
 * `latest_report_status` (string): the status of the latest report. Possible values
-  come from Puppet's report status, which can be found [here][statuses].
+  come from OpenVox's report status, which can be found [here][statuses].
 
 * `latest_report_noop` (boolean): indicates whether the most recent report for
   the node was a noop run.
@@ -72,8 +72,8 @@ The below fields are allowed as filter criteria and are returned in all response
   report for the node contained noop events.
 
 * `latest_report_corrective_change` (boolean): a flag indicating whether the latest
-  report for the node included events that remediated configuration drift. This
-  field is only populated in PE.
+  report for the node included events that remediated configuration drift.
+  OpenVoxDB does not store corrective changes, so this field is always null.
 
 * `cached_catalog_status` (string): Cached catalog status of the
   last puppet run for the node. Possible values are `explicitly_requested`,
@@ -95,7 +95,7 @@ The below fields are allowed as filter criteria and are returned in all response
 
 > *Note*: configuration of fact expiration is an experimental feature
 > which might be altered or removed in a future release, and for the
-> time being, PuppetDB exports will not include this information.
+> time being, OpenVoxDB exports will not include this information.
 
 * `expires_facts_updated` (timestamp or null): indicates when the
   value of `expires_facts` was last changed.  This will be `null` if
@@ -330,6 +330,6 @@ this route.
 
 ## Paging
 
-This query endpoint supports paged results via the common PuppetDB paging
+This query endpoint supports paged results via the common OpenVoxDB paging
 URL parameters. For more information, please see the documentation
 on [paging][paging].

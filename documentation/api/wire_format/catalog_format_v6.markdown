@@ -6,22 +6,22 @@ canonical: "/puppetdb/latest/api/wire_format/catalog_format_v6.html"
 
 # Catalog wire format - v6
 
-[containment]: https://puppet.com/docs/puppet/latest/lang_containment.html
-[relationship]: https://puppet.com/docs/puppet/latest/lang_relationships.html
-[chain]: https://puppet.com/docs/puppet/latest/lang_relationships.html#syntax-chaining-arrows
-[metaparameters]: https://puppet.com/docs/puppet/latest/lang_relationships.html#syntax-relationship-metaparameters
-[require]: https://puppet.com/docs/puppet/latest/lang_relationships.html#syntax-the-require-function
-[resource_ref]: https://puppet.com/docs/puppet/latest/lang_data_resource_reference.html
-[numbers]: https://puppet.com/docs/puppet/latest/lang_data_number.html
-[undef]: https://puppet.com/docs/puppet/latest/lang_data_undef.html
-[namevar]: https://puppet.com/docs/puppet/latest/lang_resources.html#namenamevar
-[resource]: https://puppet.com/docs/puppet/latest/lang_resources.html
-[title]: https://puppet.com/docs/puppet/latest/lang_resources.html#title
-[type]: https://puppet.com/docs/puppet/latest/lang_resources.html#type
-[attributes]: https://puppet.com/docs/puppet/latest/lang_resources.html#attributes
+[containment]: https://docs.openvoxproject.org/openvox/latest/lang_containment.html
+[relationship]: https://docs.openvoxproject.org/openvox/latest/lang_relationships.html
+[chain]: https://docs.openvoxproject.org/openvox/latest/lang_relationships.html#syntax-chaining-arrows
+[metaparameters]: https://docs.openvoxproject.org/openvox/latest/lang_relationships.html#syntax-relationship-metaparameters
+[require]: https://docs.openvoxproject.org/openvox/latest/lang_relationships.html#syntax-the-require-function
+[resource_ref]: https://docs.openvoxproject.org/openvox/latest/lang_data_resource_reference.html
+[numbers]: https://docs.openvoxproject.org/openvox/latest/lang_data_number.html
+[undef]: https://docs.openvoxproject.org/openvox/latest/lang_data_undef.html
+[namevar]: https://docs.openvoxproject.org/openvox/latest/lang_resources.html#namenamevar
+[resource]: https://docs.openvoxproject.org/openvox/latest/lang_resources.html
+[title]: https://docs.openvoxproject.org/openvox/latest/lang_resources.html#title
+[type]: https://docs.openvoxproject.org/openvox/latest/lang_resources.html#type
+[attributes]: https://docs.openvoxproject.org/openvox/latest/lang_resources.html#attributes
 
-PuppetDB receives catalogs from Puppet Servers in the following wire format. This format is subtly different from the internal format used by Puppet, so catalogs are converted by the
-[PuppetDB catalog terminus](../../connect_puppet_server.markdown) before they are sent.
+OpenVoxDB receives catalogs from OpenVox Servers in the following wire format. This format is subtly different from the internal format used by OpenVox, so catalogs are converted by the
+[OpenVoxDB catalog terminus](../../connect_puppet_server.markdown) before they are sent.
 
 ## Catalog interchange format
 
@@ -53,7 +53,7 @@ String. The name of the node for which the catalog was compiled.
 
 #### `version`
 
-String. An arbitrary string that uniquely identifies this specific catalog across time for a single node. This is controlled by Puppet's [`config_version` setting](https://puppet.com/docs/puppet/latest/configuration.html#configversion) and is usually the seconds elapsed since the epoch.
+String. An arbitrary string that uniquely identifies this specific catalog across time for a single node. This is controlled by OpenVox's [`config_version` setting](https://docs.openvoxproject.org/openvox/latest/configuration.html#configversion) and is usually the seconds elapsed since the epoch.
 
 #### `environment`
 
@@ -66,7 +66,7 @@ List of [`<edge>` objects](#data-type-edge). **Every** [relationship][] between 
   > **Notes:**
   >
   > * "Autorequire" relationships are not currently encoded in the catalog.
-  > * This key is significantly different from its equivalent in Puppet's internal catalog format, which only encodes containment edges.
+  > * This key is significantly different from its equivalent in OpenVox's internal catalog format, which only encodes containment edges.
 
 #### `resources`
 
@@ -79,8 +79,8 @@ This field may be `null`.
 
 #### `producer_timestamp`
 
-DateTime. The time of catalog submission from the Puppet Server to PuppetDB. This
-field is currently populated by the Puppet Server.
+DateTime. The time of catalog submission from the OpenVox Server to OpenVoxDB. This
+field is currently populated by the OpenVox Server.
 
 ### Data type: `<string>`
 
@@ -160,7 +160,7 @@ String            | Relationship Type        | Origin of Relationship
 
 ### Data type: `<resource>`
 
-A JSON object of the following form, which represents a [Puppet resource][resource]:
+A JSON object of the following form, which represents an [OpenVox resource][resource]:
 
     {"type": <string>,
      "title": <string>,
@@ -206,4 +206,4 @@ List of strings. Includes every tag the resource has. This is a normalized super
 
 #### `parameters`
 
-JSON object. Includes all of the resource's [attributes][] and their associated values. The value of an attribute may be any JSON data type, but Puppet will only provide Booleans, strings, arrays, and hashes. [Resource references][resource_ref] and [numbers][] in attributes are converted to strings before being inserted into the catalog. Attributes with [undef][] values are not added to the catalog.
+JSON object. Includes all of the resource's [attributes][] and their associated values. The value of an attribute may be any JSON data type, but OpenVox will only provide Booleans, strings, arrays, and hashes. [Resource references][resource_ref] and [numbers][] in attributes are converted to strings before being inserted into the catalog. Attributes with [undef][] values are not added to the catalog.

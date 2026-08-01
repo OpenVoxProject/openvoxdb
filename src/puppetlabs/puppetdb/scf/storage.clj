@@ -1348,14 +1348,14 @@
 ;;; Reports
 
 (defn find-containing-class
-  "Given a containment path from Puppet, find the outermost 'class'."
+  "Given a containment path from OpenVox, find the outermost 'class'."
   [containment-path]
   {:pre [(or
           (nil? containment-path)
           (and (coll? containment-path) (every? string? containment-path)))]
    :post [((some-fn nil? string?) %)]}
   (when-not ((some-fn nil? empty?) containment-path)
-    ;; This is a little wonky.  Puppet only gives us an array of Strings
+    ;; This is a little wonky.  OpenVox only gives us an array of Strings
     ;; to represent the containment path.  Classes can be differentiated
     ;; from types because types have square brackets and a title; so, e.g.,
     ;; "Foo" is a class, but "Foo[Bar]" is a type with a title.

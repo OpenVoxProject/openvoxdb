@@ -34,18 +34,18 @@ payload in the POST case, which contains the query to execute. Results are
 always returned in `application/json` form.
 
 Queries are usually issued from code, but you can easily issue them from the
-command line by using the [PuppetDB CLI][cli_install] or using [curl][curl].
+command line by using the [OpenVoxDB CLI][cli_install] or using [curl][curl].
 
-### Querying with the PuppetDB CLI
+### Querying with the OpenVoxDB CLI
 
-[See the PuppetDB CLI installation page for more information about using the PuppetDB CLI.][cli_install]
+[See the OpenVoxDB CLI installation page for more information about using the OpenVoxDB CLI.][cli_install]
 
 **Without SSL:**
 
     puppet query '<PQL query>' \
       --urls http://puppetdb.example.com:8080
 
-This requires that PuppetDB be
+This requires that OpenVoxDB be
 [configured to accept non-SSL connections][config_jetty]. By default, it will
 only accept unencrypted traffic from `localhost`.
 
@@ -57,10 +57,10 @@ only accept unencrypted traffic from `localhost`.
       --cert /etc/puppetlabs/puppet/ssl/certs/thisnode.pem \
       --key /etc/puppetlabs/puppet/ssl/private_keys/thisnode.pem
 
-This requires that you specify a certificate (issued by the same CA PuppetDB
+This requires that you specify a certificate (issued by the same CA OpenVoxDB
 trusts), a private key, and a CA certificate.
 
-> **Note**: The PuppetDB CLI can be configured using a config file at
+> **Note**: The OpenVoxDB CLI can be configured using a config file at
 `$HOME/.puppetlabs/client-tools/puppetdb.conf` with default values for the
 server urls and SSL credentials.
 
@@ -77,7 +77,7 @@ server urls and SSL credentials.
       -H 'Content-Type:application/json'
       -d '{"query":"<PQL query>"}'
 
-This requires that PuppetDB be
+This requires that OpenVoxDB be
 [configured to accept non-SSL connections][config_jetty]. By default, it will
 only accept unencrypted traffic from `localhost`.
 
@@ -90,13 +90,13 @@ only accept unencrypted traffic from `localhost`.
       --key /etc/puppetlabs/puppet/ssl/private_keys/thisnode.pem \
       --data-urlencode 'query=<PQL query>'
 
-This requires that you specify a certificate (issued by the same CA PuppetDB
+This requires that you specify a certificate (issued by the same CA OpenVoxDB
 trusts), a private key, and a CA certificate.
 
 ### Querying with Puppet code
 
-The PuppetDB terminus includes the `puppetdb_query` function, which can be used
-to query PuppetDB from within a Puppet manifest. For example,
+The OpenVoxDB terminus includes the `puppetdb_query` function, which can be used
+to query OpenVoxDB from within a Puppet manifest. For example,
 
     $debian_nodes_query = 'nodes[certname]{facts{name = "operatingsystem" and value = "Debian"}}'
     $debian_nodes = puppetdb_query($debian_nodes_query).map |$value| { $value["certname"] }
@@ -174,7 +174,7 @@ particular set of keys.
 * `tags`: all the tags on the resource
 * `title`: the resource title
 * `type`: the resource type
-* `resource`: this is an internal identifier for the resource used by PuppetDB
+* `resource`: this is an internal identifier for the resource used by OpenVoxDB
 * `certname`: the node that the resource came from
 
 There will be an entry in the list for every resource. A resource is specific to
@@ -425,7 +425,7 @@ For more information regarding the `in` operator, consult the
 
 Explicit subqueries allow you to query across related entities, but they require
 you to specify the columns that you wish to join on. Some relationships between
-entities are well known to PuppetDB. We can use this information ourselves in a
+entities are well known to OpenVoxDB. We can use this information ourselves in a
 query avoiding the need for specifying how entities relate.
 
 If you take this example query:

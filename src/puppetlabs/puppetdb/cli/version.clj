@@ -2,9 +2,9 @@
   "Version utility
 
    This simple command-line tool prints a list of info about
-   the version of PuppetDB.  It is useful for testing and other situations
+   the version of OpenVoxDB.  It is useful for testing and other situations
    where you'd like to know some of the version details without having
-   a running instance of PuppetDB.
+   a running instance of OpenVoxDB.
 
    The output is currently formatted like the contents of a java properties file;
    each line contains a single property name, followed by an equals sign, followed

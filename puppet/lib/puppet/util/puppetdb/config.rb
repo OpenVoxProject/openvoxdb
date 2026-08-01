@@ -24,7 +24,7 @@ module Puppet::Util::Puppetdb
       config_file ||= File.join(Puppet[:confdir], "puppetdb.conf")
 
       if File.exist?(config_file)
-        Puppet.debug("Configuring PuppetDB terminuses with config file #{config_file}")
+        Puppet.debug("Configuring OpenVoxDB terminuses with config file #{config_file}")
         content = File.read(config_file)
       else
         Puppet.debug("No #{config_file} file found; falling back to default server_urls #{defaults[:server_urls]}")
@@ -44,14 +44,14 @@ module Puppet::Util::Puppetdb
         when /^\s*(server|port)\s*=.*$/
           Puppet.warning("Setting '#{line.chomp}' is retired: use 'server_urls' instead. Defaulting to 'server_urls=https://puppetdb:8081'.")
         when /^\s*(\w+)\s*=\s*(\S+|[\S+\s*\,\s*\S]+)\s*$/
-          raise "Setting '#{line}' is illegal outside of section in PuppetDB config #{config_file}:#{number}" unless section
+          raise "Setting '#{line}' is illegal outside of section in OpenVoxDB config #{config_file}:#{number}" unless section
           result[section][$1] = $2
         when /^\s*[#;]/
           # Skip comments
         when /^\s*$/
           # Skip blank lines
         else
-          raise "Unparseable line '#{line}' in PuppetDB config #{config_file}:#{number}"
+          raise "Unparseable line '#{line}' in OpenVoxDB config #{config_file}:#{number}"
         end
       end
 
@@ -110,7 +110,7 @@ module Puppet::Util::Puppetdb
 
       self.new(config_hash)
     rescue => detail
-      Puppet.log_exception detail, "Could not configure PuppetDB terminuses: #{detail.message}", {level: :warning}
+      Puppet.log_exception detail, "Could not configure OpenVoxDB terminuses: #{detail.message}", {level: :warning}
       raise
     end
 
@@ -173,15 +173,15 @@ module Puppet::Util::Puppetdb
         begin
           uri = URI(uri_string.strip)
         rescue URI::InvalidURIError => e
-          raise URI::InvalidURIError.new, "Error parsing URL '#{uri_string}' in PuppetDB 'server_urls', error message was '#{e.message}'"
+          raise URI::InvalidURIError.new, "Error parsing URL '#{uri_string}' in OpenVoxDB 'server_urls', error message was '#{e.message}'"
         end
 
         if uri.scheme != 'https'
-          raise "PuppetDB 'server_urls' must be https, found '#{uri_string}'"
+          raise "OpenVoxDB 'server_urls' must be https, found '#{uri_string}'"
         end
 
         if uri.path != '' && uri.path != '/'
-          raise "PuppetDB 'server_urls' cannot contain URL paths, found '#{uri_string}'"
+          raise "OpenVoxDB 'server_urls' cannot contain URL paths, found '#{uri_string}'"
         end
         uri.path = ''
         uri

@@ -8,7 +8,7 @@ require 'puppet/util/puppetdb/atom'
 
 module Puppet::Util::Puppetdb
   class Http
-    SERVER_URL_FAIL_MSG = "Failing over to the next PuppetDB server_url in the 'server_urls' list"
+    SERVER_URL_FAIL_MSG = "Failing over to the next OpenVoxDB server_url in the 'server_urls' list"
 
     @@last_good_query_server_url_index = Atom.new(0)
 
@@ -56,12 +56,12 @@ module Puppet::Util::Puppetdb
         return e
 
       rescue Puppet::Util::Puppetdb::InventorySearchError => e
-        Puppet.warning("Could not perform inventory search from PuppetDB at #{server_url.host}:#{server_url.port}: " \
+        Puppet.warning("Could not perform inventory search from OpenVoxDB at #{server_url.host}:#{server_url.port}: " \
           "'#{e.message}' #{SERVER_URL_FAIL_MSG}")
         return e
 
       rescue Puppet::Util::Puppetdb::CommandSubmissionError => e
-        error = "Failed to submit '#{e.context[:command]}' command for '#{e.context[:for_whom]}' to PuppetDB " \
+        error = "Failed to submit '#{e.context[:command]}' command for '#{e.context[:for_whom]}' to OpenVoxDB " \
           "at #{server_url.host}:#{server_url.port}: '#{e.message}'."
         if config.soft_write_failure
           Puppet.err error
@@ -71,7 +71,7 @@ module Puppet::Util::Puppetdb
         return e
 
       rescue Puppet::Util::Puppetdb::SoftWriteFailError => e
-        Puppet.warning("Failed to submit '#{e.context[:command]}' command for '#{e.context[:for_whom]}' to PuppetDB " \
+        Puppet.warning("Failed to submit '#{e.context[:command]}' command for '#{e.context[:for_whom]}' to OpenVoxDB " \
           "at #{server_url.host}:#{server_url.port}: '#{e.message}' #{SERVER_URL_FAIL_MSG}")
         return e
 

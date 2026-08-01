@@ -8,24 +8,24 @@ canonical: "/puppetdb/latest/api/meta/v1/version.html"
 
 [curl]: ../../query/curl.markdown#using-curl-from-localhost-non-sslhttp
 
-The `/version` endpoint can be used to retrieve version information from the PuppetDB server.
+The `/version` endpoint can be used to retrieve version information from the OpenVoxDB server.
 
 ## `/pdb/meta/v1/version`
 
-This query endpoint will return version information about the running PuppetDB
+This query endpoint will return version information about the running OpenVoxDB
 server.
 
 This endpoint does not use any URL parameters or query strings.
 
 ## `/pdb/meta/v1/version/latest`
 
-This query will display a message describing the latest version of PuppetDB.
+This query will display a message describing the latest version of OpenVoxDB.
 
 ### Response format
 
 The response will be in `application/json`, and will return a JSON map with a
 single key: `version`, whose value is a string representation of the version
-of the running PuppetDB server.
+of the running OpenVoxDB server.
 
     {"version": "X.Y.Z"}
 

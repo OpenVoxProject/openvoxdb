@@ -8,11 +8,11 @@ canonical: "/puppetdb/latest/versioning_policy.html"
 [semver]: http://semver.org
 [commands]: ./api/command/v1/commands.markdown
 
-This document aims to create some transparency about how we version the PuppetDB software, so that both developers and users can understand the rules we try to follow internally.
+This document aims to create some transparency about how we version the OpenVoxDB software, so that both developers and users can understand the rules we try to follow internally.
 
-There are a few different levels of versioning we have to consider when it comes to PuppetDB:
+There are a few different levels of versioning we have to consider when it comes to OpenVoxDB:
 
-* PuppetDB software
+* OpenVoxDB software
 * HTTP API
 * Metrics API
 * Commands and wire formats
@@ -20,12 +20,12 @@ There are a few different levels of versioning we have to consider when it comes
 
 Some general statements about this policy:
 
-* The API versioning policy only applies to versions after v3.
+* The API versioning policy only applies to versions after PuppetDB v3.
 * If it's not written down, one shouldn’t assume it to be true or false. We expect people to raise bugs on this policy if they find a matter that needs clarification and is not already covered.
 
-## PuppetDB software
+## OpenVoxDB software
 
-This relates to the versioning associated with an overall PuppetDB release. In this case, we follow the rules of [Semantic Versioning][semver] as closely as possible. We’ll speak about that in this document using the X.Y.Z notation:
+This relates to the versioning associated with an overall OpenVoxDB release. In this case, we follow the rules of [Semantic Versioning][semver] as closely as possible. We’ll speak about that in this document using the X.Y.Z notation:
 
 > "A normal version number MUST take the form X.Y.Z where X, Y, and Z are non-negative integers, and MUST NOT contain leading zeroes. X is the major version, Y is the minor version, and Z is the patch version." - semver.org
 
@@ -60,17 +60,17 @@ The experimental API is where non-backward-compatible "breaking" changes belong.
 
 The experimental API may change without notice to allow us to refine this future API rapidly. However, we will endeavor to notify users of this change in our release notes.
 
-The experimental API will usually become current on the next major version boundary of PuppetDB (a version X release from a semver perspective).
+The experimental API will usually become current on the next major version boundary of OpenVoxDB (a version X release from a semver perspective).
 
 ### Deprecated
 
 A deprecated API is no longer current and is on its way to retirement. These APIs are no longer actively maintained/changed. As soon as a version is marked as deprecated, users should be moving off of it immediately.
 
-Deprecation of an old API version implies retirement on the next major version boundary of PuppetDB (a version X release from a semver perspective).
+Deprecation of an old API version implies retirement on the next major version boundary of OpenVoxDB (a version X release from a semver perspective).
 
 ### Retired
 
-Retired APIs have been removed and no longer function. A deprecated API will usually become retired implicitly on the next PuppetDB X release boundary.
+Retired APIs have been removed and no longer function. A deprecated API will usually become retired implicitly on the next OpenVoxDB X release boundary.
 
 At this stage all functionality is removed and documentation is removed.
 
@@ -91,8 +91,8 @@ Some examples of changes that *will* require a new command version:
 * Removal or renaming of parameters or parameter values within a command or wire format
 * Change to serialization for wire formats inside payload
 
-The [API commands][commands] documentation contains more concrete information about the existing commands, versions and statuses for this version of PuppetDB.
+The [API commands][commands] documentation contains more concrete information about the existing commands, versions and statuses for this version of OpenVoxDB.
 
 ## Upgrades
 
-PuppetDB supports upgrading from prior releases. Upgrading ensures data and configuration information is preserved across releases. Upgrades are only supported from any previous release in the same major version or any release in the prior major version. As an example, it's safe to upgrade from 2.0.0 to 2.2.2, or from 1.6.0 to 2.2.2. We don't support upgrading from 1.6.0 straight to 3.0.0. Users in this situation will want to first upgrade from 1.6.0 to 2.2.2, then from 2.2.2 to 3.0.0.
+OpenVoxDB supports upgrading from prior releases. Upgrading ensures data and configuration information is preserved across releases. Upgrades are only supported from any previous release in the same major version or any release in the prior major version. As an example, it's safe to upgrade from PuppetDB 7 to OpenVoxDB 8, or from OpenVoxDB 8.4.0 to 8.9.0. We don't support upgrading from PuppetDB 7 straight to OpenVoxDB 9. Users in this situation will want to first upgrade to some OpenVoxDB 8 release, then from there to OpenVoxDB 9.

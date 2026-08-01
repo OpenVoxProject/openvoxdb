@@ -24,11 +24,11 @@ ssl_command="puppetdb ssl-setup"
 #
 function usage() {
   echo "Usage: ${ssl_command} [-if]"
-  echo "Configuration helper for enabling SSL for PuppetDB."
+  echo "Configuration helper for enabling SSL for OpenVoxDB."
   echo
-  echo "This tool will attempt to copy the necessary Puppet SSL PEM files into "\
-       "place for use by the PuppetDB HTTPS service. It also is able to update "\
-       "the necessary PuppetDB configuration files if necessary to point to "\
+  echo "This tool will attempt to copy the necessary OpenVox SSL PEM files into "\
+       "place for use by the OpenVoxDB HTTPS service. It also is able to update "\
+       "the necessary OpenVoxDB configuration files if necessary to point to "\
        "the location of these files and also configures the host and port for "\
        "SSL to listen on."
   echo
@@ -149,7 +149,7 @@ function appendline {
   mv "$tmp" "$file"
 }
 
-# This function copies the necessary PEM files from Puppet to the PuppetDB
+# This function copies the necessary PEM files from OpenVox to the OpenVoxDB
 # SSL directory.
 #
 # This expects various environment variables to have already been set to work.
@@ -165,14 +165,14 @@ function copy_pem_from_puppet {
       echo "  * $orig_private_file"
       echo "  * $orig_public_file"
       echo
-      echo "  These files may be missing due to the fact that your host's Puppet"
+      echo "  These files may be missing due to the fact that your host's OpenVox"
       echo "  certificates may not have been signed yet, probably due to the"
-      echo "  lack of a complete Puppet agent run. Try running puppet first, for"
+      echo "  lack of a complete OpenVox agent run. Try running puppet first, for"
       echo "  example:"
       echo
       echo "      puppet agent --test"
       echo
-      echo "  Afterwards re-run this tool then restart PuppetDB to complete the SSL"
+      echo "  Afterwards re-run this tool then restart OpenVoxDB to complete the SSL"
       echo "  setup:"
       echo
       echo "      ${ssl_command} -f"
@@ -222,7 +222,7 @@ then
   fi
 
   vars=( agent_confdir agent_vardir puppetdb_confdir )
-  prompts=( "Puppet Agent confdir" "Puppet Agent vardir" "PuppetDB confdir" )
+  prompts=( "OpenVox Agent confdir" "OpenVox Agent vardir" "OpenVoxDB confdir" )
 
   for (( i=0; i<${#vars[@]}; i++ ))
   do
@@ -236,7 +236,7 @@ then
     echo "${vars[$i]}=${!vars[$i]}" >> $answers_file
   done
 else
-  # This should be run on the host with PuppetDB
+  # This should be run on the host with OpenVoxDB
   PATH=/opt/puppetlabs/bin:/opt/puppet/bin:$PATH
   agent_confdir=$(puppet config print confdir)
   agent_vardir=$(puppet config print vardir)
@@ -279,7 +279,7 @@ if ! ${force}; then
         if grep -qe "^${new_setting}" $jettyfile; then
           echo "Error: Your Jetty configuration file contains legacy entry '${old_setting}' and a new entry '${new_setting}'"
           echo
-          echo "  By default PuppetDB uses the new settings over the old ones,"
+          echo "  By default OpenVoxDB uses the new settings over the old ones,"
           echo "  which indicates your setup is probably okay, but removing"
           echo "  the old settings is recommended for clarity."
           echo
@@ -295,7 +295,7 @@ if ! ${force}; then
       # Otherwise cowardly refuse to make a change without -f
       echo "Error: Your Jetty configuration file contains legacy entry '${old_setting}'"
       echo
-      echo "  PuppetDB now provides a PEM based mechanism for retrieving SSL"
+      echo "  OpenVoxDB now provides a PEM based mechanism for retrieving SSL"
       echo "  related files as opposed to its legacy Java Keystore mechanism."
       echo
       echo "  Your configuration indicates you may have a legacy keystore based setup,"
@@ -328,7 +328,7 @@ if [ -f $ca_file -a -f $private_file -a -f $public_file ]; then
     new="${i#*:}"
 
     if ! diff -q $orig $new > /dev/null; then
-      echo "Warning: ${new} does not match the file used by Puppet (${orig})"
+      echo "Warning: ${new} does not match the file used by OpenVox (${orig})"
     fi
   done
 
@@ -401,7 +401,7 @@ if [ -f "$jettyfile" ] ; then
   done
 
 else
-  echo "Error: Unable to find PuppetDB Jetty configuration at ${jettyfile} so unable to provide automatic configuration for that file."
+  echo "Error: Unable to find OpenVoxDB Jetty configuration at ${jettyfile} so unable to provide automatic configuration for that file."
   echo
   echo "   Confirm the file exists in the path specified before running the"
   echo "   tool again. The file should have been created automatically when" 

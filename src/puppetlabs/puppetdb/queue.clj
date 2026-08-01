@@ -132,7 +132,7 @@
 
 (defn metadata-serializer
   "Given an (optional) map between the command names used in the rest of
-  PuppetDB and the command names to use in metadata strings, return a function
+  OpenVoxDB and the command names to use in metadata strings, return a function
   that serializes command metadata to a string. If no map is provided, then the
   map `puppetdb-command->metadata-command` defined in this namespace is used.
   Note that the certname in the string will not be the same as the original
@@ -183,7 +183,7 @@
 
 (defn metadata-parser
   "Given an (optional) map between the command names that appear in metadata
-  strings and the command names used in the rest of PuppetDB, return a function
+  strings and the command names used in the rest of OpenVoxDB, return a function
   that parses a queue metadata string. If no map is provided, then the map
   `metadata-command->puppetdb-command` defined in this namespace is used.
   Note that the certname in this result will not be the same as the original

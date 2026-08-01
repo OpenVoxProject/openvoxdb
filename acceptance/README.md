@@ -1,7 +1,7 @@
 Acceptance Testing
 ------------------
 
-This README outlines how to run tests using the system testing framework `beaker`, specifically for PuppetDB.
+This README outlines how to run tests using the system testing framework `beaker`, specifically for OpenVoxDB.
 
 ## Quick Start
 
@@ -65,7 +65,7 @@ You can find the required version of ezbake in project.clj.
 
 ## How to set options
 
-## PuppetDB Specific Options
+## OpenVoxDB Specific Options
 
 You can set these options in one of two ways; either by specifying them as a key-value
 pair in the hash that you return from your "--options" file, or by setting
@@ -116,8 +116,7 @@ in your hash; the environment variable names are the same but uppercased
 
 * `:puppetdb_package_build_host` (`PUPPETDB_PACKAGE_BUILD_HOST`) : This specifies
   the hostname where the final packages built by the packaging job are available.
-  This should typically not need to be overridden, as it defaults to the
-  well-known host name provided by our release engineering team.
+  This should typically not need to be overridden.
 
 * `:puppetdb_package_repo_host` (`PUPPETDB_PACAKGE_REPO_HOST`): This specifies
   the hostname where the final apt/yum repos will be deployed and accessible to

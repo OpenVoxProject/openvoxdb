@@ -35,7 +35,7 @@ DEFAULT_METRICS = {
 
 
 class PuppetDB(object):
-    """ An interface to a PuppetDB instance """
+    """ An interface to an OpenVoxDB instance """
     def __init__(self, host="localhost", port=8080):
         self.commands = None
         self.metrics = DEFAULT_METRICS
@@ -68,7 +68,7 @@ class PuppetDB(object):
                 break
 
     def submit_command(self, certname, command, data):
-        """ submit a command to PuppetDB. Parameters are:
+        """ submit a command to OpenVoxDB. Parameters are:
         certname: the certname of the agent associated with the command
         command: the command name ('replace_facts', 'store_report', etc)
         data: the full command body, as described in PDB's wire format docs"""

@@ -207,7 +207,7 @@
   {:count "X-Records"})
 
 (defn header-for-key
-  "Given a key from a PuppetDB query response, returns the HTTP header that
+  "Given a key from an OpenVoxDB query response, returns the HTTP header that
   should be used in the HTTP response."
   [k]
   {:pre [(contains? header-map k)]
@@ -215,7 +215,7 @@
   (header-map k))
 
 (defn add-headers
-  "Given a Ring response and a PuppetDB query result map, returns
+  "Given a Ring response and an OpenVoxDB query result map, returns
   an updated Ring response with the headers added."
   [response query-result]
   {:pre  [(map? query-result)]
@@ -226,7 +226,7 @@
    query-result))
 
 (defn query-result-response
-  "Given a PuppetDB query result map (as returned by `query/execute-query`),
+  "Given an OpenVoxDB query result map (as returned by `query/execute-query`),
   returns a Ring HTTP response object."
   [query-result]
   {:pre [(map? query-result)

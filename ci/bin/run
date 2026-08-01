@@ -41,7 +41,7 @@ case "$flavor" in
         case "$flavor" in
             core|core+ext)
                 fips-keystore-sanity-check
-                # Run core lein tests with ephemeral PuppetDB and PostgreSQL sandboxes
+                # Run core lein tests with ephemeral OpenVoxDB and PostgreSQL sandboxes
                 # Leiningen dev profile adds org.bouncycastle/bcpkix-jdk18on dependency
                 ext/bin/boxed-core-tests --pglog pg.log \
                     -- lein with-profiles "${LEIN_PROFILES:-dev}" test 2>&1 \
@@ -50,13 +50,13 @@ case "$flavor" in
         esac
         case "$flavor" in
             core+ext) # core will have already run host-info
-                # Run external tests on a PuppetDB uberjar
+                # Run external tests on an OpenVoxDB uberjar
                 ext/bin/run-external-tests
                 ;;
             ext)
                 # Print out host machine info for logging
                 ext/bin/host-info
-                # Run external tests on a PuppetDB uberjar
+                # Run external tests on an OpenVoxDB uberjar
                 ext/bin/run-external-tests
                 ;;
         esac
@@ -70,7 +70,7 @@ case "$flavor" in
         lein kondo --lint src test
         ;;
     rspec)
-        # Get Puppet version from test spec
+        # Get OpenVox version from test spec
         puppet_ref="$(ext/bin/prefixed-ref-from-spec "$spec" pup-)"
         # Validate test spec
         ext/bin/check-spec-env "$spec"

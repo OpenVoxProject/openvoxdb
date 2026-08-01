@@ -13,7 +13,7 @@ test_name "test puppetdb delete" do
     end
   end
 
-  step "Verify the data was stored in PuppetDB" do
+  step "Verify the data was stored in OpenVoxDB" do
     check_record_count("nodes", agents.length)
     check_record_count("factsets", agents.length)
     check_record_count("catalogs", agents.length)

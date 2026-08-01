@@ -223,6 +223,6 @@ this route.
 
 ## Paging
 
-The v4 `/facts` endpoint supports all the common PuppetDB paging URL
+The v4 `/facts` endpoint supports all the common OpenVoxDB paging URL
 parameters. For more information, please see the documentation on
 [paging][paging].

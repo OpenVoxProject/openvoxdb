@@ -7,12 +7,12 @@ canonical: "/puppetdb/latest/api/admin/v1/archive.html"
 
 [curl]: ../../query/curl.markdown#using-curl-from-localhost-non-sslhttp
 
-The `/archive` endpoint can be used for importing and exporting PuppetDB
+The `/archive` endpoint can be used for importing and exporting OpenVoxDB
 archives.
 
 ## `POST /pdb/admin/v1/archive`
 
-This endpoint can be used for streaming a PuppetDB archive into PuppetDB.
+This endpoint can be used for streaming an OpenVoxDB archive into OpenVoxDB.
 
 ### Request format
 
@@ -20,9 +20,9 @@ The request should be a multipart POST and have `Content-Type: multipart/mixed`.
 
 ### URL parameters
 
-* `archive`: required. The archive file to import to the PuppetDB. This archive
+* `archive`: required. The archive file to import to the OpenVoxDB. This archive
   must have a file called `puppetdb-bak/metadata.json` as the first entry in the
-  tarfile with a key `command_versions` which is a JSON object mapping PuppetDB
+  tarfile with a key `command_versions` which is a JSON object mapping OpenVoxDB
   command names to their version.
 
 ### Response format
@@ -43,7 +43,7 @@ successful completion of the importation:
 
 ## `GET /pdb/admin/v1/archive`
 
-This endpoint can be used to stream a tarred, gzipped backup archive of PuppetDB
+This endpoint can be used to stream a tarred, gzipped backup archive of OpenVoxDB
 to your local machine.
 
 ### URL parameters

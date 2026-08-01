@@ -6,7 +6,7 @@ canonical: "/puppetdb/latest/api/wire_format/catalog_inputs_format_v1.html"
 
 # Replace catalog inputs wire format - v1 (experimental)
 
-The v1 `replace catalog inputs` command tells PuppetDB to replace the current
+The v1 `replace catalog inputs` command tells OpenVoxDB to replace the current
 set of catalog inputs with the new.
 
 Changing the value of this setting for a certname has the same effect
@@ -38,15 +38,15 @@ String. The name of the node the catalog was compiled for.
 
 #### `producer_timestamp`
 
-DateTime. The time of command submission from the Puppet Server to PuppetDB,
-according to the clock on the Puppet Server.
+DateTime. The time of command submission from the OpenVox Server to OpenVoxDB,
+according to the clock on the OpenVox Server.
 
 `producer_timestamp` is optional but *highly* recommended. When provided, it is
 used to determine the precedence between this command and other commands that
 modify the same node. This field is provided by, and should thus reflect the
-clock of, the Puppet Server.
+clock of, the OpenVox Server.
 
-When `producer_timestamp` is not provided, the PuppetDB server's local time is
+When `producer_timestamp` is not provided, the OpenVoxDB server's local time is
 used. If another command is received for a node while a non-timestamped
 "deactivate node" command is pending processing, the results are *undefined*.
 
@@ -54,7 +54,7 @@ used. If another command is received for a node while a non-timestamped
 
 The uuid of the catalog this input was used for. Since not every catalog will
 provide a record of its inputs, and the catalog is replaced via a different
-command, this may not be the same as the current catalog stored in PuppetDB.
+command, this may not be the same as the current catalog stored in OpenVoxDB.
 
 #### `inputs`
 

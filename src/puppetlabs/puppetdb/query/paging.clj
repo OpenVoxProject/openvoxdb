@@ -2,7 +2,7 @@
   "Paging query parameter manipulation
 
    Functions that aid in the validation and processing of the
-   query parameters related to paging PuppetDB queries"
+   query parameters related to paging OpenVoxDB queries"
   (:require
    [clojure.string :as string]
    [puppetlabs.i18n.core :refer [tru]]
@@ -123,7 +123,7 @@
     order_by))
 
 (defn parse-order-by
-  "Given a list of order-by clauses that conform to the PuppetDB paging API,
+  "Given a list of order-by clauses that conform to the OpenVoxDB paging API,
   validate and convert the order-by to our internal format. Incoming is of the
   form:
 

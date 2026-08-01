@@ -35,7 +35,7 @@ module Puppet::Util::Puppetdb
   end
 
   # Given an instance of ruby's Time class, this method converts it to a String
-  # that conforms to PuppetDB's wire format for representing a date/time. All PuppetDB
+  # that conforms to OpenVoxDB's wire format for representing a date/time. All OpenVoxDB
   # timestamps are stored at millisecond accurace (i.e. 10^-3)
   def self.to_wire_time(time)
     time.iso8601(3)
@@ -51,7 +51,7 @@ module Puppet::Util::Puppetdb
     end
   end
 
-  # Generate a command for PuppetDB.
+  # Generate a command for OpenVoxDB.
   #
   # This function allows the memory used by the local parameter "payload" to
   # be released after it is converted to a JSON string for HTTP submission by
@@ -69,7 +69,7 @@ module Puppet::Util::Puppetdb
 
   # @!group Public instance methods
 
-  # Submit a command to PuppetDB.
+  # Submit a command to OpenVoxDB.
   #
   # @param certname [String] The certname this command operates on
   # @param command_name [String] name of command
@@ -84,9 +84,9 @@ module Puppet::Util::Puppetdb
     end
   end
 
-  # Query PuppetDB.
+  # Query OpenVoxDB.
   #
-  # @param query [String, Array] The PQL or AST query for PuppetDB
+  # @param query [String, Array] The PQL or AST query for OpenVoxDB
   # @return [Array<Hash>]
   def self.query_puppetdb(query)
     Puppet::Util::Profiler.profile("Submitted query '#{query}'", [:puppetdb, :query, query]) do
@@ -103,7 +103,7 @@ module Puppet::Util::Puppetdb
 
   # Profile a block of code and log the time it took to execute.
   #
-  # This outputs logs entries to the Puppet masters logging destination
+  # This outputs logs entries to the OpenVox Server's logging destination
   # providing the time it took, a message describing the profiled code
   # and a leaf location marking where the profile method was called
   # in the profiled hierachy.
@@ -113,7 +113,7 @@ module Puppet::Util::Puppetdb
   # @param block [Block] The segment of code to profile
   # @api public
   def profile(message, metric_id, &block)
-    message = "PuppetDB: " + message
+    message = "OpenVoxDB: " + message
     arity = Puppet::Util::Profiler.method(:profile).arity
     case arity
     when 1
@@ -133,7 +133,7 @@ module Puppet::Util::Puppetdb
   # @api private
   def log_x_deprecation_header(response)
     if warning = response['x-deprecation']
-      Puppet.deprecation_warning "Deprecation from PuppetDB: #{warning}"
+      Puppet.deprecation_warning "Deprecation from OpenVoxDB: #{warning}"
     end
   end
   module_function :log_x_deprecation_header

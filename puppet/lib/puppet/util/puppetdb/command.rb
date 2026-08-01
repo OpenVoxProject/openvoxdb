@@ -13,7 +13,7 @@ class Puppet::Util::Puppetdb::Command
 
   # Recursively coerce all the strings in a payload to UTF-8
   #
-  # @param payload Initially the whole Puppet object converted
+  # @param payload Initially the whole OpenVox object converted
   #   to_data_hash. This is called recusively if the command has neseted
   #   structures.
   # @param error_context_str a string prefix for log messages
@@ -76,7 +76,7 @@ class Puppet::Util::Puppetdb::Command
       coerced_payload, had_lossy_string = coerce_payload(payload, error_context_str)
 
       if had_lossy_string
-        Puppet.warning "#{error_context_str} ignoring invalid UTF-8 byte sequences in data to be sent to PuppetDB, see debug logging for more info"
+        Puppet.warning "#{error_context_str} ignoring invalid UTF-8 byte sequences in data to be sent to OpenVoxDB, see debug logging for more info"
       end
 
       # coerce to json while we are still inside the profiling block
@@ -114,13 +114,13 @@ class Puppet::Util::Puppetdb::Command
 
       if response.success?
         result = JSON.parse(response.body)
-        Puppet.info "'#{command}' command#{for_whom} submitted to PuppetDB with UUID #{result['uuid']}"
+        Puppet.info "'#{command}' command#{for_whom} submitted to OpenVoxDB with UUID #{result['uuid']}"
         result
       else
         # Newline characters cause an HTTP error, so strip them
         error = "[#{response.code} #{response.reason}] #{response.body.gsub(/[\r\n]/, '')}"
         if config.soft_write_failure
-          Puppet.err "'#{command}'command#{for_whom} failed during submission to PuppetDB: #{error}"
+          Puppet.err "'#{command}'command#{for_whom} failed during submission to OpenVoxDB: #{error}"
         else
           raise Puppet::Error, error
         end

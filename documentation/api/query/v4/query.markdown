@@ -19,11 +19,11 @@ canonical: "/puppetdb/latest/api/query/v4/query.html"
 
 ## Summary
 
-PuppetDB's query API can retrieve data objects from PuppetDB for use in other
-applications. For example, the PuppetDB-termini for Puppet Servers use this
+OpenVoxDB's query API can retrieve data objects from OpenVoxDB for use in other
+applications. For example, the OpenVoxDB-termini for OpenVox Servers use this
 API to collect exported resources.
 
-The query API is implemented as HTTP URLs on the PuppetDB server. By default,
+The query API is implemented as HTTP URLs on the OpenVoxDB server. By default,
 it can only be accessed over the network via host-verified HTTPS; [see the
 jetty settings][jetty] if you need to access the API over unencrypted HTTP.
 
@@ -61,7 +61,7 @@ After the `/pdb/query/` prefix, the first part of an API URL is the
 
 After the version, URLs are organized into a number of **endpoints** that express the entity you wish to query for.
 
-Conceptually, an entity endpoint represents a PuppetDB entity. Each version of the PuppetDB API defines a set number of endpoints.
+Conceptually, an entity endpoint represents an OpenVoxDB entity. Each version of the OpenVoxDB API defines a set number of endpoints.
 
 See the [entities documentation][entities] for a list of the available endpoints. Each endpoint may have additional sub-endpoints under it; these are generally just shortcuts for the most common types of query, so that you can write terser and simpler query strings.
 
@@ -75,13 +75,13 @@ A group of parameters begins with a question mark (`?`). Each parameter is forma
 
 The most common URL parameter is `query`, which lets you define the set of results returned by most endpoints.
 
-There are two query languages available in PuppetDB, consult the documentation for each for more details.
+There are two query languages available in OpenVoxDB, consult the documentation for each for more details.
 
 * [AST query language][ast]: a JSON based query language.
-* [Puppet query language][pql]: a new query language designed for human users to simplify
+* [Puppet query language][pql]: a query language designed for human users to simplify
   querying over the legacy AST language.
 
-A complete query string describes a comparison operation. When submitting a query, PuppetDB will check every _possible_
+A complete query string describes a comparison operation. When submitting a query, OpenVoxDB will check every _possible_
 result from the endpoint to see if it matches the comparison from the query string, and will only return those objects
 that match.
 
@@ -91,7 +91,7 @@ that match.
 
 The next most common URL parameters are the **paging** parameters.
 
-Most PuppetDB query endpoints support paged results via a set of shared URL parameters.  For more information, please see the documentation on [paging][paging].
+Most OpenVoxDB query endpoints support paged results via a set of shared URL parameters.  For more information, please see the documentation on [paging][paging].
 
 ## Query responses
 
@@ -99,14 +99,14 @@ All queries return data with a content type of `application/json`. Each endpoint
 
 ### Rich data
 
-Puppet 6 supports
+OpenVox supports
 [rich_data](https://github.com/puppetlabs/puppet-specifications/blob/master/language/types_values_variables.md#richdata)
 types like Timestamp and SemVer, and enables rich data by default.
 When rich data is enabled, readable string representations of rich
 data values may appear in the report resource event `old_value` and
 `new_value` fields, and in catalog parameter values.
 
-For example, a Timestamp value would be recorded in PuppetDB as a
+For example, a Timestamp value would be recorded in OpenVoxDB as a
 string like `"2012-10-10T00:00:00.000000000 UTC"`, and a Deferred value
 would be recorded as a string like
 `"Deferred({'name' => 'join', 'arguments' => [[1, 2, 3], ':']})"`.
@@ -117,7 +117,7 @@ For a walkthrough on constructing queries, see [the query tutorial page][tutoria
 
 ## Experimental query termination
 
-PuppetDB now monitors all queries for client disconnects, and
+OpenVoxDB now monitors all queries for client disconnects, and
 terminates the query (including the database work) as soon as the
 client is gone.  The same mechanism also helps enforce relevant query
 timeouts promptly.
@@ -137,7 +137,7 @@ but the variable is likely to be removed in a future release.
 > by the query might be incorrect.  See below for one way to
 > double-check the results if you suspect something might be amiss.
 
-PuppetDB has an experimental query optimizer that may be able to
+OpenVoxDB has an experimental query optimizer that may be able to
 substantially decrease the cost (and correspondingly decrease the
 response time) of some queries.  It does this by attempting to avoid
 retrieving unnecessary data when generating a response.
@@ -146,7 +146,7 @@ At the moment, this optimization can only be applied for queries that
 ask for a subset of the available query response fields, for example,
 a query against the nodes endpoint that only extracts the `certname`.
 Further, for any given query it may or may not have any effect at all,
-and the effect may vary across PuppetDB releases.
+and the effect may vary across OpenVoxDB releases.
 
 This optimization is now enabled by default, but the default can be
 changed by setting the `PDB_QUERY_OPTIMIZE_DROP_UNUSED_JOINS`
@@ -154,7 +154,7 @@ environment variable to `by-request` before starting puppetdb.
 
 To enable the optimization for an individual query, just add
 `optimize_drop_unused_joins=true` as a parameter.  If you'd like to
-determine wheter or not PuppetDB attempted to optimize a query, any
+determine wheter or not OpenVoxDB attempted to optimize a query, any
 efforts are logged at debug level.
 
 (If you happen to have `diff` and `jq` installed, you should be able

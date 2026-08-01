@@ -1,7 +1,7 @@
 (ns puppetlabs.puppetdb.cli.time-shift-export
   "Timestamp shift utility
 
-   This simple command-line tool updates all the timestamps inside a PuppetDB export.
+   This simple command-line tool updates all the timestamps inside an OpenVoxDB export.
    It does this by calculating the period between the newest timestamp inside the export and the provided date.
    Then, every timestamp is shifted with that period.
    It accepts three parameters:

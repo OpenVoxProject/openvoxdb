@@ -5,23 +5,23 @@ layout: default
 # Exporting and anonymizing data
 
 This document covers using the export, import and anonymization tools for
-PuppetDB.
+OpenVoxDB.
 
-The export tool will return an archive of all of your PuppetDB data which can be
-uploaded to another PuppetDB via the import tool. The export tool also has the
+The export tool will return an archive of all of your OpenVoxDB data which can be
+uploaded to another OpenVoxDB via the import tool. The export tool also has the
 ability to anonymize the archive before returning it. This is particularly
-useful when sharing PuppetDB data that contains sensitive items.
+useful when sharing OpenVoxDB data that contains sensitive items.
 
 ## Using the `export` command
 
-To create an anonymized PuppetDB archive directly, use the Puppet `db` subcommand
+To create an anonymized OpenVoxDB archive directly, use the OpenVox `db` subcommand
 from any node with puppet-client-tools installed:
 
     $ puppet db export my-puppetdb-export.tar.gz --anonymization moderate
 
 ## Using the `import` command
 
-To import an anonymized PuppetDB tarball, use the Puppet `db` subcommand from
+To import an anonymized OpenVoxDB tarball, use the OpenVox `db` subcommand from
 any node with puppet-client-tools installed:
 
     $ puppet db import my-puppetdb-export.tar.gz
@@ -70,7 +70,7 @@ is **the recommended profile for most cases**. It sorts and anonymizes data by
 data type:
 
 * Node name: is anonymized by default.
-* Resource type name: the core types that are built into Puppet are not
+* Resource type name: the core types that are built into OpenVox are not
   anonymized, including some common types from the modules: `stdlib`,
   `postgresql`, `rabbitmq`, `puppetdb`, `apache`, `mrep`, `f5`, `apt`,
   `registry`, `concat`, and `mysql`. Any Puppet Enterprise core type names are

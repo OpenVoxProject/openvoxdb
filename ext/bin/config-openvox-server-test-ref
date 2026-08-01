@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 
-# Modify local testing environment to use specific version of Puppet Server.
-# With no arguments, uses default Puppet Server version
-# With one arguments, uses that as Puppet Server version
-# Creates a symlink to bundler-installed Puppet Server repo at vendor/puppet used for testing
+# Modify local testing environment to use specific version of OpenVox Server.
+# With no arguments, uses default OpenVox Server version
+# With one arguments, uses that as OpenVox Server version
+# Creates a symlink to bundler-installed OpenVox Server repo at vendor/puppet used for testing
 # Ex: config-openvox-server-test-ref
 # Ex: config-openvox-server-test-ref 6.27.0
 
 set -euo pipefail
 
-# Always run from the top-level of PuppetDB source tree
+# Always run from the top-level of OpenVoxDB source tree
 script_home="$(cd "$(dirname "$0")" && pwd)"
 top="$script_home/../.."
 cd "$top"  # Always run from the top level of the tree
@@ -36,16 +36,16 @@ fi
 
 set -x
 
-# Remove old Puppet Server version test configuration
+# Remove old OpenVox Server version test configuration
 rm -f ext/test-conf/openvox-server-ref-requested ext/test-conf/openvox-server-dep
 
 case "$#" in
     0)
-        # If no arguments provided, set Puppet Server version to default
+        # If no arguments provided, set OpenVox Server version to default
         pupsrv_ref="$(cat ext/test-conf/openvox-server-ref-default)"
         ;;
     1)
-        # If one argument provided, set Puppet Server version to that value
+        # If one argument provided, set OpenVox Server version to that value
         pupsrv_ref="$1"
         echo "$pupsrv_ref" > ext/test-conf/openvox-server-ref-requested
         ;;
@@ -55,7 +55,7 @@ case "$#" in
         exit 2
 esac
 
-# Check if openvox-server repository exists at top-level of PuppetDB source tree
+# Check if openvox-server repository exists at top-level of OpenVoxDB source tree
 if test -d openvox-server; then
    # If repo exists, checkout the requested version number
    git -C openvox-server checkout "$pupsrv_ref"
@@ -68,7 +68,7 @@ fi
 
 (export PUPPETSERVER_HEAP_SIZE=1G
  cd openvox-server
- # Install Puppet Server dependencies
+ # Install OpenVox Server dependencies
  # If we're not testing against the git tree (say in jenkins), don't install.
  if test -z "$PDB_NO_PUPPETSERVER_INSTALL"; then
      # Because openvox-server as of 8.12.0 no longer packages the BC code directly
@@ -78,7 +78,7 @@ fi
      lein install
      lein with-profile ezbake uberjar
  fi
- # Cache Puppet Server version in a file in ext/test-conf directory
+ # Cache OpenVox Server version in a file in ext/test-conf directory
  dep_ver="$(lein-pprint :version)"
  echo "$dep_ver" > "$top/ext/test-conf/openvox-server-dep")
 

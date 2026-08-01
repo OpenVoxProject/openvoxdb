@@ -144,7 +144,7 @@ module PuppetDBExtensions
 
     pp_config = PP.pp(@config, "")
 
-    Beaker::Log.notify "PuppetDB Acceptance Configuration:\n\n#{pp_config}\n\n"
+    Beaker::Log.notify "OpenVoxDB Acceptance Configuration:\n\n#{pp_config}\n\n"
   end
 
   class << self
@@ -237,12 +237,12 @@ module PuppetDBExtensions
     jar_file = "puppetdb.jar"
     result = on host, %Q(ps -ef | grep "#{java_bin}" | grep "#{jar_file}" | grep " services -c " | awk '{print $2}')
     pids = result.stdout.chomp.split("\n")
-    Beaker::Log.notify "PuppetDB PIDs appear to be: '#{pids}'"
+    Beaker::Log.notify "OpenVoxDB PIDs appear to be: '#{pids}'"
     pids
   end
 
   def start_puppetdb(host)
-    step "Starting PuppetDB" do
+    step "Starting OpenVoxDB" do
       on(host, puppet_resource('service', 'puppetdb', 'ensure=running'))
       sleep_until_started(host)
     end
@@ -265,13 +265,13 @@ module PuppetDBExtensions
     on host, "tail -n 100 #{puppetdb_log_dir(host)}/puppetdb.log", :acceptable_exit_codes => [0,1]
   end
 
-  # Sleep until PuppetDB is completely started
+  # Sleep until OpenVoxDB is completely started
   #
-  # @param host Hostname to test for PuppetDB availability
+  # @param host Hostname to test for OpenVoxDB availability
   # @return [void]
   # @api public
   def sleep_until_started(host)
-    # Hit an actual endpoint to ensure PuppetDB is up and not just the webserver.
+    # Hit an actual endpoint to ensure OpenVoxDB is up and not just the webserver.
     # Retry until an HTTP response code of 200 is received.
     test_route = aio_pathing_exists?(host) ? "pdb/meta/v1/version" : "v4/version"
     curl_with_retries("start puppetdb", host,
@@ -456,7 +456,7 @@ module PuppetDBExtensions
   end
 
   def setup_openvoxdb_certs(database)
-    step 'Ensure PuppetDB certificates are setup' do
+    step 'Ensure OpenVoxDB certificates are setup' do
       # Normally the openvoxdb package automagically post-install runs
       # 'puppetdb ssl-setup', but this relies on the openvox-agent
       # already having certs generated at the time that the openvoxdb
@@ -724,7 +724,7 @@ module PuppetDBExtensions
   end
 
   def stop_puppetdb(host)
-    step 'Stopping PuppetDB' do
+    step 'Stopping OpenVoxDB' do
       pids = puppetdb_pids(host)
       on(host, puppet_resource('service', 'puppetdb', 'ensure=stopped'))
       sleep_until_stopped(host, pids)

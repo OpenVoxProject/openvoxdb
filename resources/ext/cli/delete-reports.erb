@@ -25,7 +25,7 @@ Usage: puppetdb delete-reports [OPTIONS]
     --psql    PATH        the path to the psql command (default: $psql_cmd)
 
     This cli command can conflict with command submission from running
-    PuppetDBs. If that happens, you should stop your PuppetDBs and re-run
+    OpenVoxDBs. If that happens, you should stop your OpenVoxDBs and re-run
     this command to avoid the conflict.
 USAGE
 }
@@ -76,7 +76,7 @@ trap 'rm -rf "$tmp_dir"' EXIT
 
 chown "$pg_user:$pg_user" "$tmp_dir"
 
-# Verify that the PuppetDB schema version is the expected value
+# Verify that the OpenVoxDB schema version is the expected value
 # so that we do not incorrectly delete the report data.
 expected_schema_ver=88
 su - "$pg_user" -s /bin/sh -c "$psql_cmd -p $pg_port -d $pdb_db_name -c 'COPY ( SELECT max(version) FROM schema_migrations ) TO STDOUT;' > $tmp_dir/schema_ver"

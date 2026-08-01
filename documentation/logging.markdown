@@ -5,7 +5,7 @@ layout: default
 # Logging configuration
 ## Structured logging
 
-PuppetDB uses logback, a standard Java logging library. In certain subsystems,
+OpenVoxDB uses logback, a standard Java logging library. In certain subsystems,
 namely HA, we provide extended structured logging information. By configuring
 logback appropriately, you get JSON-formatted log messages with event-specific
 fields in each message.

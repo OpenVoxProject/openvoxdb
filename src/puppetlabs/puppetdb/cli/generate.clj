@@ -2,7 +2,7 @@
   "# Data Generation utility
 
    This command-line tool can generate a base sampling of catalog, fact and
-   report files suitable for consumption by the PuppetDB benchmark utility.
+   report files suitable for consumption by the OpenVoxDB benchmark utility.
 
    Note that it is only necessary to generate a small set of initial sample
    data since benchmark will permute per node differences. So even if you want
@@ -482,7 +482,7 @@
                #(merge % {pname (rnd/random-ascii-string bsize)}))))
 
 (defn system-seconds-str
-  "Epoch seconds as a string. Used by default as a version string in Puppet
+  "Epoch seconds as a string. Used by default as a version string in OpenVox
    catalogs and reports."
   []
   (str (quot (System/currentTimeMillis) 1000)))
@@ -996,7 +996,7 @@
                                (into-array FileAttribute []))))
 
 (defn generate-files-from-wireformat-collection
-  "Store each PuppetDB object as a JSON blob.
+  "Store each OpenVoxDB object as a JSON blob.
    Creates dir and generates filenames using the given namer fn."
   [{:keys [dir namer col]}]
   (.mkdir (.toFile dir))
@@ -1112,7 +1112,7 @@
                 :total-leaves (count leaves)})))
 
 (defn generate
-  "Build up a dataset of sample PuppetDB facts, catalogs and reports based on
+  "Build up a dataset of sample OpenVoxDB facts, catalogs and reports based on
    given options and store them in the given output directory."
   [{:keys [output-dir] :as options}]
   (let [output-path (-> (if (string/blank? output-dir)

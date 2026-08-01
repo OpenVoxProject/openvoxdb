@@ -1,13 +1,13 @@
 (ns puppetlabs.puppetdb.cli.services
   "Main entrypoint
 
-   PuppetDB consists of several, cooperating components:
+   OpenVoxDB consists of several, cooperating components:
 
    * Command processing
 
-     PuppetDB uses a CQRS pattern for making changes to its domain
+     OpenVoxDB uses a CQRS pattern for making changes to its domain
      objects (facts, catalogs, etc). Instead of simply submitting data
-     to PuppetDB and having it figure out the intent, the intent
+     to OpenVoxDB and having it figure out the intent, the intent
      needs to explicitly be codified as part of the operation. This is
      known as a \"command\" (e.g. \"replace the current facts for node
      X\").
@@ -27,7 +27,7 @@
 
    * REST interface
 
-     All interaction with PuppetDB is conducted via its REST API. We
+     All interaction with OpenVoxDB is conducted via its REST API. We
      embed an instance of Jetty to handle web server duties. Commands
      that come in via REST are relayed to the message queue. Read-only
      requests are serviced synchronously.
@@ -531,7 +531,7 @@
                            {:status 2 :messages [[msg *err*]]}})))))
 
 (defn stop-puppetdb
-  "Shuts down PuppetDB, releasing resources when possible."
+  "Shuts down OpenVoxDB, releasing resources when possible."
   [context request-shutdown]
   ;; Must also handle a nil context.
   (try!
@@ -553,7 +553,7 @@
    (finally (stop-reporters metrics/metrics-registries))))
 
 ;; A map of required postgres settings and their expected value.
-;; PuppetDB will refuse to start unless ALL of these values
+;; OpenVoxDB will refuse to start unless ALL of these values
 ;; match the actual database configuration settings.
 (def required-pg-settings
   {:standard_conforming_strings "on"})
@@ -571,7 +571,7 @@
 
 (defn verify-database-settings
   "Ensure the database configuration does not have any settings known
-  to break PuppetDB. If an invalid database configuration is found, throws
+  to break OpenVoxDB. If an invalid database configuration is found, throws
   {:kind ::invalid-database-configuration :failed-validation failed-map}"
   [database-settings]
   (let [munged-settings (apply merge
@@ -711,7 +711,7 @@
                                   (catch Exception ex
                                     ;; Nothing to do but log it...
                                     (log/error ex (trs "Unable to close migration pool")))))
-                          (.setName "PuppetDB migration pool closer"))]
+                          (.setName "OpenVoxDB migration pool closer"))]
         (.addShutdownHook runtime on-shutdown)
         (try
           (loop [i 0
@@ -817,16 +817,16 @@
         (cond
           (= ver desired-version) true
           (nil? res)
-          (stop (trs "Cannot find the PuppetDB schema migration table") 2)
+          (stop (trs "Cannot find the OpenVoxDB schema migration table") 2)
           (> ver desired-version)
           (stop (str
-                 (trs "Please upgrade PuppetDB: ")
-                 (trs "your database contains schema migration {0} which is too new for this version of PuppetDB."
+                 (trs "Please upgrade OpenVoxDB: ")
+                 (trs "your database contains schema migration {0} which is too new for this version of OpenVoxDB."
                       ver))
                 (int \M))
           (< ver desired-version)
           (stop (str
-                 (trs "Please run PuppetDB with the migrate option set to true to upgrade your database. ")
+                 (trs "Please run OpenVoxDB with the migrate option set to true to upgrade your database. ")
                  (trs "The detected migration level {0} is out of date." ver))
                 (int \m)))))))
 
@@ -980,7 +980,7 @@
    upgrade-and-exit?]
 
   (when-let [v (version/version)]
-    (log/info (trs "PuppetDB version {0}" v)))
+    (log/info (trs "OpenVoxDB version {0}" v)))
 
   (let [{:keys [puppetdb database developer read-database emit-cmd-events?]} config
         {:keys [cmd-event-mult cmd-event-ch]} context
@@ -1205,8 +1205,8 @@
     "Immediately delete all data for the provided certname"))
 
 (defservice puppetdb-service
-  "Defines a trapperkeeper service for PuppetDB; this service is responsible
-  for initializing all of the PuppetDB subsystems and registering shutdown hooks
+  "Defines a trapperkeeper service for OpenVoxDB; this service is responsible
+  for initializing all of the OpenVoxDB subsystems and registering shutdown hooks
   that trapperkeeper will call on exit."
   PuppetDBServer
   [[:DefaultedConfig get-config]
@@ -1216,13 +1216,13 @@
   (init
    [_ context]
    (call-unless-shutting-down
-    "PuppetDB service init" (get-shutdown-reason) context
+    "OpenVoxDB service init" (get-shutdown-reason) context
     #(init-puppetdb context)))
 
   (start
    [this context]
    (call-unless-shutting-down
-    "PuppetDB service start" (get-shutdown-reason) context
+    "OpenVoxDB service start" (get-shutdown-reason) context
     #(do
        ;; Some tests rely on keeping all the logic out of this function,
        ;; to test startup errors, etc.
@@ -1294,7 +1294,7 @@
    (-> this service-context :cmd-event-mult)))
 
 (defn provide-services
-  "Starts PuppetDB as a service via Trapperkeeper.  Augments TK's normal
+  "Starts OpenVoxDB as a service via Trapperkeeper.  Augments TK's normal
   config parsing a bit."
   ([args] (provide-services args nil))
   ([args {:keys [upgrade-and-exit?]}]

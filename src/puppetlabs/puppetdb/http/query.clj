@@ -2,7 +2,7 @@
   "Query parameter manipulation
 
    Functions that aid in the parsing, serialization, and manipulation
-   of PuppetDB queries embedded in HTTP parameters."
+   of OpenVoxDB queries embedded in HTTP parameters."
   (:require
    [clojure.core.match :as cm]
    [clojure.java.io]
@@ -36,7 +36,7 @@
 ;;; Schemas
 
 (def puppetdb-query-schema
-  "This schema defines a PuppetDB query and its available
+  "This schema defines an OpenVoxDB query and its available
   parameters. In a GET request this is contained in various query
   parameters, for POST requests this should be contained in the body
   of the request"
@@ -382,7 +382,7 @@
    (case (:request-method req)
      :get (get-req->query req parse-fn)
      :post (post-req->query req parse-fn)
-     (throw (bad-query-ex (tru "PuppetDB queries must be made via GET/POST"))))
+     (throw (bad-query-ex (tru "OpenVoxDB queries must be made via GET/POST"))))
    param-spec))
 
 (defn wrap-typical-query

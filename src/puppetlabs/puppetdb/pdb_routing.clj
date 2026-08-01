@@ -26,7 +26,7 @@
   (fn [_req]
     (when (maint-mode-fn)
       {:status 503
-       :body (tru "PuppetDB is currently down. Try again later.")})))
+       :body (tru "OpenVoxDB is currently down. Try again later.")})))
 
 (defn wrap-with-context [uri route]
   (compojure/context uri [] route))
@@ -106,7 +106,7 @@
         cert-allowlist (get-in config [:puppetdb :certificate-allowlist])]
     (set-url-prefix query-prefix)
 
-    (log/info (trs "Starting PuppetDB, entering maintenance mode"))
+    (log/info (trs "Starting OpenVoxDB, entering maintenance mode"))
     (add-ring-handler
      service
      (-> (pdb-app context-root
@@ -131,7 +131,7 @@
 (defn start-pdb-routing
   [context config disable-maint-mode]
   (when-not (get-in config [:global :upgrade-and-exit?])
-    (log/info (trs "PuppetDB finished starting, disabling maintenance mode"))
+    (log/info (trs "OpenVoxDB finished starting, disabling maintenance mode"))
     (disable-maint-mode))
   context)
 
@@ -147,7 +147,7 @@
   (init
    [this context]
    (call-unless-shutting-down
-    "PuppetDB routing service init" (get-shutdown-reason) context
+    "OpenVoxDB routing service init" (get-shutdown-reason) context
     #(init-pdb-routing this context (get-config) (get-route this)
                        shared-globals
                        set-url-prefix add-ring-handler
@@ -159,7 +159,7 @@
   (start
    [_ context]
    (call-unless-shutting-down
-    "PuppetDB routing service start" (get-shutdown-reason) context
+    "OpenVoxDB routing service start" (get-shutdown-reason) context
     #(start-pdb-routing context (get-config) disable-maint-mode)))
 
   (stop

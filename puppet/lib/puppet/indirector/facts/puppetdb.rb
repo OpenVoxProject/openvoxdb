@@ -84,7 +84,7 @@ class Puppet::Node::Facts::Puppetdb < Puppet::Indirector::REST
         # This is what the inventory service expects when there is no data
         return nil
       rescue => e
-        raise Puppet::Error, "Failed to find facts from PuppetDB at  #{e}"
+        raise Puppet::Error, "Failed to find facts from OpenVoxDB at  #{e}"
       end
     end
   end

@@ -31,7 +31,7 @@
 
 (pls/defn-validated status-details :- status-details-schema
   "Returns a map containing status information on the various parts of
-  a running PuppetDB system. This data can be interpreted to determine
+  a running OpenVoxDB system. This data can be interpreted to determine
   whether the system is considered up"
   [_config :- {s/Any s/Any}
    shared-globals-fn :- pls/Function
@@ -61,7 +61,7 @@
      :status status-details}))
 
 (defn register-pdb-status
-  "Registers the PuppetDB instance in TK status using `register-fn`
+  "Registers the OpenVoxDB instance in TK status using `register-fn`
   with the associated `status-callback-fn`"
   [register-fn status-callback-fn]
   (register-fn "puppetdb-status"

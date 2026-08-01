@@ -130,7 +130,7 @@
   (execute [this runnable] (.execute (:threadpool this) runnable)))
 
 (defn unbounded-threadpool
-  "Creates an unbounded thread pool with PuppetDB specific adjustments,
+  "Creates an unbounded thread pool with OpenVoxDB specific adjustments,
   i.e. exception logging, etc."
   [name-pattern shutdown-timeout-ms]
   (map->UnboundedThreadpool

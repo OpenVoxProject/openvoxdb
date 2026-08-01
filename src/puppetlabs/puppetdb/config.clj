@@ -1,6 +1,6 @@
 (ns puppetlabs.puppetdb.config
   "Centralized place for reading a user-defined config INI file, validating,
-   defaulting and converting into a format that can startup a PuppetDB instance.
+   defaulting and converting into a format that can startup an OpenVoxDB instance.
 
    The schemas in this file define what is expected to be present in the INI file
    and the format expected by the rest of the application."
@@ -33,7 +33,7 @@
 ;; The config is currently broken into the sections that are defined
 ;; in the INI file. When the schema defaulting code gets changed to
 ;; support defaulting/converting nested maps, these configs can be put
-;; together in a single schema that defines the config for PuppetDB
+;; together in a single schema that defines the config for OpenVoxDB
 
 (defn redirect-obsolete-config-setting
   [config obsolete replacement]
@@ -529,7 +529,7 @@
 
 (defn convert-config
   "Given a `config` map (created from the user defined config), validate, default and convert it
-   to the internal Clojure format that PuppetDB expects"
+   to the internal Clojure format that OpenVoxDB expects"
   [config]
   (-> config
       configure-dbs
@@ -629,7 +629,7 @@
   (when (get-in config-data [:global :url-prefix])
     (utils/println-err (format "%s %s %s"
                                (trs "The configuration item `url-prefix` in the [global] section is retired, please remove this item from your config.")
-                               (trs "PuppetDB has a non-configurable context route of `/pdb`.")
+                               (trs "OpenVoxDB has a non-configurable context route of `/pdb`.")
                                (trs "Consult the documentation for more details.")))
     (utils/flush-and-exit err-exit-status)) ; cf. PDB-2053
   config-data)
@@ -686,7 +686,7 @@
 
 (defn process-config!
   "Accepts a map containing all of the user-provided configuration values
-  and configures the various PuppetDB subsystems."
+  and configures the various OpenVoxDB subsystems."
   [config]
   (let [test-config (get-in config [:puppetdb ::test])]
     (-> config
@@ -748,7 +748,7 @@
     ;; This wrapper is just for consistency, for now the config
     ;; service is the root of the dependency tree...
     (call-unless-shutting-down
-     "PuppetDB config service init" (get-shutdown-reason) context
+     "OpenVoxDB config service init" (get-shutdown-reason) context
      #(init-config-service context (get-config) transform-config request-shutdown)))
 
    (get-config

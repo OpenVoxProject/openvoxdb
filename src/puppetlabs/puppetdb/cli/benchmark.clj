@@ -3,7 +3,7 @@
 
    This command-line utility will simulate catalog submission for a
    population. It requires that a separate, running instance of
-   PuppetDB for it to submit catalogs to.
+   OpenVoxDB for it to submit catalogs to.
 
    We attempt to approximate a number of hosts submitting catalogs at
    the specified runinterval with the specified rate-of-churn in
@@ -63,7 +63,7 @@
      and it's related leaf edge.
 
    By ensuring we only ever delete leaves from the graph, we maintain the graph
-   integrity, which is important since PuppetDB validates the edges on injestion.
+   integrity, which is important since OpenVoxDB validates the edges on injestion.
 
    This provides only limited exercise of edge mutation, which seemed like a
    reasonable trade-off given that edge submission is deprecated. Running with
@@ -296,7 +296,7 @@
 
 (defn resource-has-blob?
   "True if the given resource has a BLOB parameter value. Sample catalogs
-  created by the PuppetDB Generate command may have 'content_blob_*' parameters
+  created by the OpenVoxDB Generate command may have 'content_blob_*' parameters
   with large values."
   [resource]
   (let [parameter-keys (keys (resource "parameters"))]
@@ -394,7 +394,7 @@
   contain any of the 'clone-*' resources created by add-resource. This prevents
   nested relationships from forming between added resources, and in turn allows
   del-resource in the include-edges case to simply drop a cloned resource and
-  its edge without breaking the graph validated by PuppetDB on injestion."
+  its edge without breaking the graph validated by OpenVoxDB on injestion."
   [{:keys [original-keys include-edges] :as work-cat} resource-to-clone]
   (let [new-resource (clone-resource resource-to-clone)
         new-rkey {"type" (new-resource "type") "title" (new-resource "title")}
@@ -706,7 +706,7 @@
                ["-F" "--facts FACTS" "Directory of *.json sample factsets"]
                ["-C" "--catalogs CATALOGS" "Directory of *.json sample catalogs"]
                ["-R" "--reports REPORTS" "Directory of *.json sample reports"]
-               ["-A" "--archive ARCHIVE" "PuppetDB export tarball (conflicts with -C, -F or -R)"]
+               ["-A" "--archive ARCHIVE" "OpenVoxDB export tarball (conflicts with -C, -F or -R)"]
                ["-i" "--runinterval RUNINTERVAL"
                 "Simulation interval (minutes); uses TMPDIR (or java.io.tmpdir)"
                 :parse-fn #(Integer/parseInt %)]
@@ -756,7 +756,7 @@
                ["-o" "--offset N" "Host cert number offset (start with host-N)"
                 :default 0
                 :parse-fn #(Integer/parseInt %)]
-               [nil "--include-catalog-edges" "Include catalog edges in the data submitted to PuppetDB"]
+               [nil "--include-catalog-edges" "Include catalog edges in the data submitted to OpenVoxDB"]
                [nil "--catalog-query-pct PERCENT" "Chance catalog will query before send"
                 :default 0
                 :parse-fn #(/ (Double/parseDouble %) 100)

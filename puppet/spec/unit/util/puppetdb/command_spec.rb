@@ -38,7 +38,7 @@ describe Puppet::Util::Puppetdb::Command do
 
         subject.submit
         test_logs.find_all { |m|
-          m =~ /'#{subject.command}' command for #{subject.certname} submitted to PuppetDB/
+          m =~ /'#{subject.command}' command for #{subject.certname} submitted to OpenVoxDB/
         }.length.should == 1
       end
     end
