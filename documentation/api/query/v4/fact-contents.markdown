@@ -195,7 +195,7 @@ Which returns:
 
 ## Paging
 
-This query endpoint supports paged results via the common PuppetDB paging
+This query endpoint supports paged results via the common OpenVoxDB paging
 URL parameters. For more information, please see the documentation
 on [paging][paging]. When the `order_by` parameter is set to "value", the
 ordering will be lexicographical.

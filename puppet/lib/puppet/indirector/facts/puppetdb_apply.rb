@@ -4,8 +4,8 @@ require 'puppet/indirector/facts/puppetdb'
 # terminus that better suits execution via `puppet apply`.
 #
 # This terminus is designed to be used as a cache terminus, to ensure that facts
-# are stored in PuppetDB. It does not act as a real cache itself however, it
-# tells Puppet to fallback to the `terminus` instead.
+# are stored in OpenVoxDB. It does not act as a real cache itself however, it
+# tells OpenVox to fallback to the `terminus` instead.
 class Puppet::Node::Facts::PuppetdbApply < Puppet::Node::Facts::Puppetdb
   attr_writer :dbstored
 

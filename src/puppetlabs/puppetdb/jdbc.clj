@@ -172,7 +172,7 @@
   (sql/db-query-with-resultset *db* sql-params func))
 
 (defn valid-jdbc-query?
-  "Most SQL queries generated in the PuppetDB code base are represented internally
+  "Most SQL queries generated in the OpenVoxDB code base are represented internally
   as a vector whose first item is the SQL string (with optional '?' placeholders),
   and whose remaining items (if any) are simple data types that can be passed
   to a JDBC prepared statement as parameter values to bind to the placeholders
@@ -497,7 +497,7 @@
        ~@body)))
 
 (defn ^:dynamic *enable-jmx*
-  "This function exists to enable starting multiple PuppetDB instances
+  "This function exists to enable starting multiple OpenVoxDB instances
   inside a single JVM. Starting up a second instance results in a
   collision exception between JMX beans from the two
   instances. Disabling JMX from the broker avoids that issue"
@@ -529,12 +529,12 @@
      "    case"
      "      when db_schema_version > expected_max then"
      "        raise exception"
-     "          'Please upgrade PuppetDB: your database contains schema
-                 migration %% which is too new for this version of PuppetDB.',
+     "          'Please upgrade OpenVoxDB: your database contains schema
+                 migration %% which is too new for this version of OpenVoxDB.',
                  db_schema_version;"
      "      when db_schema_version < expected_max then"
      "        raise exception"
-     "          'Please run PuppetDB with the migrate option set to true
+     "          'Please run OpenVoxDB with the migrate option set to true
                  to upgrade your database. The detected migration level %% is
                  out of date.', db_schema_version;"
      "      else"

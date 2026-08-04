@@ -1,8 +1,8 @@
 (ns puppetlabs.puppetdb.catalogs
-  "Puppet catalog parsing
+  "OpenVox catalog parsing
 
    Functions that handle conversion of catalogs from wire format to
-   internal PuppetDB format.
+   internal OpenVoxDB format.
 
    The wire format is described in detail in [the spec](../spec/catalog-wire-format.md).
 
@@ -74,7 +74,7 @@
 
    ### Catalog
 
-   A wire-format-neutral representation of a Puppet catalog. It is a
+   A wire-format-neutral representation of an OpenVox catalog. It is a
    map with the following structure:
 
        {:certname    \"...\"
@@ -105,7 +105,7 @@
   `(ex-info ~msg {:puppetlabs.puppetdb/known-error? true}))
 
 (def ^:const catalog-version
-  "Constant representing the version number of the PuppetDB
+  "Constant representing the version number of the OpenVoxDB
   catalog format"
   8)
 
@@ -290,7 +290,7 @@
 
 (defn- strip-unknown-attributes
   "Removes unknown attributes from a resource. This is essential for the forward compatibility
-  of PuppetDB when the puppet agent makes additions to its resource definition."
+  of OpenVoxDB when the puppet agent makes additions to its resource definition."
   [{:keys [type title] :as resource} expected-keys already-seen-unrecognized-keys]
   (let [unrecognized-keys (set/difference (set (keys resource))
                                           expected-keys
@@ -333,10 +333,10 @@
 ;; Functions to ensure that the catalog structure is coherent.
 
 (def ^:const tag-pattern
-  ; tags are case insensitive, and Puppet automatically converts
+  ; tags are case insensitive, and OpenVox automatically converts
   ; tags to lower case, so we do not consider uppercase letters in
   ; our valid tag regex.
-  ; See the doc for more info https://puppet.com/docs/puppet/6.4/lang_reserved.html#tags
+  ; See the doc for more info https://docs.openvoxproject.org/openvox/latest/lang_reserved.html#tags
   #"[[\p{L}&&[^\p{Lu}]]\p{N}_][[\p{L}&&[^\p{Lu}]]\p{N}_:.-]*")
 
 (defn validate-resources
@@ -398,7 +398,7 @@
 
 (defmulti parse-catalog
   "Parse a wire-format `catalog` object or string of the specified `version`,
-  returning a PuppetDB-suitable representation."
+  returning an OpenVoxDB-suitable representation."
   (fn [catalog version _received-time]
     (match [catalog version]
            [(_ :guard string?) _]

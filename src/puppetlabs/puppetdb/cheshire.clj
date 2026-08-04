@@ -79,7 +79,7 @@
 (def default-pretty-opts (assoc default-opts :pretty true))
 
 (defn generate-string
-  "Thinly wraps cheshire.core/generate-string, adding the PuppetDB
+  "Thinly wraps cheshire.core/generate-string, adding the OpenVoxDB
   default date format."
   ([obj]
    (core/generate-string obj default-opts))
@@ -87,7 +87,7 @@
    (core/generate-string obj (merge default-opts opts))))
 
 (defn generate-pretty-string
-  "Thinly wraps cheshire.core/generate-string, adding the PuppetDB
+  "Thinly wraps cheshire.core/generate-string, adding the OpenVoxDB
   default date format and pretty printing from `default-pretty-opts`"
   ([obj]
    (core/generate-string obj default-pretty-opts))
@@ -95,7 +95,7 @@
    (core/generate-string obj (merge default-pretty-opts opts))))
 
 (defn generate-stream
-  "Thinly wraps cheshire.core/generate-stream, adding the PuppetDB
+  "Thinly wraps cheshire.core/generate-stream, adding the OpenVoxDB
   default date format."
   ([obj writer]
    (core/generate-stream obj writer default-opts))
@@ -103,7 +103,7 @@
    (core/generate-stream obj writer (merge default-opts opts))))
 
 (defn generate-pretty-stream
-  "Thinly wraps cheshire.core/generate-stream, adding the PuppetDB default date format
+  "Thinly wraps cheshire.core/generate-stream, adding the OpenVoxDB default date format
    and pretty printing from `default-pretty-opts`"
   ([obj writer]
      (generate-pretty-stream obj writer default-pretty-opts))

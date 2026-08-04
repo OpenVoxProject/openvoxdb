@@ -29,10 +29,10 @@ The `"values"` key points to a _JSON Object_ that represents the set
 of facts. Each key is the fact name, and the value is the fact value.
 
 The `"producer_timestamp"` key points to a timestamp reflecting
-the time of fact set submission from the Server to PuppetDB.
+the time of fact set submission from the Server to OpenVoxDB.
 
-The `"producer"` key is the certname of the Puppet Server that sent the fact set
-to PuppetDB. This field may be `null`.
+The `"producer"` key is the certname of the OpenVox Server that sent the fact set
+to OpenVoxDB. This field may be `null`.
 
 Fact names and values **must** be strings.
 

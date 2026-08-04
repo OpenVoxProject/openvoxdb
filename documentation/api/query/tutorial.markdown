@@ -11,7 +11,7 @@ canonical: "/puppetdb/latest/api/query/tutorial.html"
 [select]: ./v4/ast.markdown#selectentity-subquery-statements
 [config_jetty]: ../../configure.markdown#jetty-http-settings
 
-This page walks through the construction of several types of PuppetDB
+This page walks through the construction of several types of OpenVoxDB
 queries. We use the **version 4 API** in all examples.
 
 ## How to query
@@ -36,7 +36,7 @@ Queries are usually issued from code, but you can easily issue them from the com
       -H 'Content-Type:application/json'
       -d '{"query":["=","certname","foo.com"]}'
 
-This requires that PuppetDB be [configured to accept non-SSL connections][config_jetty]. By default, it will only accept unencrypted traffic from `localhost`.
+This requires that OpenVoxDB be [configured to accept non-SSL connections][config_jetty]. By default, it will only accept unencrypted traffic from `localhost`.
 
 
 **With SSL:**
@@ -48,14 +48,14 @@ This requires that PuppetDB be [configured to accept non-SSL connections][config
       --key /etc/puppetlabs/puppet/ssl/private_keys/thisnode.pem \
       --data-urlencode query@<FILENAME>
 
-This requires that you specify a certificate (issued by the same CA PuppetDB trusts), a private key, and a CA certificate.
+This requires that you specify a certificate (issued by the same CA OpenVoxDB trusts), a private key, and a CA certificate.
 
 In both examples, `<filename>` should be a file that contains the query to execute.
 
 ### Querying with Puppet code
 
-The PuppetDB terminus includes the `puppetdb_query` function, which can be used
-to query PuppetDB from within a Puppet manifest. For example,
+The OpenVoxDB terminus includes the `puppetdb_query` function, which can be used
+to query OpenVoxDB from within a Puppet manifest. For example,
 
     $debian_nodes_query = '["from", "nodes", ["=", ["fact", "operatingsystem"], "Debian"]]'
     $debian_nodes = puppetdb_query($debian_nodes_query).each |$value| { $value["certname"] }
@@ -133,7 +133,7 @@ a particular set of keys.
 * `tags`: all the tags on the resource
 * `title`: the resource title
 * `type`: the resource type
-* `resources`: this is an internal identifier for the resource used by PuppetDB
+* `resources`: this is an internal identifier for the resource used by OpenVoxDB
 * `certname`: the node that the resource came from
 
 There will be an entry in the list for every resource. A resource is specific

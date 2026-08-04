@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-# Testing the upgrade subcommand on PuppetDB jar
+# Testing the upgrade subcommand on OpenVoxDB jar
 # Migrates an empty database to most recent migration.
-# You can specify PuppetDB jar location with env var PDB_JAR.
-# PuppetDB configuration is sourced from PDBBOX sandbox or an ephemeral sandbox
+# You can specify OpenVoxDB jar location with env var PDB_JAR.
+# OpenVoxDB configuration is sourced from PDBBOX sandbox or an ephemeral sandbox
 # Flags --pgbin and --pgbin are necessary unless set with ext/bin/test-config
 
 set -euo pipefail
@@ -47,7 +47,7 @@ fi
 
 set -x
 
-# Ensure there is a PuppetDB sandbox available
+# Ensure there is an OpenVoxDB sandbox available
 if test -z "${PDBBOX:-}"; then
     # No PDBBOX, set one up and run ourselves again
     tmpdir="$(mktemp -d "test-upgrade-and-exit-XXXXXX")"

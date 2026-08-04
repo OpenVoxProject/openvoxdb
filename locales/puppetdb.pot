@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Puppet <docs@puppet.com>
+# Copyright (C) YEAR Vox Pupuli; portions Copyright (C) Puppet, Inc.
 # This file is distributed under the same license as the puppetlabs.puppetdb package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -7,8 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: puppetlabs.puppetdb \n"
-"X-Git-Ref: 560fdf949fa73fee7a8cd679cd86cc424000fbfd\n"
-"Report-Msgid-Bugs-To: docs@puppet.com\n"
+"Report-Msgid-Bugs-To: https://github.com/OpenVoxProject/openvoxdb/issues\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
@@ -205,14 +204,6 @@ msgid "Failed to delete all data for host {0}"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/cli/services.clj
-msgid "Update checker interrupted"
-msgstr ""
-
-#: src/puppetlabs/puppetdb/cli/services.clj
-msgid "Skipping update check on Puppet Enterprise"
-msgstr ""
-
-#: src/puppetlabs/puppetdb/cli/services.clj
 msgid "Shut down {0} scheduler"
 msgstr ""
 
@@ -288,22 +279,22 @@ msgid "Unable to read schema version: {0}"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/cli/services.clj
-msgid "Cannot find the PuppetDB schema migration table"
+msgid "Cannot find the OpenVoxDB schema migration table"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/cli/services.clj
-msgid "Please upgrade PuppetDB: "
+msgid "Please upgrade OpenVoxDB: "
 msgstr ""
 
 #: src/puppetlabs/puppetdb/cli/services.clj
 msgid ""
 "your database contains schema migration {0} which is too new for this "
-"version of PuppetDB."
+"version of OpenVoxDB."
 msgstr ""
 
 #: src/puppetlabs/puppetdb/cli/services.clj
 msgid ""
-"Please run PuppetDB with the migrate option set to true to upgrade your "
+"Please run OpenVoxDB with the migrate option set to true to upgrade your "
 "database. "
 msgstr ""
 
@@ -324,7 +315,7 @@ msgid "Garbage collector interrupted"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/cli/services.clj
-msgid "PuppetDB version {0}"
+msgid "OpenVoxDB version {0}"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/cli/services.clj
@@ -378,15 +369,15 @@ msgid "warn:"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/cli/util.clj
-msgid "JDK {0} is neither tested nor supported. Please use JDK {1}"
+msgid "JDK {0} is neither tested nor supported. Please use JDK 21 or 25"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/cli/util.clj
-msgid "JDK {0} is deprecated, please upgrade to JDK {1}"
+msgid "JDK {0} is deprecated, please upgrade to JDK 21 or 25"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/cli/util.clj
-msgid "PuppetDB doesn''t support JDK {0}"
+msgid "OpenVoxDB doesn''t support JDK {0}"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/command.clj
@@ -610,7 +601,7 @@ msgid ""
 msgstr ""
 
 #: src/puppetlabs/puppetdb/config.clj
-msgid "PuppetDB has a non-configurable context route of `/pdb`."
+msgid "OpenVoxDB has a non-configurable context route of `/pdb`."
 msgstr ""
 
 #: src/puppetlabs/puppetdb/config.clj
@@ -740,15 +731,15 @@ msgid "to be reviewed"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/dashboard.clj
-msgid "Redirecting / to the PuppetDB dashboard"
+msgid "Redirecting / to the OpenVoxDB dashboard"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/export.clj
-msgid "Export triggered for PuppetDB"
+msgid "Export triggered for OpenVoxDB"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/export.clj
-msgid "Finished exporting PuppetDB"
+msgid "Finished exporting OpenVoxDB"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/facts.clj
@@ -860,7 +851,7 @@ msgid "Parsing PQL took {0} ms for PDBQuery:{1}:{2}"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/http/query.clj
-msgid "PuppetDB queries must be made via GET/POST"
+msgid "OpenVoxDB queries must be made via GET/POST"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/http/query.clj
@@ -945,18 +936,6 @@ msgstr ""
 msgid "Could not find version"
 msgstr ""
 
-#: src/puppetlabs/puppetdb/meta.clj
-msgid "Could not retrieve update information ({0})"
-msgstr ""
-
-#: src/puppetlabs/puppetdb/meta.clj
-msgid "Error when checking for latest version"
-msgstr ""
-
-#: src/puppetlabs/puppetdb/meta.clj
-msgid "Error when checking for latest version: {0}"
-msgstr ""
-
 #: src/puppetlabs/puppetdb/middleware.clj
 msgid "Processing HTTP request to URI: ''{0}''"
 msgstr ""
@@ -968,8 +947,8 @@ msgstr ""
 #: src/puppetlabs/puppetdb/middleware.clj
 msgid ""
 "The client certificate name {0} doesn't appear in the certificate allowlist. "
-"Is your master''s (or other PuppetDB client''s) certname listed in "
-"PuppetDB''s certificate-allowlist file?"
+"Is your master''s (or other OpenVoxDB client''s) certname listed in "
+"OpenVoxDB''s certificate-allowlist file?"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/middleware.clj
@@ -1030,7 +1009,7 @@ msgid "Unknown sync version check state"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/pdb_routing.clj
-msgid "PuppetDB is currently down. Try again later."
+msgid "OpenVoxDB is currently down. Try again later."
 msgstr ""
 
 #: src/puppetlabs/puppetdb/pdb_routing.clj
@@ -1038,11 +1017,11 @@ msgid "Not Found"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/pdb_routing.clj
-msgid "Starting PuppetDB, entering maintenance mode"
+msgid "Starting OpenVoxDB, entering maintenance mode"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/pdb_routing.clj
-msgid "PuppetDB finished starting, disabling maintenance mode"
+msgid "OpenVoxDB finished starting, disabling maintenance mode"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/pql.clj
@@ -1271,8 +1250,8 @@ msgstr ""
 
 #: src/puppetlabs/puppetdb/query_eng.clj
 msgid ""
-"AST validation failed, but was successfully converted to SQL. Please file a "
-"PuppetDB ticket at https://tickets.puppetlabs.com n{0}"
+"AST validation failed, but was successfully converted to SQL. Please file an "
+"OpenVoxDB issue at https://github.com/OpenVoxProject/openvoxdb/issues n{0}"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/query_eng.clj
@@ -1465,8 +1444,8 @@ msgstr ""
 
 #: src/puppetlabs/puppetdb/query_eng/engine.clj
 msgid ""
-"Could not drop-joins from {0} query. One or more projections were missing :"
-"join-deps {1}"
+"Could not drop-joins from {0} query. One or more projections were "
+"missing :join-deps {1}"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/query_eng/engine.clj
@@ -1607,7 +1586,7 @@ msgstr ""
 
 #: src/puppetlabs/puppetdb/scf/migrate.clj
 msgid ""
-"PuppetDB only supports upgrading from the previous major version to the "
+"OpenVoxDB only supports upgrading from the previous major version to the "
 "current major version."
 msgstr ""
 
@@ -1619,8 +1598,8 @@ msgstr ""
 
 #: src/puppetlabs/puppetdb/scf/migrate.clj
 msgid ""
-"Your PuppetDB database contains a schema migration numbered {0}, but this "
-"version of PuppetDB does not recognize that version."
+"Your OpenVoxDB database contains a schema migration numbered {0}, but this "
+"version of OpenVoxDB does not recognize that version."
 msgstr ""
 
 #: src/puppetlabs/puppetdb/scf/migrate.clj
@@ -1657,11 +1636,11 @@ msgid "Unable to restore "
 msgstr ""
 
 #: src/puppetlabs/puppetdb/scf/migrate.clj
-msgid "PuppetDB requires the PostgreSQL `pg_trgm` extension.n"
+msgid "OpenVoxDB requires the PostgreSQL `pg_trgm` extension.n"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/scf/migrate.clj
-msgid "Please connect to the PuppetDB database and run this:n"
+msgid "Please connect to the OpenVoxDB database and run this:n"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/scf/migrate.clj
@@ -1801,7 +1780,7 @@ msgid "cannot regex-quote strings containing ''\\E''"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/utils.clj
-msgid "Refusing request; PuppetDB is shutting down"
+msgid "Refusing request; OpenVoxDB is shutting down"
 msgstr ""
 
 #: src/puppetlabs/puppetdb/utils.clj

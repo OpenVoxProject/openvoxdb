@@ -54,7 +54,7 @@
       (when-not (allowed? req)
         (when ssl-client-cn
           (log/warn (trs "{0} rejected by certificate allowlist {1}" ssl-client-cn allowlist)))
-        (http/denied-response (tru "The client certificate name {0} doesn't appear in the certificate allowlist. Is your master''s (or other PuppetDB client''s) certname listed in PuppetDB''s certificate-allowlist file?" ssl-client-cn)
+        (http/denied-response (tru "The client certificate name {0} doesn't appear in the certificate allowlist. Is your master''s (or other OpenVoxDB client''s) certname listed in OpenVoxDB''s certificate-allowlist file?" ssl-client-cn)
                               HttpURLConnection/HTTP_FORBIDDEN)))))
 
 (defn wrap-cert-authn

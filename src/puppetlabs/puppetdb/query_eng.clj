@@ -160,7 +160,7 @@
                     (log/error e (trs "Unknown exception when processing ast to add report type filter(s)."))
                     (throw e)))]
         (if (and (map? ast) (= (:type ast) ::failed))
-          (throw (ex-info (trs "AST validation failed, but was successfully converted to SQL. Please file a PuppetDB ticket at https://tickets.puppetlabs.com \n{0}"
+          (throw (ex-info (trs "AST validation failed, but was successfully converted to SQL. Please file an OpenVoxDB issue at https://github.com/OpenVoxProject/openvoxdb/issues \n{0}"
                                (:message ast))
                           {:kind ::dr/unrecognized-ast-syntax
                            :ast query

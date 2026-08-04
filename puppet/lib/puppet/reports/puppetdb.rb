@@ -8,12 +8,12 @@ Puppet::Reports.register_report(:puppetdb) do
   CommandStoreReport = Puppet::Util::Puppetdb::CommandNames::CommandStoreReport
 
   desc <<-DESC
-  Send report information to PuppetDB via the REST API.  Reports are serialized to
-  JSON format, and then submitted to puppetdb using the '#{CommandStoreReport}'
+  Send report information to OpenVoxDB via the REST API.  Reports are serialized to
+  JSON format, and then submitted to OpenVoxDB using the '#{CommandStoreReport}'
   command.
   DESC
 
-  # Process the report by formatting it into a PuppetDB 'store report'
+  # Process the report by formatting it into an OpenVoxDB 'store report'
   # command and submitting it.
   #
   # @return [void]
@@ -29,7 +29,7 @@ Puppet::Reports.register_report(:puppetdb) do
   end
 
   # Convert `self` (an instance of `Puppet::Transaction::Report`) to a hash
-  # suitable for sending over the wire to PuppetDB
+  # suitable for sending over the wire to OpenVoxDB
   #
   # @return Hash[<String, Object>]
   # @api private
@@ -158,7 +158,7 @@ Puppet::Reports.register_report(:puppetdb) do
   end
 
   # Convert an instance of `Puppet::Transaction::Event` to a hash
-  # suitable for sending over the wire to PuppetDB
+  # suitable for sending over the wire to OpenVoxDB
   #
   # @return Hash[<String, Object>]
   # @api private
@@ -184,7 +184,7 @@ Puppet::Reports.register_report(:puppetdb) do
   end
 
   # Convert an instance of `Puppet::Resource::Status` to a hash
-  # suitable for sending over the wire to PuppetDB
+  # suitable for sending over the wire to OpenVoxDB
   #
   # @return Hash[<String, Object>]
   # @api private

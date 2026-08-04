@@ -1,65 +1,63 @@
 ---
-title: "Connecting standalone Puppet nodes to PuppetDB"
+title: "Connecting standalone OpenVox nodes to OpenVoxDB"
 layout: default
 canonical: "/puppetdb/latest/connect_puppet_apply.markdown"
 ---
 
-# Connecting standalone Puppet nodes to PuppetDB
+# Connecting standalone OpenVox nodes to OpenVoxDB
 
-[exported]: https://puppet.com/docs/puppet/latest/lang_exported.html
-[package]: https://puppet.com/docs/puppet/latest/type.html#package
-[file]: https://puppet.com/docs/puppet/latest/type.html#file
-[yumrepo]: https://puppet.com/docs/puppet/latest/type.html#yumrepo
+[exported]: https://docs.openvoxproject.org/openvox/latest/lang_exported.html
+[package]: https://docs.openvoxproject.org/openvox/latest/type.html#package
+[file]: https://docs.openvoxproject.org/openvox/latest/type.html#file
+[yumrepo]: https://docs.openvoxproject.org/openvox/latest/type.html#yumrepo
 [apt]: http://forge.puppetlabs.com/puppetlabs/apt
-[puppetdb_download]: http://downloads.puppetlabs.com/puppetdb
-[puppetdb_conf]: https://puppet.com/docs/puppet/latest/config_file_puppetdb.html
-[routes_yaml]: https://puppet.com/docs/puppet/latest/config_file_routes.html
-[exported]: https://puppet.com/docs/puppet/latest/lang_exported.html
+[puppetdb_download]: https://github.com/OpenVoxProject/openvoxdb/releases
+[puppetdb_conf]: https://docs.openvoxproject.org/openvox/latest/config_file_puppetdb.html
+[routes_yaml]: https://docs.openvoxproject.org/openvox/latest/config_file_routes.html
+[exported]: https://docs.openvoxproject.org/openvox/latest/lang_exported.html
 [jetty]: ./configure.markdown#jetty-http-settings
 [ssl_script]: ./maintain_and_tune.markdown#redo-ssl-setup-after-changing-certificates
-[settings_namespace]: https://puppet.com/docs/puppet/latest/lang_facts_and_builtin_vars.html#puppet-master-variables
-[package_repos]: https://puppet.com/docs/puppet/latest/install_puppet.html#enable_the_puppet_platform_repository
+[settings_namespace]: https://docs.openvoxproject.org/openvox/latest/lang_facts_and_builtin_vars.html#puppet-master-variables
+[package_repos]: https://docs.openvoxproject.org/openvox/latest/install_linux.html
 
-> **Note:** To use PuppetDB, the nodes at your site must be running Puppet version 3.8.1 or later.
+OpenVoxDB can be used with standalone OpenVox deployments where each node runs `puppet apply`. When connected to OpenVoxDB, `puppet apply` does the following:
 
-PuppetDB can be used with standalone Puppet deployments where each node runs `puppet apply`. When connected to PuppetDB, `puppet apply` does the following:
+* Send the node's catalog to OpenVoxDB
+* Query OpenVoxDB when compiling catalogs that collect [exported resources][exported]
+* Store facts in OpenVoxDB
+* Send reports to OpenVoxDB (optional)
 
-* Send the node's catalog to PuppetDB
-* Query PuppetDB when compiling catalogs that collect [exported resources][exported]
-* Store facts in PuppetDB
-* Send reports to PuppetDB (optional)
-
-You must take the following steps to configure your standalone nodes to connect to PuppetDB. Note that because you must change Puppet's configuration on every managed node, **we strongly recommend that you do so with Puppet itself.**
+You must take the following steps to configure your standalone nodes to connect to OpenVoxDB. Note that because you must change OpenVox's configuration on every managed node, **we strongly recommend that you do so with OpenVox itself.**
 
 ## Step 1: Configure SSL
 
-PuppetDB requires client authentication (CA) for its SSL connections, and the PuppetDB-termini require SSL to talk to PuppetDB. You must configure Puppet and PuppetDB to work around this double-bind by using one of the following options:
+OpenVoxDB requires client authentication (CA) for its SSL connections, and the OpenVoxDB-termini require SSL to talk to OpenVoxDB. You must configure OpenVox and OpenVoxDB to work around this double-bind by using one of the following options:
 
-### Option A (Recommended): Issue certificates to all Puppet nodes
+### Option A (Recommended): Issue certificates to all OpenVox nodes
 
-This option is recommended. The Puppet team optimizes for this option when they're developing, and it is better tested.
+This option is recommended. The OpenVox team optimizes for this option when they're developing, and it is better tested.
 
-When talking to PuppetDB, `puppet apply` can use the certificates issued by a Puppet Server's certificate authority. You can issue certificates to every node by setting up a Puppet Server server with dummy manifests, running `puppet agent --test` one time on every node, signing every certificate request on the Puppet Server, and running `puppet agent --test` again on every node.
+When talking to OpenVoxDB, `puppet apply` can use the certificates issued by an OpenVox Server's certificate authority. You can issue certificates to every node by setting up an OpenVox Server with dummy manifests, running `puppet agent --test` one time on every node, signing every certificate request on the OpenVox Server, and running `puppet agent --test` again on every node.
 
-Do the same on your PuppetDB node, then [re-run the SSL setup script][ssl_script] (which usually runs automatically during installation). PuppetDB will now trust connections from your Puppet nodes.
+Do the same on your OpenVoxDB node, then [re-run the SSL setup script][ssl_script] (which usually runs automatically during installation). OpenVoxDB will now trust connections from your OpenVox nodes.
 
 You will have to sign a certificate for every new node you add to your site.
 
-### Option B: Set up an SSL proxy for PuppetDB
+### Option B: Set up an SSL proxy for OpenVoxDB
 
-Before you head down this path, please consider if signing certificates with Puppet Server will work for you.
+Before you head down this path, please consider if signing certificates with OpenVox Server will work for you.
 This option requires more work on your part to set up, and does not allow you to provide
-SSL to PuppetDB without a signed certificate, but it will allow you to provide SSL connections to PuppetDB using an existing CA.
-If you have an existing CA you would like to use, you can [set up Puppet Server as an intermediate CA](https://puppet.com/docs/puppetserver/latest/intermediate_ca.html#set-up-puppet-as-an-intermediate-ca-with-an-external-root) and then follow the instructions in Option A.
+SSL to OpenVoxDB without a signed certificate, but it will allow you to provide SSL connections to OpenVoxDB using an existing CA.
+If you have an existing CA you would like to use, you can [set up OpenVox Server as an intermediate CA](https://docs.openvoxproject.org/openvox-server/latest/intermediate_ca.html#set-up-puppet-as-an-intermediate-ca-with-an-external-root) and then follow the instructions in Option A.
 
-1. Edit [the `[jetty]` section of the PuppetDB config files][jetty] to remove all SSL-related settings.
-2. Install a general-purpose web server (like Apache or NGINX) on the PuppetDB server.
+1. Edit [the `[jetty]` section of the OpenVoxDB config files][jetty] to remove all SSL-related settings.
+2. Install a general-purpose web server (like Apache or NGINX) on the OpenVoxDB server.
 3. Configure the web server to listen on port 8081 with SSL enabled and proxy all traffic to `localhost:8080` (or whatever unencrypted hostname and port were set in [jetty.ini][jetty]).
    The cacert used will need to be signed.
 
 If you use this option, you'll need to add these settings in addition
 to the general ones specified below. The cacert supplied to `localcacert`
-should be the one that signs the SSL proxy cert for PuppetDB.
+should be the one that signs the SSL proxy cert for OpenVoxDB.
 
 Add this to your `puppetdb.conf`
 ```
@@ -75,27 +73,27 @@ certificate_revocation = false
 ```
 
 
-## Step 2: Install terminus plugins on every Puppet node
+## Step 2: Install terminus plugins on every OpenVox node
 
-Currently, Puppet needs extra Ruby plugins in order to use PuppetDB. Unlike custom facts or functions, these cannot be loaded from a module and must be installed in Puppet's main source directory.
+Currently, OpenVox needs extra Ruby plugins in order to use OpenVoxDB. Unlike custom facts or functions, these cannot be loaded from a module and must be installed in OpenVox's main source directory.
 
-* First, ensure that the appropriate [Puppet platform repository][package_repos]
+* First, ensure that the appropriate [OpenVox platform repository][package_repos]
   repository is enabled. You can use a [package][] resource to do this or the
   `apt::source` (from the [puppetlabs-apt][apt] module) and [`yumrepo`][yumrepo] types.
-* Next, use Puppet to ensure that the `puppetdb-termini` package is installed:
+* Next, use OpenVox to ensure that the `openvoxdb-termini` package is installed:
 
 ~~~ ruby
-    package {'puppetdb-termini':
+    package {'openvoxdb-termini':
       ensure => installed,
     }
 ~~~
 
 ### On platforms without packages
 
-If your Puppet Server isn't running Puppet from a supported package, you will need to install the plugins using [file][] resources.
+If your OpenVox Server isn't running OpenVox from a supported package, you will need to install the plugins using [file][] resources.
 
-* [Download the PuppetDB source code][puppetdb_download]; unzip it, locate the `puppet/lib/puppet` directory, and put it in the `files` directory of the Puppet module you are using to enable PuppetDB integration.
-* Identify the install location of Puppet on your nodes.
+* [Download the OpenVoxDB source code][puppetdb_download]; unzip it, locate the `puppet/lib/puppet` directory, and put it in the `files` directory of the Puppet module you are using to enable OpenVoxDB integration.
+* Identify the install location of OpenVox on your nodes.
 * Create a [file][] resource in your manifest(s) for each of the plugin files, to move them into place on each node.
 
 ~~~ ruby
@@ -114,24 +112,24 @@ If your Puppet Server isn't running Puppet from a supported package, you will ne
     }
 ~~~
 
-## Step 3: Manage configuration files on every Puppet node
+## Step 3: Manage configuration files on every OpenVox node
 
-All of the config files you need to manage will be in Puppet's config directory (`confdir`). When managing these files with `puppet apply`, you can use the [`$settings::confdir`][settings_namespace] variable to automatically discover the location of this directory.
+All of the config files you need to manage will be in OpenVox's config directory (`confdir`). When managing these files with `puppet apply`, you can use the [`$settings::confdir`][settings_namespace] variable to automatically discover the location of this directory.
 
 ### Manage puppetdb.conf
 
-You can specify the contents of [puppetdb.conf][puppetdb_conf] directly in your manifests. It should contain the PuppetDB server's hostname and port:
+You can specify the contents of [puppetdb.conf][puppetdb_conf] directly in your manifests. It should contain the OpenVoxDB server's hostname and port:
 
     [main]
     server = puppetdb.example.com
     port = 8081
 
-PuppetDB's port for secure traffic defaults to 8081. Puppet **requires** use of PuppetDB's
+OpenVoxDB's port for secure traffic defaults to 8081. OpenVox **requires** use of OpenVoxDB's
 secure HTTPS port. You cannot use the unencrypted, plain HTTP port.
 If you are providing SSL via a proxy like nginx (Option B in Step 1) refer there for
 a few extra configuration options that you will need.
 
-For availability reasons, there is a setting named `soft_write_failure` that will cause the PuppetDB-termini to fail in a soft manner if PuppetDB is not accessible for command submission. This means that users who are either not using storeconfigs or only exporting resources will still have their catalogs compile during a PuppetDB outage.
+For availability reasons, there is a setting named `soft_write_failure` that will cause the OpenVoxDB-termini to fail in a soft manner if OpenVoxDB is not accessible for command submission. This means that users who are either not using storeconfigs or only exporting resources will still have their catalogs compile during an OpenVoxDB outage.
 
 If no puppetdb.conf file exists, the following default values will be used:
 
@@ -146,7 +144,7 @@ You will need to create a template for puppet.conf based on your existing config
     [main]
       storeconfigs = true
       storeconfigs_backend = puppetdb
-      # Optional settings to submit reports to PuppetDB:
+      # Optional settings to submit reports to OpenVoxDB:
       report = true
       reports = puppetdb
 
@@ -154,7 +152,7 @@ You will need to create a template for puppet.conf based on your existing config
 
 ### Manage routes.yaml
 
-Typically, you can specify the contents of [routes.yaml][routes_yaml] directly in your manifests; if you are already using routes.yaml for some other purpose, you will need to manage it with a template based on your existing configuration. The path to this Puppet configuration file can be found with the command `puppet config print route_file`.
+Typically, you can specify the contents of [routes.yaml][routes_yaml] directly in your manifests; if you are already using routes.yaml for some other purpose, you will need to manage it with a template based on your existing configuration. The path to this OpenVox configuration file can be found with the command `puppet config print route_file`.
 
 Ensure that the following keys are present:
 
@@ -170,4 +168,4 @@ Ensure that the following keys are present:
         terminus: facter
         cache: puppetdb_apply
 
-This is necessary to keep Puppet from using stale facts and to keep the `puppet resource` subcommand from malfunctioning. Note that the `puppetdb_apply` terminus is specifically for `puppet apply` nodes, and differs from the configuration of Puppet Servers using PuppetDB.
+This is necessary to keep OpenVox from using stale facts and to keep the `puppet resource` subcommand from malfunctioning. Note that the `puppetdb_apply` terminus is specifically for `puppet apply` nodes, and differs from the configuration of OpenVox Servers using OpenVoxDB.

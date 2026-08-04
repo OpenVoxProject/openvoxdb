@@ -20,7 +20,7 @@ canonical: "/puppetdb/latest/api/command/v1/commands.html"
 [expirev1]: ../../wire_format/configure_expiration_format_v1.markdown
 [inputsv1]: ../../wire_format/catalog_inputs_format_v1.markdown
 
-Commands are used to change PuppetDB's model of a population. Commands are
+Commands are used to change OpenVoxDB's model of a population. Commands are
 specified using these values:
 
 `command` is a string identifying the name of the command.
@@ -38,7 +38,7 @@ should be applied to.
 `checksum` (optional) is a SHA-1 hash of the payload which will be used for
 content verification with the server. This value is not required.
 
-The PuppetDB termini for Puppet Servers use this command API to update facts,
+The OpenVoxDB termini for OpenVox Servers use this command API to update facts,
 catalogs, and reports for nodes, and will always include the checksum.
 
 ## Command submission
@@ -53,7 +53,7 @@ two mechanisms:
 This method entails POSTing the command name, version, certname and optionally
 the checksum as query parameters, with the POST body containing the given
 command's payload according to its wire format. Providing this information via
-query parameters allows PuppetDB to provide better validation and feedback at
+query parameters allows OpenVoxDB to provide better validation and feedback at
 time of POSTing without having to parse the JSON body. This is the preferred
 method of command submission.
 
@@ -103,8 +103,8 @@ following:
   server-side logs.
 
 > **Note**: a successful response only means that the command has been been
-> successfully queued. The command may still fail once PuppetDB tries to
-> execute it sometime in the future. Check the PuppetDB logs if you suspect a
+> successfully queued. The command may still fail once OpenVoxDB tries to
+> execute it sometime in the future. Check the OpenVoxDB logs if you suspect a
 > command is failing.
 
 When a command submission fails, the submitter will receive the following:
@@ -121,7 +121,7 @@ When a command submission fails, the submitter will receive the following:
 >non-blocking command submission.
 
 When submitting a command, you may specify the "secondsToWaitForCompletion"
-query parameter. If you do, PuppetDB will block the request until the command
+query parameter. If you do, OpenVoxDB will block the request until the command
 has been processed, or until the specified timeout has passed, whichever comes
 first. The response will contain the following additional keys:
 
@@ -140,11 +140,11 @@ command size by setting the following custom header:
 `X-Uncompressed-Length: <uncompressed length in bytes>`.
 This header is used to update command size metrics and compared against
 `max-command-size` when `reject-large-commands` is set to true. All commands
-sent from the PuppetDB termini now include this header by default.
+sent from the OpenVoxDB termini now include this header by default.
 
 ## Command semantics
 
-Commands are processed _asynchronously_. If PuppetDB returns a 200
+Commands are processed _asynchronously_. If OpenVoxDB returns a 200
 when you submit a command, that only indicates that the command has
 been _accepted_ for processing. There are no guarantees as to when
 that command will be processed, nor that when it is processed it will
@@ -162,7 +162,7 @@ processed.
 
 * The nullable `producer` property has been added.
 
-The payload is expected to be a Puppet catalog, as a JSON object,
+The payload is expected to be an OpenVox catalog, as a JSON object,
 conforming exactly to the [catalog wire format v9][catalogv9]. Extra
 or missing fields are an error.
 
@@ -188,7 +188,7 @@ payload of this command.
   `type` fields have been added.
 
 The payload is expected to be a report, containing events that occurred on
-Puppet resources. It is structured as a JSON object, conforming to the
+OpenVox resources. It is structured as a JSON object, conforming to the
 [report wire format v8][reportv8].
 
 ## Deprecated commands
@@ -197,7 +197,7 @@ Puppet resources. It is structured as a JSON object, conforming to the
 
 * The nullable `catalog_uuid` property has been added.
 
-The payload is expected to be a Puppet catalog, as a JSON object,
+The payload is expected to be an OpenVox catalog, as a JSON object,
 conforming exactly to the [catalog wire format v8][catalogv8]. Extra
 or missing fields are an error.
 
@@ -205,7 +205,7 @@ or missing fields are an error.
 
 * The nullable `code_id` property has been added.
 
-The payload is expected to be a Puppet catalog, as a JSON object,
+The payload is expected to be an OpenVox catalog, as a JSON object,
 conforming exactly to the [catalog wire format v7][catalogv7]. Extra
 or missing fields are an error.
 
@@ -216,7 +216,7 @@ or missing fields are an error.
 
 * The catalog `name` field has been renamed to `certname`.
 
-The payload is expected to be a Puppet catalog, as a JSON object,
+The payload is expected to be an OpenVox catalog, as a JSON object,
 conforming exactly to the [catalog wire format v6][catalogv6]. Extra
 or missing fields are an error.
 
@@ -236,7 +236,7 @@ payload of this command.
 properties have been added.
 
 The payload is expected to be a report, containing events that occurred on
-Puppet resources. It is structured as a JSON object, conforming to the
+OpenVox resources. It is structured as a JSON object, conforming to the
 [report wire format v7][reportv7].
 
 ### "store report", version 6
@@ -245,11 +245,11 @@ The version 6 store report command differs from previous versions by changing
 from a `resource_events` property to a `resources` property. The
 `resource_events` property was a merged version of `resources` and their
 associated events `events`. This new version moves the command to use a similar
-format to a raw Puppet report, with a list of `resources`, each with an `events`
+format to a raw OpenVox report, with a list of `resources`, each with an `events`
 property containing a list of the resource's events.
 
 The payload is expected to be a report, containing events that occurred on
-Puppet resources. It is structured as a JSON object, conforming to the
+OpenVox resources. It is structured as a JSON object, conforming to the
 [report wire format v6][reportv6].
 
 ### "store report", version 5
@@ -260,7 +260,7 @@ puppet run with `--noop`, as well as in the conversion of dash-separated fields 
 underscored.
 
 The payload is expected to be a report, containing events that occurred on
-Puppet resources. It is structured as a JSON object, conforming to the
+OpenVox resources. It is structured as a JSON object, conforming to the
 [report wire format v5][reportv5].
 
 ### "configure expiration", version 1 (experimental)
@@ -270,7 +270,7 @@ The payload should be a JSON format command, conforming to the
 not facts should be expired for a given `certname`.
 
 > *Note*: this is an experimental command, which might be altered or
-> removed in a future release, and for the time being, PuppetDB
+> removed in a future release, and for the time being, OpenVoxDB
 > exports will not include this information.
 
 ### "replace catalog inputs", version 1

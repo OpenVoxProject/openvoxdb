@@ -17,7 +17,7 @@ class Puppet::Resource::Catalog::Puppetdb < Puppet::Indirector::REST
 
   # @!group Public instance methods
 
-  # Submit a command to PuppetDB.
+  # Submit a command to OpenVoxDB.
   #
   # @param certname [String] The certname this command operates on
   # @param command_name [String] name of command
@@ -102,7 +102,7 @@ class Puppet::Resource::Catalog::Puppetdb < Puppet::Indirector::REST
   def munge_catalog(catalog, producer_timestamp, extra_request_data = {})
     profile("Munge catalog", [:puppetdb, :catalog, :munge]) do
       data = profile("Convert catalog to JSON data hash", [:puppetdb, :catalog, :convert_to_hash]) do
-        Puppet.override({:stringify_rich => true}, 'PuppetDB Terminus') do
+        Puppet.override({:stringify_rich => true}, 'OpenVoxDB Terminus') do
           catalog.to_data_hash
         end
       end
@@ -218,7 +218,7 @@ class Puppet::Resource::Catalog::Puppetdb < Puppet::Indirector::REST
   # @api private
   def add_job_id_if_missing(hash, default)
     hash['job_id'] = hash['job_id'] || default
-    # PuppetDB's wire format catalog schema requires this to be a string
+    # OpenVoxDB's wire format catalog schema requires this to be a string
     # or nil
     hash['job_id'] = hash['job_id']&.to_s
     hash
@@ -429,7 +429,7 @@ class Puppet::Resource::Catalog::Puppetdb < Puppet::Indirector::REST
                 resource_hash = {'type' => resource['type'], 'title' => resource['title']}
                 other_hash = resource_ref_to_hash(other_ref)
 
-                # Puppet doesn't always seem to check this correctly. If we don't
+                # OpenVox doesn't always seem to check this correctly. If we don't
                 # users will later get an invalid relationship error instead.
                 #
                 # Primarily we are trying to catch the non-capitalized resourceref
@@ -445,7 +445,7 @@ class Puppet::Resource::Catalog::Puppetdb < Puppet::Indirector::REST
                     "careful note of the capitalization)."
                 end
 
-                # This is an unfortunate hack.  Puppet does some weird things w/rt
+                # This is an unfortunate hack.  OpenVox does some weird things w/rt
                 # munging off trailing slashes from file resources, and users may
                 # legally specify relationships using a different number of trailing
                 # slashes than the resource was originally declared with.

@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-# Verifies that a PuppetDB jar will periodically check and shut down when it
+# Verifies that an OpenVoxDB jar will periodically check and shut down when it
 # notices that the database is at an unrecognized schema/migration number
-# This can happen anytime when there are multiple PuppetDB instances being used
+# This can happen anytime when there are multiple OpenVoxDB instances being used
 # and one is upgraded before the other.
 # The check happens in puppetlabs.puppetdb.cli.serverices/check-schema-version.
 
-# You can specify PuppetDB jar location with env var PDB_JAR.
-# PuppetDB configuration is sourced from PDBBOX sandbox or an ephemeral sandbox
+# You can specify OpenVoxDB jar location with env var PDB_JAR.
+# OpenVoxDB configuration is sourced from PDBBOX sandbox or an ephemeral sandbox
 # Flags --pgbin and --pgbin are necessary unless set with ext/bin/test-config
 
 set -euo pipefail
@@ -53,7 +53,7 @@ fi
 
 set -x
 
-# Create an ephemeral PuppetDB sandbox if one isn't set by PDBBOX
+# Create an ephemeral OpenVoxDB sandbox if one isn't set by PDBBOX
 if test -z "${PDBBOX:-}"; then
     # No PDBBOX, set one up and run ourselves again
     tmpdir="$(mktemp -d "test-schema-mismatch-bails-XXXXXX")"
@@ -72,7 +72,7 @@ tmpdir="$(cd "$tmpdir" && pwd)"
 trap "$(printf 'rm -rf %q' "$tmpdir")" EXIT
 
 # Append low schema-check-interval value just after the [database] section header
-# in PuppetDB config file to trigger a schema check quickly.
+# in OpenVoxDB config file to trigger a schema check quickly.
 
 # MacOS sed appears to require the embedded newline
 sed '/\[database\]/a\
@@ -93,7 +93,7 @@ touch "$tmpdir/pdb-out" "$tmpdir/pdb-err"
 ./uberjar services -c "$PDBBOX/conf.d" 1>"$tmpdir/pdb-out" 2>"$tmpdir/pdb-err"  & pdb_pid=$!
 
 # Allow time for pdb to start before changing migration level
-while ! grep -F "PuppetDB finished starting" "$tmpdir/pdb-out" > /dev/null
+while ! grep -F "OpenVoxDB finished starting" "$tmpdir/pdb-out" > /dev/null
 do
     echo 'Waiting for pdb to start...'
     cat "$tmpdir/pdb-out" "$tmpdir/pdb-err"
@@ -109,4 +109,4 @@ wait $pdb_pid || rc=$?
 test "$rc" -eq 77
 
 cat "$tmpdir/pdb-out" "$tmpdir/pdb-err"
-grep -F 'Please upgrade PuppetDB' "$tmpdir/pdb-err"
+grep -F 'Please upgrade OpenVoxDB' "$tmpdir/pdb-err"

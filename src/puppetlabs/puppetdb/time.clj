@@ -259,7 +259,7 @@
           nil)))))
 
 (defn wire-datetime->instant
-  "Parses s as a PuppetDB wire format <datetime> and returns an
+  "Parses s as an OpenVoxDB wire format <datetime> and returns an
   Instant, or nil if the string cannot be parsed."
   [s]
   (when s (or (parse-iso-z s) (parse-offset-iso s))))

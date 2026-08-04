@@ -10,11 +10,11 @@ layout: default
 [pgstattuple]: http://www.postgresql.org/docs/9.6/static/pgstattuple.html
 [pgtune]: https://github.com/gregs1104/pgtune
 [postgres-config]: http://www.postgresql.org/docs/current/static/runtime-config-resource.html
-[fact-precedence]: https://puppet.com/docs/puppet/latest/custom_facts.html#fact-precedence
+[fact-precedence]: https://docs.openvoxproject.org/openfact/latest/custom_facts.html#fact-precedence
 [dbvis]: https://www.dbvis.com/
 [stockpile]: https://github.com/puppetlabs/stockpile
 
-This is a technical guide for troubleshooting PuppetDB (PDB) and understanding
+This is a technical guide for troubleshooting OpenVoxDB (PDB) and understanding
 its internals.
 
 ## PDB Architectural Overview
@@ -27,7 +27,7 @@ database to reside on three separate machines.
 
 ### Terminus
 
-The terminus resides on the Puppet Server and redirects agent data to
+The terminus resides on the OpenVox Server and redirects agent data to
 PDB in the form of "commands". PDB has four commands, as described in the
 [commands documentation][commands].
 
@@ -183,7 +183,7 @@ are:
   /etc/defaults/puppetdb on Debian derivatives. Usually though, crashes due to
   OOMs indicate that PDB is getting used in ways that it should not be, and
   it's important to identify and inspect the commands that cause the crash to
-  figure out whether there is some misuse of Puppet that can be corrected.
+  figure out whether there is some misuse of OpenVox that can be corrected.
 
   The most common causes of OOMs on command processing are blobs of binary data
   stored in catalog resources, huge structured facts, and large numbers of log
@@ -207,8 +207,7 @@ Check the postgres logs for:
 Slow queries are the main concern here, because most errors here have already
 been seen in the PDB logs. Slow queries frequently occur on deletes related to
 garbage collection and in queries against event-counts and
-aggregate-event-counts (which will typically present in Puppet Enterprise as
-slow page loads on the event inspector). Garbage collection deletes only run
+aggregate-event-counts. Garbage collection deletes only run
 periodically, so some degree of slowness there is not generally an issue.
 
 For slow queries connected to queries against PDB's REST API, the two most
@@ -239,10 +238,10 @@ for information on these settings.
 
 There are a few things to watch for in the PDB dashboard:
 
-* Low catalog duplication rate: PuppetDB includes some optimizations built on
+* Low catalog duplication rate: OpenVoxDB includes some optimizations built on
   the assumption that the catalog for a given node changes relatively
-  infrequently. Namely, when PuppetDB receives a catalog for a node that hashes
-  to the same value as the node's previous catalog, PuppetDB will
+  infrequently. Namely, when OpenVoxDB receives a catalog for a node that hashes
+  to the same value as the node's previous catalog, OpenVoxDB will
   simply update the timestamp associated with the last catalog, rather than
   insert the data again. This works fine most of the time, but is failure prone
   in cases where aspects of the catalog are guaranteed to change on every run.

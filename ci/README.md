@@ -1,9 +1,9 @@
-# PuppetDB Testing and CI
+# OpenVoxDB Testing and CI
 
 ## Jargon
 
 ### spec
-A testing specification string. The element is the test flavor and the trailing elements describe dependency information (JDK, PostgreSQL, Puppet, Puppet Server). Examples:
+A testing specification string. The element is the test flavor and the trailing elements describe dependency information (JDK, PostgreSQL, OpenVox, OpenVox Server). Examples:
 - `core/openjdk8/pg-9.6`
 - `int/openjdk11/pup-6.x/srv-6.x/pg-11`
 - `core+ext/openjdk11/pg-11/rich`
@@ -12,9 +12,9 @@ A testing specification string. The element is the test flavor and the trailing 
 ### flavor
 The first element of the spec string describing which test suite to run. One of:
 - `core` (`lein test`)
-- `ext` (external tests on PuppetDB jar)
+- `ext` (external tests on OpenVoxDB jar)
 - `core+ext` (both core and external tests)
-- `int` (integration tests with Puppet and Puppet Server)
+- `int` (integration tests with OpenVox and OpenVox Server)
 - `lint` (check Clojure code with Eastwood and clj-kondo)
 - `rspec`
 
@@ -33,10 +33,10 @@ Creates symbolic link to a relative path. Relative path is forced even if absolu
 Outputs sha256 checksum of STDIN
 
 ### `ext/bin/config-openvox-test-ref`
-Modify local testing environment to use specific version of Puppet.
+Modify local testing environment to use specific version of OpenVox.
 
 ### `ext/bin/config-openvox-server-test-ref`
-Modify local testing environment to use specific version of Puppet Server.
+Modify local testing environment to use specific version of OpenVox Server.
 
 ### `ext/bin/test-config`
 Get, set, or reset persistent test configuration values by storing them in local files in the directory `ext/test-conf`
@@ -70,28 +70,28 @@ Installs Leiningen onto machine
 Installs pgbox onto machine
 
 ### `ext/bin/prep-debianish`
-Prepares Debian-like Linux machines for running PuppetDB tests
+Prepares Debian-like Linux machines for running OpenVoxDB tests
 
 ### `ext/bin/prep-macos`
-Prepares MacOS machines for running PuppetDB tests
+Prepares MacOS machines for running OpenVoxDB tests
 
 ### `ext/bin/pdbbox-init`
-Creates a local PuppetDB sandbox directory which contains a PostgreSQL sandbox
+Creates a local OpenVoxDB sandbox directory which contains a PostgreSQL sandbox
 
 ### `ext/bin/pdbbox-env`
 Sets up environment variables and runs a command using  `pgbox env`
 
 ### `ext/bin/with-pdbbox`
-Runs a command using new, empheral PuppetDB sandbox (with an ephemeral PostgreSQL sandbox inside of it). Starts PostgreSQL and runs a command using the sandboxes. Destroys sandboxes and stops PostgreSQL afterwards.
+Runs a command using new, empheral OpenVoxDB sandbox (with an ephemeral PostgreSQL sandbox inside of it). Starts PostgreSQL and runs a command using the sandboxes. Destroys sandboxes and stops PostgreSQL afterwards.
 
 ### `ext/bin/boxed-core-tests`
-Runs a command using ephemeral Leiningen and pgbox executables, as well as ephemeral PuppetDB and PostgreSQL sandboxes. User still needs PostgreSQL and JDK installed. Passes command to `ext/bin/with-pdbbox` which creates the ephemeral sandboxes.
+Runs a command using ephemeral Leiningen and pgbox executables, as well as ephemeral OpenVoxDB and PostgreSQL sandboxes. User still needs PostgreSQL and JDK installed. Passes command to `ext/bin/with-pdbbox` which creates the ephemeral sandboxes.
 
 ### `ext/bin/boxed-integration-tests`
 Exactly the same as `ext/bin/boxed-core-tests` except uses this for the temporary directory name (starts with `int-test`).
 
 ### `ext/bin/run-external-tests`
-Creates a PuppetDB uberjar and runs some tests on its behavior and output.
+Creates an OpenVoxDB uberjar and runs some tests on its behavior and output.
 
 ### `ext/bin/run-rspec-tests`
 Run Ruby rspec tests on Ruby code in `puppet` directory.
@@ -100,28 +100,25 @@ Run Ruby rspec tests on Ruby code in `puppet` directory.
 Runs core, integration, and external tests with `boxed-core-tests`, `boxed-integration-tests`, and `run-external-tests` respectively. Also prints log lines saying which script is running.
 
 ### `ext/test/oom-causes-shutdown`
-Tests an existing PuppetDB jar to to see if it gracefully shuts down on an OutOfMemoryError when forced to allocate a giant amount of memory.
+Tests an existing OpenVoxDB jar to to see if it gracefully shuts down on an OutOfMemoryError when forced to allocate a giant amount of memory.
 
 ### `ext/test/top-level-cli`
-Tests an existing PuppetDB jar's command line interface by running subcommands and grepping the output.
+Tests an existing OpenVoxDB jar's command line interface by running subcommands and grepping the output.
 
 ### `ext/test/schema-mismatch-causes-pdb-shutdown`
-Verifies that a PuppetDB jar will periodically check and shut down when the database is at an unrecognized schema (migration) number.
+Verifies that an OpenVoxDB jar will periodically check and shut down when the database is at an unrecognized schema (migration) number.
 
 ### `ext/test/database-migration-config`
-Ensures PuppetDB jar fails to start and logs error message when the PuppetDB PostgreSQL database is not migrated to the most recent migration that PuppetDB knows about.
+Ensures OpenVoxDB jar fails to start and logs error message when the OpenVoxDB PostgreSQL database is not migrated to the most recent migration that OpenVoxDB knows about.
 
 ### `ext/bin/contributors-in-git-log`
 Given two git tags, prints out a list of contributors who authored commits in that commit range.
 
 ### `ext/bin/render-pdb-schema`
-Creates an SVG graph of the PuppetDB PostgreSQL schema for educational purposes. Requires postgresql-autodoc and graphiz.
-
-### `ext/bin/tag-release`
-Automates the release tagging process for PuppetDB. This script tags and pushes both release branches for FOSS and extensions (four total branches) at once.
+Creates an SVG graph of the OpenVoxDB PostgreSQL schema for educational purposes. Requires postgresql-autodoc and graphiz.
 
 ### `pdb`
-In top-level of source tree. Starts an existing PuppetDB uberjar and passes all arguments. Allows overriding of Bouncy Castle jars.
+In top-level of source tree. Starts an existing OpenVoxDB uberjar and passes all arguments. Allows overriding of Bouncy Castle jars.
 
 ## CI Scripts
 
@@ -135,37 +132,3 @@ Runs tests on a prepared CI machine.
 
 ###  `.github/workflows/main.yml`
 On pull request and push runs core, external, integration, and rspec tests on MacOS machines. Also runs lint test on an Ubuntu machine.
-
-### `.github/workflows/docs_test.yml`
-On pull request runs `dita` doc-building command and tests for failure.
-
-### `.github/workflows/docs_publish.yml`
-On push to `doc-latest` or `doc-6.y` builds and uploads docs to Puppet's s3 bucket which gets used by puppet.com/docs.
-
-### `.github/workflows/snyk.yml`
-On push to `6.x` and `main`, run Snyk security scanning tests.
-
-### `doc/pipelines/enterprise.md`
-Overview of whole Jenkins setup. Documents global parameters which can be used by any project.
-
-### `doc/pipelines/puppetdb.md`
-Overview of PuppetDB Jenkins setup. Documents PuppetDB-specific parameters.
-
-### `jenkii/enterprise/projects/puppetdb.yaml`
-Defines the PuppetDB projects.
-
-### `resources/job-groups/puppetdb.yaml`
-Defines the PuppetDB job groups.
-
-## Docker
-
-PuppetDB is published as [Docker image](https://hub.docker.com/r/puppet/puppetdb), although supporting it is not currently a priority.
-
-### `docker/Makefile`
-- prep: Git fetches all latest commits and tags
-- lint: Lints `docker/puppetdb/Dockerfile` with `hadolint`
-- build: Builds image with `docker buildx`
-- test: Runs Ruby rspec tests
-- push-image: Push docker image to dockerhub
-- push-readme: Update dockerhub README
-- publish: Runs push-image and push-readme

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Sanity check for a PuppetDB test spec
+# Sanity check for an OpenVoxDB test spec
 # Ensures that correct JDK is installed and test flavor is valid
 
 set -ueo pipefail

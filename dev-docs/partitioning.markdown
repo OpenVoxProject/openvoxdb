@@ -1,6 +1,6 @@
-# Partitioning in PuppetDB
+# Partitioning in OpenVoxDB
 
-PuppetDB will use partitioning for its timeseries data, specifically `reports`
+OpenVoxDB will use partitioning for its timeseries data, specifically `reports`
 and `resource_events`. The primary goal of partitioning is to reduce the burden
 of managing deleted data with `VACUUM`. Any query performance improvements are a
 secondary concern.

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Prepares MacOS machines for running PuppetDB tests
+# Prepares MacOS machines for running OpenVoxDB tests
 
 set -uxeo pipefail
 

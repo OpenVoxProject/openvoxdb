@@ -183,8 +183,8 @@
   (start
    [this context]
    (call-unless-shutting-down
-    "PuppetDB dashboard start" (get-shutdown-reason) context
+    "OpenVoxDB dashboard start" (get-shutdown-reason) context
     #(do
-       (log/info (trs "Redirecting / to the PuppetDB dashboard"))
+       (log/info (trs "Redirecting / to the OpenVoxDB dashboard"))
        (add-ring-handler this (mid/make-pdb-handler dashboard-routes))
        context))))

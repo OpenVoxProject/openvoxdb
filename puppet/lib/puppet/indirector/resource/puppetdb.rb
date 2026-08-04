@@ -45,7 +45,7 @@ class Puppet::Resource::Puppetdb < Puppet::Indirector::REST
           raise Puppet::Error, "[#{response.code} #{response.reason}] #{response.body.gsub(/[\r\n]/, '')}"
         end
       rescue => e
-        raise Puppet::Error, "Could not retrieve resources from the PuppetDB at #{uri_ref.scheme}://#{uri_ref.host}:#{uri_ref.port}: #{e}"
+        raise Puppet::Error, "Could not retrieve resources from the OpenVoxDB at #{uri_ref.scheme}://#{uri_ref.host}:#{uri_ref.port}: #{e}"
       end
 
       resources = profile("Parse resource query response (size: #{response.body.size})",

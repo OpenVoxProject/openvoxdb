@@ -1,7 +1,7 @@
-# PuppetDB User-Contributed Content
+# OpenVoxDB User-Contributed Content
 
 This directory contains code and other content that has been contributed by
-PuppetDB users.  It's a place where we can include items that we know will be
+OpenVoxDB users.  It's a place where we can include items that we know will be
 useful to other users, but that we can't yet officially maintain or support.
 We hope that you will find it valuable!
 

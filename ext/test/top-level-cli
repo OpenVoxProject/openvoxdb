@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# Runs simple tests on PuppetDB jar command line ouptput.
-# PuppetDB is started without configuration
+# Runs simple tests on OpenVoxDB jar command line ouptput.
+# OpenVoxDB is started without configuration
 # PostgreSQL is not necessary
 
 set -uexo pipefail

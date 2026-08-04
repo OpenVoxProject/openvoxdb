@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Prepares Debian-like Linux machines for running PuppetDB tests
+# Prepares Debian-like Linux machines for running OpenVoxDB tests
 # Installs JDK, Leiningen, and pgbox and creates
 # --for takes a test spec like core/openjdk8/pg-9.6
 

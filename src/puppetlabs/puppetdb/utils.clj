@@ -368,7 +368,7 @@
   [shutdown-reason]
   (when shutdown-reason
     (throw
-     (ex-info (trs "Refusing request; PuppetDB is shutting down")
+     (ex-info (trs "Refusing request; OpenVoxDB is shutting down")
               {:kind :puppetlabs.puppetdb/shutting-down}))))
 
 (defn call-unless-shutting-down

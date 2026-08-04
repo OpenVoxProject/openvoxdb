@@ -10,9 +10,9 @@ canonical: "/puppetdb/latest/api/admin/v1/cmd.html"
 [config-purge-limit]: ../../../configure.markdown#node-purge-gc-batch-limit
 
 
-The `/cmd` endpoint can be used to trigger PuppetDB maintenance
+The `/cmd` endpoint can be used to trigger OpenVoxDB maintenance
 operations or to directly delete a node.  Admin commands are processed
-synchronously seperate from other PuppetDB commands.
+synchronously seperate from other OpenVoxDB commands.
 
 ## `POST /pdb/admin/v1/cmd`
 
@@ -115,7 +115,7 @@ $ curl -X POST http://localhost:8080/pdb/admin/v1/cmd \
 The `"delete"` command can be used to trigger the immediate deletion of all data
 associated with a certname.  It is important to note that the delete operation
 doesn't account for commands which may be in the command queue but not yet
-processed by PuppetDB.  This could cause a node targeted for deletion to
+processed by OpenVoxDB.  This could cause a node targeted for deletion to
 reappear when the command in the queue gets processed after the deletion
 operation has run.
 

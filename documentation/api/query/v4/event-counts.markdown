@@ -14,13 +14,13 @@ canonical: "/puppetdb/latest/api/query/v4/event-counts.html"
 > **Experimental endpoint**: The event-counts endpoint is designated
 > as experimental. It may be altered or removed in a future release.
 
-Puppet agent nodes submit reports after their runs, and the Puppet Server forwards these to PuppetDB. Each report includes:
+OpenVox agent nodes submit reports after their runs, and the OpenVox Server forwards these to OpenVoxDB. Each report includes:
 
 * Data about the entire run
 * Metadata about the report
 * Many _events,_ describing what happened during the run
 
-After this information is stored in PuppetDB, it can be queried in various ways.
+After this information is stored in OpenVoxDB, it can be queried in various ways.
 
 * You can query **data about the run** and **report metadata** by making an HTTP request to the [`/reports`](./reports.markdown) endpoint.
 * You can query **data about individual events** by making an HTTP request to the [`/events`][events] endpoint.
@@ -132,37 +132,6 @@ When summarizing by `containing_class`, the `subject` will contain a `title` key
       }
     ]
 
-#### Puppet Enterprise
-
-In PE, the `successes` and `noops` counts are subdivided into intentional and corrective parts.
-Events are mapped to the corresponding counts based on the value of `corrective_change` flag.
-
-    [
-      {
-        "subject_type": "certname",
-        "subject": { "title": "foo.local" },
-        "failures": 0,
-        "intentional_successes": 2,
-        "corrective_successes": 0,
-        "intentional_noops": 0,
-        "corrective_noops": 0,
-        "skips": 1
-      },
-      {
-        "subject_type": "certname",
-        "subject": { "title": "bar.local" },
-        "failures": 1,
-        "intentional_successes": 0,
-        "corrective_successes": 0,
-        "intentional_noops": 0,
-        "corrective_noops": 0,
-        "skips": 1
-      }
-    ]
-
-`intentional_successes`, `corrective_successes`, `intentional_noops`, and `corrective_noops` fields
-can be used in `counts_filter` too.
-
 ### Examples
 
 You can use [`curl`][curl] to query information about resource event counts:
@@ -175,4 +144,4 @@ You can use [`curl`][curl] to query information about resource event counts:
 
 ## Paging
 
-This endpoint supports paged results via the common PuppetDB paging URL parameters. For more information, please see the documentation on [paging][paging].
+This endpoint supports paged results via the common OpenVoxDB paging URL parameters. For more information, please see the documentation on [paging][paging].

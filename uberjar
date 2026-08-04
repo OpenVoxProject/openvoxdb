@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-# Starts PuppetDB using an existing uberjar
+# Starts OpenVoxDB using an existing uberjar
 # The uberjar location can be defined with PDB_JAR environment variable
 # The Bouncycastle dependency jars can be specified with BCPROV_JAR and BCPKIX_JAR
-# Must have PostgreSQL running for PuppetDB to work
-# Any arguments get passed straight to PuppetDB
+# Must have PostgreSQL running for OpenVoxDB to work
+# Any arguments get passed straight to OpenVoxDB
 # Example: uberjar --help
 # Example: uberjar services --config ~/tmp/pdb-sandbox/conf.d
 
@@ -73,10 +73,10 @@ else
     bcpkix="$HOME/.m2/repository/org/bouncycastle/bcpkix-jdk18on/$bcpkix_ver/bcpkix-jdk18on-$bcpkix_ver.jar"
 fi
 
-# Validate that PuppetDB jar and Bouncy Castle jars exist
+# Validate that OpenVoxDB jar and Bouncy Castle jars exist
 require-file "$jar" "lein uberjar"
 require-file "$bcprov" "lein deps"
 require-file "$bcpkix" "lein deps"
 
-# Start PuppetDB and pass all received arguments to it
+# Start OpenVoxDB and pass all received arguments to it
 exec java -cp "$jar:$bcprov:$bcpkix" clojure.main -m puppetlabs.puppetdb.core "$@"

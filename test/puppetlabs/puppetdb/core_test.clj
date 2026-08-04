@@ -21,7 +21,7 @@
                            (str err) @log])))]
                 (is (= cliu/err-exit-status result))
                 ;; Right now the output may also include clojure warning lines
-                (is (re-find #"(?s)(?:^|\n)error: PuppetDB doesn't support.*" err))
+                (is (re-find #"(?s)(?:^|\n)error: OpenVoxDB doesn't support.*" err))
                 (if-not (logs? subcommand)
                   (is (= [] log))
                   (do
@@ -29,6 +29,6 @@
                     (let [[{:keys [logger level message]}] log]
                       (is (= "puppetlabs.puppetdb.cli.tk-util" logger))
                       (is (= :error level))
-                      (is (re-find #"PuppetDB doesn't support.*" message)))))))]
+                      (is (re-find #"OpenVoxDB doesn't support.*" message)))))))]
       (doseq [cmd ["help" "version" "benchmark" "services" "upgrade"]]
         (check cmd "1.5.0")))))

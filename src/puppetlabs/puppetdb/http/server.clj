@@ -59,7 +59,7 @@
                 "/reports" handlers/reports-routes}))))
 
 (defn build-app
-  "Generates a Ring application that handles PuppetDB requests.
+  "Generates a Ring application that handles OpenVoxDB requests.
    If get-authorizer is nil or false, all requests will be accepted.
    Otherwise it must accept no arguments and return an authorize
    function that accepts a request.  The request will be allowed only

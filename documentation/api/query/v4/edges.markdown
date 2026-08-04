@@ -21,7 +21,7 @@ the nodes in the graph. You can query edges by making an HTTP request to the
 
 ## `/pdb/query/v4/edges`
 
-Returns all edges known to PuppetDB.
+Returns all edges known to OpenVoxDB.
 
 ### URL parameters
 
@@ -110,6 +110,6 @@ A sample response:
 
 ## Paging
 
-This query endpoint supports paged results via the common PuppetDB paging
+This query endpoint supports paged results via the common OpenVoxDB paging
 URL parameters. For more information, please see the documentation
 on [paging][paging].

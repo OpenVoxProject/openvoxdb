@@ -81,7 +81,7 @@ def reset_requested(what):
         if ex.errno != errno.ENOENT:
             raise
 
-# Use external scripts to set up Puppet and Puppetserver environments
+# Use external scripts to set up OpenVox and OpenVox Server environments
 def set_puppet_ref(what, value):
     check_call(['ext/bin/config-openvox-test-ref', value])
 

@@ -1,4 +1,4 @@
-step "Install development build of PuppetDB on the PuppetDB server" do
+step "Install development build of OpenVoxDB on the OpenVoxDB server" do
   databases.each do |database|
     os = test_config[:os_families][database.name]
 

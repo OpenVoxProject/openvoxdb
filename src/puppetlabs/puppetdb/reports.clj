@@ -1,8 +1,8 @@
 (ns puppetlabs.puppetdb.reports
-  "Puppet report/event parsing
+  "OpenVox report/event parsing
 
    Functions that handle conversion of reports from wire format to
-   internal PuppetDB format, including validation."
+   internal OpenVoxDB format, including validation."
   (:require [schema.core :as s]
             [clojure.set :as set]
             [puppetlabs.puppetdb.schema :as pls]

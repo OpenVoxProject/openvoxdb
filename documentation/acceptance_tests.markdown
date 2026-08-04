@@ -1,6 +1,6 @@
 # Acceptance tests
 
-PuppetDB uses the [Beaker](https://github.com/puppetlabs/beaker) acceptance
+OpenVoxDB uses the [Beaker](https://github.com/puppetlabs/beaker) acceptance
 testing framework. We run acceptance tests on a matrix of machine and database
 configurations before we merge new code into our stable or master branches, but
 it can be useful for a variety of reasons to run them yourself.
@@ -19,7 +19,7 @@ EC2 setup
         :aws_secret_access_key: <your AWS secret key>
 
 * The included configuration files in `acceptance/config` refer to resources
-  (security groups, VPCs, etc) that exist in the Puppet AWS account. If
+  (security groups, VPCs, etc) that exist in the OpenVox AWS account. If
   you're using your own AWS account, you'll have to create the appropriate
   resources and modify the appropriate configuration file to refer to them.
 

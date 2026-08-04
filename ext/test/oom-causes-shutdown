@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-# Tests a PuppetDB jar to to see if it gracefully shuts down on an OutOfMemoryError
+# Tests an OpenVoxDB jar to to see if it gracefully shuts down on an OutOfMemoryError
 # when forced to allocate a large amount of memory.
 # Sets PDB_TEST_ALLOCATE_AT_LEAST_MB_AT_STARTUP environment variable which triggers
 # a hook in puppetlabs.puppetdb.cli.services/start-schema-checks that forces
-# PuppetDB to allocate that much memory for testing purposes.
+# OpenVoxDB to allocate that much memory for testing purposes.
 
-# You can specify PuppetDB jar location with env var PDB_JAR.
-# PuppetDB configuration is sourced from PDBBOX sandbox or an ephemeral sandbox
+# You can specify OpenVoxDB jar location with env var PDB_JAR.
+# OpenVoxDB configuration is sourced from PDBBOX sandbox or an ephemeral sandbox
 # Flags --pgbin and --pgbin are necessary unless set with ext/bin/test-config
 
 set -euo pipefail
@@ -55,7 +55,7 @@ fi
 
 set -x
 
-# Create an ephemeral PuppetDB sandbox if one isn't set by PDBBOX
+# Create an ephemeral OpenVoxDB sandbox if one isn't set by PDBBOX
 if test -z "${PDBBOX:-}"; then
     # No PDBBOX, set one up and run ourselves again
     tmpdir="$(mktemp -d "test-${desc}-XXXXXX")"
@@ -75,7 +75,7 @@ trap "$(printf 'rm -rf %q' "$tmpdir")" EXIT
 
 set -x
 
-# Force PuppetDB to allocate a large amount of memory and make sure it handles the
+# Force OpenVoxDB to allocate a large amount of memory and make sure it handles the
 # OutOfMemoryError gracefully by checking that it output the error to stdout
 rc=0
 # Show err and out, but save them separately

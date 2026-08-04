@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-# Runs a command using a new, ephemeral PuppetDB sandbox and PostgreSQL sandbox inside that
-# Sandbox contains PuppetDB and PostgreSQL configuration and data storage
-# The PuppetDB sandbox directory provided with --box must not already exist
-# The PuppetDB sandbox is destroyed after the command terminates
+# Runs a command using a new, ephemeral OpenVoxDB sandbox and PostgreSQL sandbox inside that
+# Sandbox contains OpenVoxDB and PostgreSQL configuration and data storage
+# The OpenVoxDB sandbox directory provided with --box must not already exist
+# The OpenVoxDB sandbox is destroyed after the command terminates
 
 set -ueo pipefail
 
@@ -61,7 +61,7 @@ test "$box" || misuse
 test "$pgbin" || misuse
 test "$pgport" || misuse
 
-# Ensure the PuppetDB sandbox directory doesn't already exist
+# Ensure the OpenVoxDB sandbox directory doesn't already exist
 if test -e "$box"; then
     printf 'error: the --box %q already exists\n' "$box"
     exit 2
@@ -75,9 +75,9 @@ set -x
 # script_home allows people to invoke with-pdbbox from "other places".
 
 trap "$(printf 'rm -rf %q' "$box")" EXIT
-# Export new PuppetDB sandbox path for pdbbox-env to use
+# Export new OpenVoxDB sandbox path for pdbbox-env to use
 export PDBBOX="$box"
-# Create new PuppetDB sandbox
+# Create new OpenVoxDB sandbox
 "$script_home"/pdbbox-init --sandbox "$box" --pgbin "$pgbin" \
               --pgport "$pgport" \
               --bind-addr ip6-localhost --bind-addr localhost
@@ -89,6 +89,6 @@ fi
 
 # Use a subshell for a nested EXIT trap
 (trap '"$script_home"/pdbbox-env pg_ctl stop' EXIT
- # Start PostgreSQL server new PostgreSQL sandbox inside of new PuppetDB sandbox
+ # Start PostgreSQL server new PostgreSQL sandbox inside of new OpenVoxDB sandbox
  "$script_home"/pdbbox-env pg_ctl start -w "${pg_ctl_args[@]}"
  "$script_home"/pdbbox-env "${cmd[@]}")

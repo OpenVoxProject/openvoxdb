@@ -39,7 +39,7 @@
 
 (defn submit-command-via-http!
   "Submits `payload` as a valid command of type `command` and
-   `version` to the PuppetDB instance specified by `host` and
+   `version` to the OpenVoxDB instance specified by `host` and
    `port`. The `payload` will be converted to JSON before
    submission. Alternately accepts a command-map object (such as those
    returned by `parse-command`). Returns the server response."

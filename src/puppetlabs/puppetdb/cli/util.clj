@@ -30,7 +30,7 @@
       (:unknown) {:warn (trs "JDK {0} is neither tested nor supported. Please use JDK 21 or 25" version)}
       (:deprecated) {:warn (trs "JDK {0} is deprecated, please upgrade to JDK 21 or 25" version)}
       (:official :tested) nil
-      {:error (trs "PuppetDB doesn''t support JDK {0}" version)})))
+      {:error (trs "OpenVoxDB doesn''t support JDK {0}" version)})))
 
 (defn run-cli-cmd [f]
   (let [jdk (java-version)]

@@ -10,15 +10,15 @@ canonical: "/puppetdb/latest/api/query/v4/paging.html"
 [query]: query.markdown
 [ast]: ./ast.markdown#paging-operators-limit-offset-orderby
 
-Most of PuppetDB's [query endpoints][api] support a general set of HTTP URL parameters that
-can be used for paging results. PuppetDB also supports paging via query
+Most of OpenVoxDB's [query endpoints][api] support a general set of HTTP URL parameters that
+can be used for paging results. OpenVoxDB also supports paging via query
 operators, as described in the [AST documentation][ast].
 
 ## URL parameters for paging results
 
 ### `order_by`
 
-This parameter can be used to ask PuppetDB to return results sorted by one or more fields, in ascending or descending order. The value must be a JSON array of maps. Each map represents a field to sort by, and the order in which the maps are specified in the array determines the sort order.
+This parameter can be used to ask OpenVoxDB to return results sorted by one or more fields, in ascending or descending order. The value must be a JSON array of maps. Each map represents a field to sort by, and the order in which the maps are specified in the array determines the sort order.
 
 Each map must contain the key `field`, whose value must be the name of a field that can be
 returned by the specified query.
@@ -87,9 +87,9 @@ The value should be a Boolean, and defaults to `false`. If `true`, the HTTP resp
 
 ### `offset`
 
-This parameter can be used to tell PuppetDB to return results beginning at the specified offset. For example, if you'd like to page through query results with a page size of 10, your first query would specify `limit=10` and `offset=0`, your second query would specify `limit=10` and `offset=10`, and so on.
+This parameter can be used to tell OpenVoxDB to return results beginning at the specified offset. For example, if you'd like to page through query results with a page size of 10, your first query would specify `limit=10` and `offset=0`, your second query would specify `limit=10` and `offset=10`, and so on.
 
-This value should be an integer. Note that the order in which results are returned by PuppetDB is not guaranteed to be consistent unless you specify a value for `order_by`, so this parameter should generally be used in conjunction with `order_by`.
+This value should be an integer. Note that the order in which results are returned by OpenVoxDB is not guaranteed to be consistent unless you specify a value for `order_by`, so this parameter should generally be used in conjunction with `order_by`.
 
 #### Example:
 

@@ -37,7 +37,7 @@
           export-file-ext))
 
 (pls/defn-validated export-datum->tar-item :- utils/tar-item
-  "Creates a tar-item map for a PuppetDB entity"
+  "Creates a tar-item map for an OpenVoxDB entity"
   [entity datum]
   (let [command-file-name
         (case entity
@@ -116,10 +116,10 @@
 (defn export!
   ([outfile query-fn] (export! outfile query-fn nil))
   ([outfile query-fn anonymize-profile]
-   (log/info (trs "Export triggered for PuppetDB"))
+   (log/info (trs "Export triggered for OpenVoxDB"))
    (with-open [tar-writer (archive/tarball-writer outfile)]
      (utils/add-tar-entry
       tar-writer {:file-suffix [export-metadata-file-name]
                   :contents (json/generate-pretty-string {:timestamp (now) :command_versions latest-command-versions})})
      (export!* tar-writer query-fn anonymize-profile))
-   (log/info (trs "Finished exporting PuppetDB"))))
+   (log/info (trs "Finished exporting OpenVoxDB"))))

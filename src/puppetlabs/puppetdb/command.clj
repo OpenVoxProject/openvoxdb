@@ -1,7 +1,7 @@
 (ns puppetlabs.puppetdb.command
-  "PuppetDB command handling
+  "OpenVoxDB command handling
 
-   Commands are the mechanism by which changes are made to PuppetDB's
+   Commands are the mechanism by which changes are made to OpenVoxDB's
    model of a population. Commands are represented by `command
    objects`, which have the following JSON wire format:
 
@@ -32,7 +32,7 @@
 
    Each entry corresponds to a single failed attempt at handling the
    message, containing the error message, stack trace, and timestamp
-   for each failure. PuppetDB may discard messages which have been
+   for each failure. OpenVoxDB may discard messages which have been
    attempted and failed too many times, or which have experienced
    fatal errors (including unparseable messages).
 
@@ -1070,7 +1070,7 @@
                         (catch InterruptedException _
                           nil)))
             shovel-thread (doto (Thread. shovel)
-                            (.setName "PuppetDB command shovel")
+                            (.setName "OpenVoxDB command shovel")
                             (.setDaemon false)
                             (.start))]
         (assoc context

@@ -1,4 +1,4 @@
-test_name "Install Puppet" do
+test_name "Install OpenVox" do
   unless (test_config[:skip_presuite_provisioning])
     if is_el8 && ([:upgrade_latest].include? test_config[:install_mode])
       on(hosts, 'update-crypto-policies --set LEGACY')
@@ -10,7 +10,7 @@ test_name "Install Puppet" do
     if (test_config[:skip_openvox_package_installation])
       install_puppet_conf
     else
-      step "Install Puppet" do
+      step "Install OpenVox" do
         install_puppet(puppet_repo_version(test_config[:platform_version],
                                            test_config[:install_mode],
                                            test_config[:nightly]))

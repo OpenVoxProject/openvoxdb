@@ -40,7 +40,7 @@ describe Puppet::Node::Puppetdb do
       destroy
     end
 
-    it "should log a deprecation warning if one is returned from PuppetDB" do
+    it "should log a deprecation warning if one is returned from OpenVoxDB" do
       nethttpok['x-deprecation'] = 'A horrible deprecation warning!'
       responseok.stubs(:body).returns '{"uuid": "a UUID"}'
 

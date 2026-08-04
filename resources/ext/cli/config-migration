@@ -19,10 +19,10 @@ migration_command="puppetdb config-migration"
 #
 function usage() {
   echo "Usage: ${migration_command}"
-  echo "Configuration helper for migrating config files for PuppetDB upgrade."
+  echo "Configuration helper for migrating config files for OpenVoxDB upgrade."
   echo
-  echo "This tool will attempt to copy the necessary PuppetDB config files into "\
-       "place for use by the PuppetDB HTTPS service. It updates the pathing of "\
+  echo "This tool will attempt to copy the necessary OpenVoxDB config files into "\
+       "place for use by the OpenVoxDB HTTPS service. It updates the pathing of "\
        "the files to align with new path expectations in the PuppetDB 3 series. "\
        "It will ensure the config files contain either existing edits or up "\
        "to date default settings. If the default settings are changed, the script "\
@@ -113,7 +113,7 @@ function path_not_found {
   echo
   echo "  * $1"
   echo
-  echo "  Re-run this tool then restart PuppetDB to complete the config"
+  echo "  Re-run this tool then restart OpenVoxDB to complete the config"
   echo "  setup:"
   echo
   echo "      ${migration_command}"
@@ -266,7 +266,7 @@ for ini_file in "${ini_files[@]}"; do
       done
     done
   else
-    echo "Error: Unable to find PuppetDB configuration file at ${ini_file} so unable to provide automatic configuration for that file."
+    echo "Error: Unable to find OpenVoxDB configuration file at ${ini_file} so unable to provide automatic configuration for that file."
     echo
     echo "   Confirm the file exists before running the tool again."
     echo "   The file should have been created automatically when"
@@ -291,7 +291,7 @@ for old_ini_file in "${old_ini_files[@]}" ; do
   fi
 done
 
-echo "Modifications may have been made to PuppetDB config files. To ensure these changes have been picked up, please do the following: "
-echo "  1) upgrade the puppetdb-termini package"
+echo "Modifications may have been made to OpenVoxDB config files. To ensure these changes have been picked up, please do the following: "
+echo "  1) upgrade the openvoxdb-termini package"
 echo "  2) restart the puppetdb service"
 echo "  3) restart the puppetserver service"

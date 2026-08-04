@@ -150,7 +150,7 @@ CONF
 
         expect do
           config = described_class.load
-        end.to raise_error(/PuppetDB 'server_urls' must be https, found 'http:\/\/foo.something-different.com'/)
+        end.to raise_error(/OpenVoxDB 'server_urls' must be https, found 'http:\/\/foo.something-different.com'/)
       end
 
       it "should fail if given a URL path" do
@@ -162,7 +162,7 @@ CONF
 
         expect do
           config = described_class.load
-        end.to raise_error(/PuppetDB 'server_urls' cannot contain URL paths, found 'https:\/\/foo.something-different.com\/bar'/)
+        end.to raise_error(/OpenVoxDB 'server_urls' cannot contain URL paths, found 'https:\/\/foo.something-different.com\/bar'/)
       end
 
       it "should fail if given a server/port combo" do
@@ -173,7 +173,7 @@ CONF
 
         expect do
           config = described_class.load
-        end.to raise_error(/PuppetDB 'server_urls' must be https, found 'foo.com:8080'/)
+        end.to raise_error(/OpenVoxDB 'server_urls' must be https, found 'foo.com:8080'/)
       end
 
       it "should fail if given a server only" do
@@ -184,7 +184,7 @@ CONF
 
         expect do
           config = described_class.load
-        end.to raise_error(/PuppetDB 'server_urls' must be https, found 'foo.com'/)
+        end.to raise_error(/OpenVoxDB 'server_urls' must be https, found 'foo.com'/)
       end
 
 
@@ -196,7 +196,7 @@ CONF
 
         expect do
           config = described_class.load
-        end.to raise_error(/Error parsing URL 'https:\/\/invalid#host#name.com' in PuppetDB 'server_urls'/)
+        end.to raise_error(/Error parsing URL 'https:\/\/invalid#host#name.com' in OpenVoxDB 'server_urls'/)
       end
 
       it "should fail if given an unparsable second URI" do
@@ -207,7 +207,7 @@ CONF
 
         expect do
           config = described_class.load
-        end.to raise_error(/Error parsing URL 'https:\/\/invalid#host#name.com' in PuppetDB 'server_urls'/)
+        end.to raise_error(/Error parsing URL 'https:\/\/invalid#host#name.com' in OpenVoxDB 'server_urls'/)
       end
 
       it "should fail if given an unparsable second URI" do
@@ -218,7 +218,7 @@ CONF
 
         expect do
           config = described_class.load
-        end.to raise_error(/Error parsing URL 'https:\/\/invalid#host#name.com' in PuppetDB 'server_urls'/)
+        end.to raise_error(/Error parsing URL 'https:\/\/invalid#host#name.com' in OpenVoxDB 'server_urls'/)
       end
 
       it "should tolerate spaces between URLs" do

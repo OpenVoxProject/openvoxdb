@@ -41,7 +41,7 @@ describe Puppet::Util::Puppetdb do
     let(:response) { JSON.generate({'certname' => 'futile', 'status' => 'irrelevant'}) }
     let(:query) { ["=", "type", "Foo"] }
     let(:http_response) { FakeHttpResponse.new(response) }
-    it "should query PuppetDB" do
+    it "should query OpenVoxDB" do
       # careful here... since we're going to stub Command.new, we need to
       # make sure we reference command1 first, because it calls Command.new.
       Puppet::Util::Puppetdb::Http.expects(:action).once.returns(http_response)

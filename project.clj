@@ -460,7 +460,7 @@
             "test-in-parallel" ["run"
                                 "-m" "puppetlabs.puppetdb.test-in-parallel/main"
                                 "--test-paths" :project/test-paths]
-            "time-shift-export" ^{:doc (clojure.string/join "" ["Shifts all timestamps from a PuppetDB archive with"
+            "time-shift-export" ^{:doc (clojure.string/join "" ["Shifts all timestamps from an OpenVoxDB archive with"
                                         " the period between the most recent one in the archive and the one "
                                         "you provide, or the current date."])}
                                ["trampoline" "run" "-m" "puppetlabs.puppetdb.cli.time-shift-export"]

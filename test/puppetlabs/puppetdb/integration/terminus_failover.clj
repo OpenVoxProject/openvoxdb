@@ -39,7 +39,7 @@
                  (int/run-puppet ps pdb "Notify <<| |>>"))
             data (ex-data ex)]
         (is (= ::int/bundle-exec-failure (:kind data)))
-        (is (re-find #"Could not retrieve resources from the PuppetDB"
+        (is (re-find #"Could not retrieve resources from the OpenVoxDB"
                      (get-in data [:result :err])))))
 
     (testing "Agent run should succeed for manifest which exports resources"

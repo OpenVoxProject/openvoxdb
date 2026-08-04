@@ -1,5 +1,5 @@
 (ns puppetlabs.puppetdb.core
-  "PuppetDBs normal entry point.  Dispatches to command line subcommands."
+  "OpenVoxDBs normal entry point.  Dispatches to command line subcommands."
   (:require
    [clojure.string :as str]
    [puppetlabs.puppetdb.cli.util
@@ -8,7 +8,7 @@
 (def usage-lines
   ["Available subcommands:"
    "  version                 Display version information"
-   "  services                Run PuppetDB"
+   "  services                Run OpenVoxDB"
    "  upgrade                 Upgrade to latest version and exit"
    "  benchmark               Run development-only benchmarking tool"
    "  fact-storage-benchmark"

@@ -7,31 +7,31 @@ canonical: "/puppetdb/latest/migration_coordination.html"
 
 [config]: ./configure.markdown
 
-By default at startup PuppetDB will attempt to perform any database
+By default at startup OpenVoxDB will attempt to perform any database
 updates that might be needed.  If there is a possibiity that multiple
-PuppetDB instances could run at the same time, it's important to
+OpenVoxDB instances could run at the same time, it's important to
 coordinate the update process so that only one server attempts to perform
 updates.  The [configuration documentation][config#coordinating-database-migrations]
 explains how to arrange that, and the broader context, but not the
 detailed process, which is described here.
 
-Assuming all of the PuppetDB instances have been configured
+Assuming all of the OpenVoxDB instances have been configured
 appropriately, then only one will have `[database] migrate` set to
 true, so that it will be the only one that should attempt a migration.
 That will guard against concurrent migration attempts, but doesn't
 help if the servers are misconfigured, and it doesn't do anything to
-protect against another concern, the possibility that PuppetDB
+protect against another concern, the possibility that OpenVoxDB
 instances might try to operate on a database that's at the incorrect
 migration level during normal operations.
 
-This might happen because, for example, a newer version of PuppetDB
+This might happen because, for example, a newer version of OpenVoxDB
 has migrated the database to a version they don't understand, or
 because they're not configured to perform a migration and the database
 is too old.  And note that these concerns apply all of the time, not
 just at startup, since the database might accidentally be migrated
-while older PuppetDB instances are still running.
+while older OpenVoxDB instances are still running.
 
-In an attempt to guard against all of these possibilities, PuppetDB
+In an attempt to guard against all of these possibilities, OpenVoxDB
 does the following:
 
 When acting as a migrator (`migrate = true`)
@@ -75,7 +75,7 @@ When acting as a migrator (`migrate = true`)
 
 * Resumes normal operations.
 
-All PuppetDB instances, including a migrator after migration
+All OpenVoxDB instances, including a migrator after migration
 ------------------------------------------------------------
 
 * Always connects to the database as the normal
@@ -89,9 +89,9 @@ All PuppetDB instances, including a migrator after migration
   schema_migrations table.
 
 * Establishes a [periodic check][config#schema-check-interval] that
-  will shut PuppetDB down if it detects a database that's either newer
+  will shut OpenVoxDB down if it detects a database that's either newer
   or older than it's prepared to handle.  This also makes sure that
-  PuppetDB won't continue using any existing (pool) connections to the
+  OpenVoxDB won't continue using any existing (pool) connections to the
   database (since the `connectionInitSql` check above only prevents
   new connections).
 

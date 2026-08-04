@@ -18,13 +18,13 @@ canonical: "/puppetdb/latest/api/query/v4/events.html"
 [reports]: ./reports.markdown
 [rich_data]: query.markdown#rich-data
 
-Puppet agent nodes submit reports after their runs, and the Puppet Server forwards these to PuppetDB. Each report includes:
+OpenVox agent nodes submit reports after their runs, and the OpenVox Server forwards these to OpenVoxDB. Each report includes:
 
 * Data about the entire run
 * Metadata about the report
 * Many _events,_ describing what happened during the run
 
-After this information is stored in PuppetDB, it can be queried in various ways.
+After this information is stored in OpenVoxDB, it can be queried in various ways.
 
 * You can query **data about the run** and **report metadata** by making an HTTP request to the [`/reports`][report] endpoint.
 * You can query **data about individual events** by making an HTTP request to the `/events` endpoint.
@@ -33,7 +33,7 @@ After this information is stored in PuppetDB, it can be queried in various ways.
 ## `/pdb/query/v4/events`
 
 Returns all resource events matching the given query. (Resource events
-are generated from Puppet reports.)
+are generated from OpenVox reports.)
 
 ### URL parameters
 
@@ -73,13 +73,13 @@ See [the AST query language page][ast] for the full list of available operators.
 
 * `status` (string): the status of the event. Legal values are `success`, `failure`, `noop`, and `skipped`.
 
-* `timestamp` (timestamp): the timestamp (from the Puppet agent) at which the event occurred. Timestamps are always [ISO-8601][8601] compatible date/time strings.
+* `timestamp` (timestamp): the timestamp (from the OpenVox agent) at which the event occurred. Timestamps are always [ISO-8601][8601] compatible date/time strings.
 
-* `run_start_time` (timestamp): the timestamp (from the Puppet agent) at which the Puppet run began. Timestamps are always [ISO-8601][8601] compatible date/time strings.
+* `run_start_time` (timestamp): the timestamp (from the OpenVox agent) at which the OpenVox run began. Timestamps are always [ISO-8601][8601] compatible date/time strings.
 
-* `run_end_time` (timestamp): the timestamp (from the Puppet agent) at which the Puppet run finished. Timestamps are always [ISO-8601][8601] compatible date/time strings.
+* `run_end_time` (timestamp): the timestamp (from the OpenVox agent) at which the OpenVox run finished. Timestamps are always [ISO-8601][8601] compatible date/time strings.
 
-* `report_receive_time` (timestamp): the timestamp (from the PuppetDB server) at which the Puppet report was received. Timestamps are always [ISO-8601][8601] compatible date/time strings.
+* `report_receive_time` (timestamp): the timestamp (from the OpenVoxDB server) at which the OpenVox report was received. Timestamps are always [ISO-8601][8601] compatible date/time strings.
 
 * `resource_type` (string, with first letter always capitalized): the type of resource that the event occurred on, such as `File`, `Package`, etc.
 
@@ -91,9 +91,9 @@ See [the AST query language page][ast] for the full list of available operators.
 
 * `name` (string or null): the name of the resource on which the event occurred.
 
-* `new_value` (string or null): the new value that Puppet was attempting to set for the specified resource property.  Any [rich data][rich_data] values will appear as readable strings.  **Note:** this field may contain `NULL` values; see notes above.
+* `new_value` (string or null): the new value that OpenVox was attempting to set for the specified resource property.  Any [rich data][rich_data] values will appear as readable strings.  **Note:** this field may contain `NULL` values; see notes above.
 
-* `old_value` (string or null): the previous value of the resource property, which Puppet was attempting to change.  Any [rich data][rich_data] values will appear as readable strings.  **Note:** this field may contain `NULL` values; see notes above.
+* `old_value` (string or null): the previous value of the resource property, which OpenVox was attempting to change.  Any [rich data][rich_data] values will appear as readable strings.  **Note:** this field may contain `NULL` values; see notes above.
 
 * `message` (string or null): a description (supplied by the resource provider) of what happened during the event. **Note:** this field may contain `NULL` values; see notes above.
 
@@ -104,11 +104,11 @@ See [the AST query language page][ast] for the full list of available operators.
 
 * `containing_class` (string or null): the Puppet class where this resource is declared.  **Note:** this field may contain `NULL` values; see notes above.
 
-* `latest_report?` (Boolean): whether the event occurred in the most recent Puppet run (per-node). **Note:** the value of this field is always Boolean (`true` or `false` without quotes), and it is not supported by the regex match operator.
+* `latest_report?` (Boolean): whether the event occurred in the most recent OpenVox run (per-node). **Note:** the value of this field is always Boolean (`true` or `false` without quotes), and it is not supported by the regex match operator.
 
 * `environment` (string): the environment associated with the reporting node.
 
-* `configuration_version` (string): an identifier string that Puppet uses to match a specific catalog for a node to a specific Puppet run.
+* `configuration_version` (string): an identifier string that OpenVox uses to match a specific catalog for a node to a specific OpenVox run.
 
 * `containment_path` (array of strings, where each string is a containment path element): the containment path associated with the event, as an ordered array that ends with the most specific containing element.
 
@@ -209,7 +209,7 @@ To retrieve event status counts for each node:
 
 ## Paging
 
-This endpoint supports paged results via the common PuppetDB paging
+This endpoint supports paged results via the common OpenVoxDB paging
 URL parameters. For more information, please see the documentation
 on [paging][paging].
 

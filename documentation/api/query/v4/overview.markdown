@@ -51,13 +51,13 @@ general info about queries, see [our guide to query structure.][query]
 `query` in AST, either exactly as supplied or translated from PQL. False by default.
 
 * `origin`: optional. A string describing the source of the query.  It
-can be anything, and will be reported in the log when PuppetDB is
-configured to log queries.  Note that Puppet intends to use origin
+can be anything, and will be reported in the log when OpenVoxDB is
+configured to log queries.  Note that OpenVox intends to use origin
 names beginning with `puppet:` for its own queries, so it is
 recommended that other clients choose something else.
 
 * `explain`: optional. The string value `analyze`. This parameter can be used
-  to tell PuppetDB to return the execution plan of a statement instead of the
+  to tell OpenVoxDB to return the execution plan of a statement instead of the
   query results. The execution plan shows how the table(s) referenced by the
   statement will be scanned, the estimated statement execution cost and the
   actual run time statistics.
@@ -115,7 +115,7 @@ The same query can also be executed using [PQL][pql]:
 
 ## Paging
 
-This query endpoint supports paged results via the common PuppetDB paging
+This query endpoint supports paged results via the common OpenVoxDB paging
 URL parameters. For more information, see the documentation
 on [paging][paging].
 

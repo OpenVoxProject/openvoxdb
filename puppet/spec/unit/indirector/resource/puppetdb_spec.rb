@@ -44,7 +44,7 @@ describe Puppet::Resource::Puppetdb do
       search("exec").should == []
     end
 
-    it "should log a deprecation warning if one is returned from PuppetDB" do
+    it "should log a deprecation warning if one is returned from OpenVoxDB" do
       nethttpok['x-deprecation'] = "Deprecated, yo."
       nethttpok.stubs(:body).returns '[]'
 
@@ -63,7 +63,7 @@ describe Puppet::Resource::Puppetdb do
       search("exec")
     end
 
-    it "should fail it can't connect to the PuppetDB server" do
+    it "should fail it can't connect to the OpenVoxDB server" do
       expect { search("user") }.to raise_error(Puppet::Error, /Could not retrieve resources/)
     end
 

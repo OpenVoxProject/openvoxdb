@@ -7,7 +7,7 @@ Gem::Specification.new do |gem|
   gem.version       = "3.0.0"
   gem.authors       = ["Puppet Labs", "OpenVoxProject"]
   gem.email         = ["openvox@voxpupuli.org"]
-  gem.description   = "Puppet terminus files to connect to OpenVoxDB"
+  gem.description   = "OpenVox terminus files to connect to OpenVoxDB"
   gem.summary       = "Connect OpenVox to OpenVoxDB by setting up a terminus for OpenVoxDB"
   gem.homepage      = "https://github.com/OpenVoxProject/openvoxdb"
   gem.license       = "Apache-2.0"

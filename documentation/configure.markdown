@@ -1,62 +1,58 @@
 ---
-title: "Configuring PuppetDB"
+title: "Configuring OpenVoxDB"
 layout: default
 canonical: "/puppetdb/latest/configure.html"
 ---
 
-# Configuring PuppetDB
+# Configuring OpenVoxDB
 
 [configure-postgres]: ./configure_postgres.markdown
 [java-patterns]: https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html
 [logback]: http://logback.qos.ch/manual/configuration.html
 [dashboard]: ./maintain_and_tune.markdown#monitor-the-performance-dashboard
-[pe-dashboard]: https://support.puppet.com/hc/en-us/articles/208484488-Enable-and-view-the-PuppetDB-performance-dashboard-for-Puppet-Enterprise-3-3-2-to-2019-1
 [repl]: ./repl.markdown
 [pg_trgm]: http://www.postgresql.org/docs/current/static/pgtrgm.html
 [postgres_ssl]: ./postgres_ssl.markdown
 [migration-coordination]: ./migration_coordination.markdown
 [module]: ./install_via_module.markdown
 [puppetdb.conf]: ./connect_puppet_server.markdown#edit-puppetdbconf
-[ha]: ./ha.markdown
 [node-ttl]: #node-ttl
 [admin-cmd]: ./api/admin/v1/cmd.markdown
 [query-timeout-parameter]: ./api/query/v4/overview.markdown#url-parameters
 
-PuppetDB has three main groups of settings:
+OpenVoxDB has three main groups of settings:
 
-* The init script's configuration file, which sets the JVM heap size and the location of PuppetDB's main config file.
-* Logging settings, which go in the [logback.xml](#logging-config) file and can be changed without restarting PuppetDB.
-* All other settings, which go in PuppetDB's configuration file(s) and take effect after the service is restarted.
+* The init script's configuration file, which sets the JVM heap size and the location of OpenVoxDB's main config file.
+* Logging settings, which go in the [logback.xml](#logging-config) file and can be changed without restarting OpenVoxDB.
+* All other settings, which go in OpenVoxDB's configuration file(s) and take effect after the service is restarted.
 
 ## Init Script Config File
 
-If you installed PuppetDB from packages or used the `rake install`
-installation method, an init script was created for PuppetDB. This
+If you installed OpenVoxDB from packages or used the `rake install`
+installation method, an init script was created for OpenVoxDB. This
 script has its own configuration file, the location of which varies by
 platform and by package:
 
 OS and Package               | File
 -----------------------------|----------------------------
-Red Hat-like (open source)   | `/etc/sysconfig/puppetdb`
-Red Hat-like (PE)            | `/etc/sysconfig/pe-puppetdb`
-Debian/Ubuntu (open source)  | `/etc/default/puppetdb`
-Debian/Ubuntu (PE)           | `/etc/default/pe-puppetdb`
+Red Hat-like                 | `/etc/sysconfig/puppetdb`
+Debian/Ubuntu                | `/etc/default/puppetdb`
 
  In this file, you can change the following settings:
 
 - **`JAVA_BIN`**: the location of the Java binary.
 - **`JAVA_ARGS`**: command line options for the Java binary, most notably the `-Xmx` (max heap size) flag.
-- **`USER`**: the user PuppetDB should be running as.
-- **`INSTALL_DIR`**: the directory into which PuppetDB is installed.
-- **`CONFIG`**: the location of the PuppetDB config file, which may be a single file or a directory of .ini files.
+- **`USER`**: the user OpenVoxDB should be running as.
+- **`INSTALL_DIR`**: the directory into which OpenVoxDB is installed.
+- **`CONFIG`**: the location of the OpenVoxDB config file, which may be a single file or a directory of .ini files.
 
 ### Configuring the Java heap size
 
-To change the JVM heap size for PuppetDB, edit the [init script config
+To change the JVM heap size for OpenVoxDB, edit the [init script config
 file](#init-script-config-file) by setting a new value for the `-Xmx`
 flag in the `JAVA_ARGS` variable.
 
-For example, to cap PuppetDB at 192MB of memory:
+For example, to cap OpenVoxDB at 192MB of memory:
 
     JAVA_ARGS="-Xmx192m"
 
@@ -87,28 +83,28 @@ up a JMX socket on port 1099:
 
 Logging is configured with a logback.xml file, whose location is
 defined with the [`logging-config`](#logging-config) setting. If you
-change the log settings while PuppetDB is running, it will apply the
+change the log settings while OpenVoxDB is running, it will apply the
 new settings without requiring a restart.
 
 [See the Logback documentation][logback] for more information about logging options.
 
 
-## The PuppetDB configuration file(s)
+## The OpenVoxDB configuration file(s)
 
-PuppetDB is configured using an INI-style config format with several
-`[sections]`. This is very similar to the format used by Puppet. All
-of the sections and settings described below belong in the PuppetDB
+OpenVoxDB is configured using an INI-style config format with several
+`[sections]`. This is very similar to the format used by OpenVox. All
+of the sections and settings described below belong in the OpenVoxDB
 config file(s).
 
-> **Note:** Whenever you change PuppetDB's configuration settings, you must restart the service for the changes to take effect.
+> **Note:** Whenever you change OpenVoxDB's configuration settings, you must restart the service for the changes to take effect.
 
 You can change the location of the main config file in [the init
 script config file](#init-script-config-file). This location can point
 to a single configuration file or a directory of .ini files. If you
-specify a directory (in _conf.d_ style), PuppetDB will merge the .ini
+specify a directory (in _conf.d_ style), OpenVoxDB will merge the .ini
 files in alphabetical order.
 
-If you've installed PuppetDB from a package, by default it will use
+If you've installed OpenVoxDB from a package, by default it will use
 the _conf.d_ config style. The default config directory is
 `/etc/puppetlabs/puppetdb/conf.d`. If you're running from source, you
 may use the `-c` command-line argument to specify your config file or
@@ -129,41 +125,41 @@ An example configuration file:
     [jetty]
     port = 8080
 
-### Playing nice with the PuppetDB module
+### Playing nice with the OpenVoxDB module
 
-If you [installed PuppetDB with the puppetlabs-puppetdb
-module][module], PuppetDB's settings will be managed by Puppet. Most
+If you [installed OpenVoxDB with the puppet-openvoxdb
+module][module], OpenVoxDB's settings will be managed by OpenVox. Most
 of the settings you care about can be configured with the module's
 class parameters; see [the module's
-documentation](https://forge.puppetlabs.com/puppetlabs/puppetdb) for
+documentation](https://forge.puppet.com/puppet/openvoxdb) for
 details.
 
 If you _do_ need to change those rare settings that the module doesn't
 manage, you can do the following:
 
 Create a new class in a new module (something like
-`site::puppetdb::server::extra`), declare any number of `ini_setting`
+`site::openvoxdb::server::extra`), declare any number of `ini_setting`
 resources as shown below, set the class to refresh the
-`puppetdb::server` class, and assign it to your PuppetDB server.
+`openvoxdb::server` class, and assign it to your OpenVoxDB server.
 
 ~~~ ruby
-    # Site-specific PuppetDB settings. Declare this class on any node that gets the puppetdb::server class.
-    class site::puppetdb::server::extra {
+    # Site-specific OpenVoxDB settings. Declare this class on any node that gets the openvoxdb::server class.
+    class site::openvoxdb::server::extra {
 
-      # Restart the PuppetDB service if settings change
-      Class[site::puppetdb::server::extra] ~> Class[puppetdb::server]
+      # Restart the OpenVoxDB service if settings change
+      Class[site::openvoxdb::server::extra] ~> Class[openvoxdb::server]
 
-      # Get PuppetDB confdir
-      include puppetdb::params
-      $confdir = $puppetdb::params::confdir
+      # Get OpenVoxDB confdir
+      include openvoxdb::params
+      $confdir = $openvoxdb::params::confdir
 
       # Set resource defaults
       Ini_setting {
         ensure  => present,
-        require => Class['puppetdb::server::validate_db'],
+        require => Class['openvoxdb::server::validate_db'],
       }
 
-      ini_setting {'puppetdb-extra-setting':
+      ini_setting {'openvoxdb-extra-setting':
         path    => "${confdir}/global.ini",
         section => 'global',
         setting => <some-extra-setting>,
@@ -179,7 +175,7 @@ The `[global]` section is used to configure application-wide behavior.
 ### `vardir`
 
 This defines the parent directory for the MQ's data directory. The
-directory must exist and be writable by the PuppetDB user in order for
+directory must exist and be writable by the OpenVoxDB user in order for
 the application to run.
 
 ### `logging-config`
@@ -190,29 +186,20 @@ file. Covering all the options available for configuring Logback is
 outside the scope of this guide: see the [Logback documentation][logback] for
 exhaustive information.
 
-If this setting isn't provided, PuppetDB defaults to logging at INFO
+If this setting isn't provided, OpenVoxDB defaults to logging at INFO
 level to standard out.
 
-If you installed from packages, PuppetDB will use the logback.xml file
+If you installed from packages, OpenVoxDB will use the logback.xml file
 in the `/etc/puppetdb/` or `/etc/puppetlabs/puppetdb`
 directory. Otherwise, you can find an example file in the `ext`
 directory of the source.
 
-You can edit the logging configuration file while PuppetDB is running,
+You can edit the logging configuration file while OpenVoxDB is running,
 and it will automatically react to changes after a few seconds.
-
-### `update-server`
-
-The URL to query when checking for newer versions; defaults to
-`https://updates.puppetlabs.com/check-for-updates`. Overriding this
-setting may be useful if your PuppetDB server is firewalled and can't
-make external HTTP requests. In this case you can configure a proxy
-server to send requests to the `updates.puppetlabs.com` URL and
-override this setting to point to your proxy server.
 
 ## `[puppetdb]` settings
 
-The `[puppetdb]` section is used to configure PuppetDB
+The `[puppetdb]` section is used to configure OpenVoxDB
 application-specific behavior.
 
 ### `query-timeout-default`
@@ -245,40 +232,39 @@ the `query-timeout-default` description for additional information.
 At the moment, this limit only applies to the `/pdb//query/..`
 endpoints.
 
-Note that this maximum does not apply to PuppetDB sync (PE Only)
-queries (with `origin=puppet:puppetdb-sync-*`).  They specify their
-own timeouts related to the sync `entity-time-limit`.
+Note that this maximum does not apply to queries with
+`origin=puppet:puppetdb-sync-*`, which specify their own timeouts.
 
 ### `certificate-allowlist`
 
 Optional. This describes the path to a file that contains a list of
 certificate names, one per line. Incoming HTTPS requests will have
 their certificates validated against this list of names and only those
-with an **exact** matching entry will be allowed through. (For a Puppet
+with an **exact** matching entry will be allowed through. (For an OpenVox
 Server, this compares against the value of the `certname` setting,
 rather than the `dns_alt_names` setting.)
 
-If not supplied, PuppetDB uses standard HTTPS without any additional
+If not supplied, OpenVoxDB uses standard HTTPS without any additional
 authorization. All HTTPS clients must still supply valid, verifiable
 SSL client certificates.
 
 ### `log-queries`
 Optional. Setting this to `true` will enable debug level logging of the internal
-AST and SQL that PuppetDB generates for all queries. This can be useful when
+AST and SQL that OpenVoxDB generates for all queries. This can be useful when
 debugging query performance. If unset, the default value is `false`.
 [See the Logback documentation][logback] for more information about logging
 options and how to enable debug level logging.
 
 ## `[database]` settings
 
-The `[database]` section configures PuppetDB's database settings.
-PuppetDB stores its data in PostgreSQL.
+The `[database]` section configures OpenVoxDB's database settings.
+OpenVoxDB stores its data in PostgreSQL.
 
 > **FAQ: Why no MySQL or Oracle support?**
 >
-> MySQL lacks several features that PuppetDB relies on, most notably including recursive queries. We have no plans to ever support MySQL.
+> MySQL lacks several features that OpenVoxDB relies on, most notably including recursive queries. We have no plans to ever support MySQL.
 >
-> Depending on demand, Oracle support may be forthcoming in a future version of PuppetDB. This hasn't been decided yet.
+> Depending on demand, Oracle support may be forthcoming in a future version of OpenVoxDB. This hasn't been decided yet.
 
 ### `gc-interval`
 
@@ -359,7 +345,7 @@ is disabled.
 Nodes will be purged in batches of this size, one batch per
 `gc-interval`.  If unset, the batch limit will be 25, and if you
 expect to generate eligible nodes faster than that (on average), you
-should either increase this limit so that PuppetDB will be able to
+should either increase this limit so that OpenVoxDB will be able to
 keep up, or complement the automatic GC process with manual
 `purge_node` requests to the [cmd endpoint][admin-cmd] to cover the
 excess.
@@ -396,8 +382,8 @@ This describes where to find the database. Set this to
 DB server's hostname, `<PORT>` with the port on which PostgreSQL is listening,
 and `<DATABASE>` with the name of the database.  See the [Postgres SSL
 doc][postgres_ssl] for details on configuring the `subname` option for an
-encrypted connection between PuppetDB and Postgres.  Without additional
-parameters, PuppetDB's database connections will communicate in plaintext.
+encrypted connection between OpenVoxDB and Postgres.  Without additional
+parameters, OpenVoxDB's database connections will communicate in plaintext.
 
 ### `username`
 
@@ -419,7 +405,7 @@ password is stored in plain-text in the configuration file. You can remove this
 configuration option if you [configure an SSL connection][postgres_ssl] and
 configure postgres to use certificates to authorize the database connections.
 If your PostgreSQL server is on a different server, you should configure an SSL
-connection between PuppetDB and Postgres, otherwise the database communication
+connection between OpenVoxDB and Postgres, otherwise the database communication
 is done via plaintext.
 
 ### `migrator-username`
@@ -445,13 +431,13 @@ to `password`. This password is stored in plain-text in the configuration file.
 You can remove this configuration option if you [configure an SSL
 connection][postgres_ssl] and configure postgres to use certificates to
 authorize the database connection. If your PostgreSQL server is on a different
-server, you should configure an SSL connection between PuppetDB and Postgres,
+server, you should configure an SSL connection between OpenVoxDB and Postgres,
 otherwise the database communication is done via plaintext.
 
 ### `migrate`
 
-When set to `true` (the default), PuppetDB will upgrade the data in
-the database to the latest format at startup.  When `false`, PuppetDB
+When set to `true` (the default), OpenVoxDB will upgrade the data in
+the database to the latest format at startup.  When `false`, OpenVoxDB
 will exit with an error status if the format version is not the one it
 expects, whether newer or older.  See the [PostgreSQL configuration
 section](configure-postgres) for some important requirements for the
@@ -471,7 +457,7 @@ When the pool reaches this size, and no idle connections are available, attempts
 to get a connection will wait for `connection-timeout` milliseconds before timing
 out.
 
-The default value is 25. Note that PuppetDB will use one pool for writes and another
+The default value is 25. Note that OpenVoxDB will use one pool for writes and another
 for reads, so the total number of connections used will be twice this setting.
 
 ### `conn-max-age`
@@ -525,14 +511,14 @@ above for additional information.
 
 ### `schema-check-interval`
 
-This controls how often, in milliseconds, to check the schema version PuppetDB
+This controls how often, in milliseconds, to check the schema version OpenVoxDB
 is compatible with against the database's schema version. The default is every
-30 seconds. If a mismatch is detected PuppetDB will exit with an error message
+30 seconds. If a mismatch is detected OpenVoxDB will exit with an error message
 suggesting appropriate action. If set to zero, this check is disabled.
 
 ## `[read-database]` settings
 
-The `[read-database]` section configures PuppetDB's _read-database_
+The `[read-database]` section configures OpenVoxDB's _read-database_
 settings, useful when running a PostgreSQL [Hot
 Standby](http://wiki.postgresql.org/wiki/Hot_Standby) cluster.
 Currently, only configuring a PostgreSQL read-database is supported.  See
@@ -541,7 +527,7 @@ for details on configuring the cluster. The `[read-database]` portion
 of the configuration is in addition to the `[database]` settings. If
 `[read-database]` is specified, `[database]` must also be specified.
 
-To configure PuppetDB to use a read-only database from the cluster,
+To configure OpenVoxDB to use a read-only database from the cluster,
 add the following to the `[read-database]` section:
 
     subname = //<HOST>:<PORT>/<DATABASE>
@@ -550,7 +536,7 @@ add the following to the `[read-database]` section:
 
 Replace `<HOST>` with the DB server's hostname. Replace `<PORT>` with
 the port on which PostgreSQL is listening. Replace `<DATABASE>` with
-the name of the database you've created for use with PuppetDB.
+the name of the database you've created for use with OpenVoxDB.
 
 ### `subname`
 
@@ -559,8 +545,8 @@ This describes where to find the database. Set this to
 DB server's hostname, `<PORT>` with the port on which PostgreSQL is listening,
 and `<DATABASE>` with the name of the database.  See the [Postgres SSL
 doc][postgres_ssl] for details on configuring the `subname` option for an
-encrypted connection between PuppetDB and Postgres.  Without additional
-parameters, PuppetDB's database connections will communicate in plaintext.
+encrypted connection between OpenVoxDB and Postgres.  Without additional
+parameters, OpenVoxDB's database connections will communicate in plaintext.
 
 ### `username`
 
@@ -575,7 +561,7 @@ password is stored in plain-text in the configuration file. You can remove this
 configuration option if you [configure an SSL connection][postgres_ssl] and
 configure postgres to use certificates to authorize the database connection. If
 your PostgreSQL server is on a different server, you should configure an SSL
-connection between PuppetDB and Postgres, otherwise the database communication
+connection between OpenVoxDB and Postgres, otherwise the database communication
 is done via plaintext.
 
 ### `maximum-pool-size`
@@ -622,7 +608,7 @@ from the pool of database connections. If not supplied, defaults to
 The `[command-processing]` section configures the command-processing
 subsystem.
 
-Every change to PuppetDB's data stores arrives via **commands** that
+Every change to OpenVoxDB's data stores arrives via **commands** that
 are inserted into a message queue (MQ). Command processor threads pull
 items off of that queue, persisting those changes.
 
@@ -649,7 +635,7 @@ bottleneck for command processing.
 
 This is a Boolean that enables rejecting (returning an HTTP 413 error)
 commands that are too large to process, such as a
-catalog that is too large, causing PuppetDB to run out of
+catalog that is too large, causing OpenVoxDB to run out of
 memory. This setting can be used along with `max-command-size`.
 
 This setting is false by default.
@@ -657,7 +643,7 @@ This setting is false by default.
 ### `max-command-size`
 
 This is an integer that specifies (in bytes) which commands are "too
-large" to process with PuppetDB. By default this setting is a fraction
+large" to process with OpenVoxDB. By default this setting is a fraction
 of the total heap space. It is strongly recommended that users set
 this manually as the default is probably too conservative. To help
 determine the current size of commands being processed, enable debug
@@ -668,29 +654,24 @@ logging for the `puppetlabs.puppetdb.middleware` appender in the
 
 ## `[jetty]` (HTTP) settings
 
-The `[jetty]` section configures HTTP for PuppetDB.
-
-> **Note:** If you are using Puppet Enterprise and want to enable the
-    PuppetDB dashboard from the PE console, refer to [Enable and view PuppetDB performance dashboard in PE][pe-dashboard]
-    for more information. PE users should not edit `jetty.ini`.
-
+The `[jetty]` section configures HTTP for OpenVoxDB.
 
 ### `host`
 
 Sets the IP interface to listen on for **unencrypted** HTTP
 traffic. If not supplied, we bind to `localhost`, which will reject
-connections from anywhere but the PuppetDB server itself. To listen on
+connections from anywhere but the OpenVoxDB server itself. To listen on
 all available interfaces, use `0.0.0.0`.
 
 To avoid DNS resolution confusion, if you wish to set this to something other than `localhost`, we reccomend using an IP address instead of a hostname.
 
 > **Note:** Unencrypted HTTP is the only way to view the [performance
-    dashboard][dashboard], because PuppetDB uses host verification for
-    SSL. However, it can also be used to make any call to PuppetDB's
+    dashboard][dashboard], because OpenVoxDB uses host verification for
+    SSL. However, it can also be used to make any call to OpenVoxDB's
     API, including inserting exported resources and retrieving
-    arbitrary data about your Puppet-managed nodes. **If you enable
+    arbitrary data about your OpenVox-managed nodes. **If you enable
     cleartext HTTP, you MUST configure your firewall to protect
-    unverified access to PuppetDB.**
+    unverified access to OpenVoxDB.**
 
 ### `port`
 
@@ -723,7 +704,7 @@ supplied, we won't listen for encrypted traffic at all.
 ### `ssl-cert`
 
 Sets the path to the server certificate PEM file used by the
-PuppetDB web service for HTTPS. During the SSL handshake for a
+OpenVoxDB web service for HTTPS. During the SSL handshake for a
 connection, certificates extracted from this file are presented to the
 client for the client's use in validating the server. This file may
 contain a single certificate or a chain of certificates ordered from
@@ -748,7 +729,7 @@ the `ssl-cert` PEM and followed by any certificates in the
 ### `ssl-key`
 
 This sets the path to the private key PEM file that corresponds with
-the `ssl-cert`, if used by the PuppetDB web service for HTTPS.
+the `ssl-cert`, if used by the OpenVoxDB web service for HTTPS.
 
 ### `ssl-ca-cert`
 
@@ -762,7 +743,7 @@ incoming SSL connections. Valid names are listed in the
 [official JVM cryptographic providers documentation](http://docs.oracle.com/javase/8/docs/technotes/guides/security/SunProviders.html#SupportedCipherSuites). Note
 that you must use the all-caps cipher suite name.
 
-If not supplied, PuppetDB will use only non-DHE cipher suites.
+If not supplied, OpenVoxDB will use only non-DHE cipher suites.
 
 ### `ssl-protocols`
 
@@ -772,7 +753,7 @@ SSL connections. Valid names are listed in the
 that you must use the names with verbatim capitalization. For example:
 `TLSv1.2, TLSv1.3`.
 
-If not supplied, PuppetDB uses a default of `TLSv1, TLSv1.1, TLSv1.2`. By default, SSLv3 is not included in that list due to known vulnerabilities. Users wanting to use SSLv3 need to explicitly specify it in their list.
+If not supplied, OpenVoxDB uses a default of `TLSv1, TLSv1.1, TLSv1.2`. By default, SSLv3 is not included in that list due to known vulnerabilities. Users wanting to use SSLv3 need to explicitly specify it in their list.
 
 ### `ssl-crl-path`
 
@@ -855,7 +836,7 @@ more detailed info, see [our guide to debugging with the remote REPL][repl].
 
 Enabling a remote
 [REPL](http://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop)
-allows you to manipulate the behavior of PuppetDB at runtime. This
+allows you to manipulate the behavior of OpenVoxDB at runtime. This
 should only be done for debugging purposes, and is thus disabled by
 default. An example configuration stanza:
 
@@ -883,7 +864,7 @@ If you wish to listen on all interfaces, you can specify `0.0.0.0`, for example,
 ## `[developer]` settings
 
 The `[developer]` section contains configuration items that may be useful to
-users developing against the PuppetDB API. These settings may impede
+users developing against the OpenVoxDB API. These settings may impede
 performance, and are not recommended for production use.
 
 ### `pretty-print`
@@ -894,73 +875,6 @@ incurs a penalty in data transfer speed and size. Users may override this
 setting on a per-query basis by supplying a `?pretty=` parameter in the URL,
 valued `true` or `false`.
 
-## `[sync]` settings (Puppet Enterprise only)
-
-The `[sync]` section of the PuppetDB configuration file is used to configure
-synchronization for a high-availability system. See
-the [HA configuration guide][ha] for complete system configuration instructions.
-
-### `remotes`
-
-The `remotes` configuration key indicates that PuppetDB should poll a remote
-PuppetDB server for changes. When it finds changed or updated records on that
-server, it will download the records and submit them to the local command queue.
-
-In the configuration file, you specify a `remote` for each server you want to
-pull data from. It is perfectly reasonable, and expected, for two servers to
-pull data from each other. For each remote, you must provide:
-
- - The remote server url. This is a root url which should include the protocol
-   and port to use (eg. "https://puppetdb.myco.net:8081"). The protocol is
-   mandatory and must be either "http" or "https". If the port is not provided,
-   it will default to `8080` for http and `8081` for https.
-
- - The interval at which to poll the remote server for new data. This is
-   formatted as a timespan with units (e.g. '2m'). See the
-   [node-ttl documentation][node-ttl] for further reference.
-
-You should not configure PuppetDB to sync with itself.
-
-### `entity-time-limit`
-
-Set the maximum time that an entity can sync for (default: `"30m"`). PuppetDB
-syncs one entity (`catalogs`, `factsets`, `reports`, and `nodes`) at a time.
-While the sync is running it keeps a query open on the PostgreSQL database that
-will prevent the removal of old rows. If that connection is open long enough,
-it can degrade database performance. You shouldn't need to modify this setting
-unless you are experiencing an issue.
-
-### `initial-report-threshold`
-
-PuppetDB's initial sync, which occurs during startup, will only sync reports
-newer than `initial-report-threshold` (default: `"0s"`). While starting up,
-PuppetDB will not respond to queries or accept command submissions, so this can
-be used to get PuppetDB online faster, at the expense that it could return query
-responses that are not up to date. Subsequent periodic syncs will transfer the
-remaining data.
-
-#### HOCON
-
-If you are using HOCON to configure PuppetDB, use the following structure in
-your .conf file:
-
-    sync: {
-      remotes: [{server_url: "https://remote-puppetdb.myco.net:8081",
-                 interval: 2m}]
-    }
-
-#### ini
-
-If you are using a .ini file to configure PuppetDB, use the following structure:
-
-    [sync]
-    server_urls = https://remote-puppetdb.myco.net:8081
-    intervals = 2m
-
-Multiple values may be provided by comma-separating them, with no whitespace.
-You must have exactly the same number of entries in the `server_urls` and
-`intervals` values.
-
 ## Experimental environment variables
 
 > *Note*: these settings are experimental and are likely to be altered
@@ -968,7 +882,7 @@ You must have exactly the same number of entries in the `server_urls` and
 
 ### `PDB_COMMAND_SQL_STATEMENT_TIMEOUT_MS`
 
-Controls how many milliseconds (by default 10 minutes) PuppetDB will
+Controls how many milliseconds (by default 10 minutes) OpenVoxDB will
 wait for an SQL command to complete during an attempt to process a
 command (store a report, update a factset, etc.).  When set to `0` it
 will wait forever (the default before 6.13), and when set to `system`,
@@ -976,7 +890,7 @@ it won't specify any timeout, deferring to PostgreSQL's configuration.
 
 ### `PDB_GC_DAILY_PARTITION_DROP_LOCK_TIMEOUT_MS`
 
-Controls how many milliseconds (by default 5 minutes) PuppetDB will
+Controls how many milliseconds (by default 5 minutes) OpenVoxDB will
 wait for the required lock when it attempts to drop a report or
 resource event partition that has expired.  When set to `0` it will
 wait forever (the default before 6.13), and when set to `system`, it
@@ -984,22 +898,15 @@ won't specify any timeout, deferring to PostgreSQL's configuration.
 
 ### `PDB_FACT_PATH_GC_SQL_LOCK_TIMEOUT_MS`
 
-Controls how many milliseconds PuppetDB's fact path garbage collection
+Controls how many milliseconds OpenVoxDB's fact path garbage collection
 process will wait for the lock it needs.  When set to `0` it will wait
 forever (the default), and when set to `system`, it won't specify
 any timeout, deferring to PostgreSQL's configuration.
 
-### `PDB_EXT_INTERRUPT_LINGERING_SYNC_PULL` (Puppet Enterprise only)
-
-Can be set to `true` (the default) or `false`.  When true, will
-attempt to interrupt the thread performing sync when the
-[`entity-time-limit`](#entity-time-limit) is exceeded during a sync
-attempt, in addition to the normal periodic checks for for a timeout.
-
 ### `PDB_GC_QUERY_BULLDOZER_TIMEOUT_MS`
 
-Controls how many milliseconds (by default 5 minutes) PuppetDB GC
+Controls how many milliseconds (by default 5 minutes) OpenVoxDB GC
 will wait for the query bulldozer thread it spawns to be cleaned
 up before logging an error. When set to `0` the query bulldozer
-thread is disabled and PuppetDB GC will wait in line to get
+thread is disabled and OpenVoxDB GC will wait in line to get
 the AccessExclusiveLock it needs to drop partitioned tables.
