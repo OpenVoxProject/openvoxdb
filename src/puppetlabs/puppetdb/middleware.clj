@@ -46,7 +46,7 @@
    (tru "OpenVoxDB requires clients to present a certificate signed by its CA, and this request presented none.")
    HttpURLConnection/HTTP_FORBIDDEN))
 
-(defn reject-unauthenticated-request
+(defn- reject-unauthenticated-request
   "Returns a ring response rejecting a request that did not present a client
   certificate, or nil if it did."
   [{:keys [ssl-client-cn]}]
@@ -72,7 +72,7 @@
             (http/denied-response (tru "The client certificate name {0} doesn't appear in the certificate allowlist. Is your master''s (or other OpenVoxDB client''s) certname listed in OpenVoxDB''s certificate-allowlist file?" ssl-client-cn)
                                   HttpURLConnection/HTTP_FORBIDDEN))))))
 
-(defn loopback-request?
+(defn- loopback-request?
   "True if req arrived from a loopback address."
   [{:keys [remote-addr]}]
   (boolean

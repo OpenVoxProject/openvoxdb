@@ -52,7 +52,23 @@
       (let [config (configure-puppetdb {:puppetdb {:log-queries "some-string"}})]
         (is (= false (get-in config [:puppetdb :log-queries]))))
       (is (thrown? clojure.lang.ExceptionInfo
-                   (configure-puppetdb {:puppetdb {:log-queries 1337}}))))))
+                   (configure-puppetdb {:puppetdb {:log-queries 1337}}))))
+
+    (testing "should default :allow-unauthenticated-cleartext to false"
+      (let [config (configure-puppetdb {})]
+        (is (= false (get-in config [:puppetdb :allow-unauthenticated-cleartext])))))
+
+    (testing "should allow allow-unauthenticated-cleartext boolean"
+      (let [config (configure-puppetdb {:puppetdb {:allow-unauthenticated-cleartext "true"}})]
+        (is (= true (get-in config [:puppetdb :allow-unauthenticated-cleartext]))))
+      (let [config (configure-puppetdb {:puppetdb {:allow-unauthenticated-cleartext "false"}})]
+        (is (= false (get-in config [:puppetdb :allow-unauthenticated-cleartext]))))
+      ;; Anything that isn't recognized as true leaves authentication on, which
+      ;; is the safe way for this setting to fail.
+      (let [config (configure-puppetdb {:puppetdb {:allow-unauthenticated-cleartext "some-string"}})]
+        (is (= false (get-in config [:puppetdb :allow-unauthenticated-cleartext]))))
+      (is (thrown? clojure.lang.ExceptionInfo
+                   (configure-puppetdb {:puppetdb {:allow-unauthenticated-cleartext 1337}}))))))
 
 (deftest commandproc-configuration
   (testing "should use the thread value specified"
