@@ -155,7 +155,7 @@
                          ;; ~jackson-version when they match again.
                          [com.fasterxml.jackson.core/jackson-annotations "2.21"]
                          [com.gfredericks/test.chuck "0.2.15"]
-                         [com.github.seancorfield/honeysql "2.7.1425"]
+                         [com.github.seancorfield/honeysql "2.7.1437"]
                          [com.github.seancorfield/next.jdbc "1.3.1118"]
                          [com.rpl/specter "1.1.6"]
                          [com.taoensso/nippy "3.8.1" :exclusions [org.tukaani/xz]]
