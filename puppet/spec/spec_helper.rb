@@ -4,10 +4,10 @@ $LOAD_PATH.unshift File.join(dir, "../lib")
 # don't fail any worse than we already would.
 $LOAD_PATH.push File.join(dir, "../../../puppetlabs_spec_helper")
 
-require 'cgi'
 require 'rspec'
 require 'rspec/expectations'
 require 'puppetlabs_spec_helper/puppet_spec_helper'
+require 'uri'
 require 'tmpdir'
 require 'fileutils'
 require 'puppet'
@@ -36,9 +36,9 @@ end
 
 def assert_valid_producer_ts(path)
   _, param_str = path.split "?"
-  params = CGI::parse(param_str)
-  return false if params["producer-timestamp"].size != 1
-  Time.iso8601(params["producer-timestamp"].first)
+  params = URI.decode_www_form(param_str).to_h
+  return false unless params["producer-timestamp"]
+  Time.iso8601(params["producer-timestamp"])
 end
 
 def create_http_response(url, nethttp)
