@@ -96,7 +96,7 @@
 (def pdb-jvm-opts (when (< 8 (:feature pdb-jvm-ver) 17)
                     ["--illegal-access=deny"]))
 
-(def i18n-version "1.0.4")
+(def i18n-version "1.0.5")
 (def logback-version "1.6.2")
 ;; NOTE: Use the 2.21.z release series of Jackson. The Cheshire JSON
 ;;       library requires 2.x and 2.21 is the current LTS as of 2026.
