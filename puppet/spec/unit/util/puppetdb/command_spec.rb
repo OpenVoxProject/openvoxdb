@@ -3,7 +3,6 @@ require 'digest/sha1'
 require 'puppet/network/http_pool'
 require 'puppet/util/puppetdb'
 require 'uri'
-require 'cgi'
 
 describe Puppet::Util::Puppetdb::Command do
   let(:payload) { {'resistance' =>  'futile', 'opinion' => 'irrelevant'} }
@@ -27,11 +26,12 @@ describe Puppet::Util::Puppetdb::Command do
       it "should issue the HTTP POST and log success" do
         nethttpok.stubs(:body).returns '{"uuid": "a UUID"}'
         http.expects(:post).with() do | uri, payload, options |
-          param_map = CGI::parse(uri.query)
+          # URI.decode_www_form is compatible with Ruby 3.2+ and Ruby 4.x.
+          param_map = URI.decode_www_form(uri.query).to_h
           assert_valid_producer_ts("#{uri.path}?#{uri.query}") &&
-            param_map['certname'].first.should == 'foo.localdomain' &&
-            param_map['version'].first.should == '1' &&
-            param_map['command'].first.should == 'OPEN_SESAME' &&
+            param_map['certname'].should == 'foo.localdomain' &&
+            param_map['version'].should == '1' &&
+            param_map['command'].should == 'OPEN_SESAME' &&
             options[:options][:compress] == :gzip &&
             options[:options][:metric_id] == [:puppetdb, :command, 'OPEN_SESAME']
         end.returns(responseok)
