@@ -192,7 +192,7 @@
                          [org.openvoxproject/ring-middleware "2.2.1"]
                          [org.openvoxproject/ssl-utils "3.7.1"]
                          [org.openvoxproject/stockpile "1.0.2"]
-                         [org.openvoxproject/structured-logging "1.0.2"]
+                         [org.openvoxproject/structured-logging "1.0.3"]
                          [org.openvoxproject/trapperkeeper "5.0.5"]
                          [org.openvoxproject/trapperkeeper "5.0.5" :classifier "test"]
                          [org.openvoxproject/trapperkeeper-authorization "2.4.1"]
