@@ -183,7 +183,7 @@
                          [org.slf4j/slf4j-api ~slf4j-version]
                          [org.slf4j/jul-to-slf4j ~slf4j-version]
                          [org.slf4j/log4j-over-slf4j ~slf4j-version]
-                         [org.openvoxproject/comidi "1.1.3"]
+                         [org.openvoxproject/comidi "1.1.4"]
                          [org.openvoxproject/i18n ~i18n-version]
                          [org.openvoxproject/http-client "2.4.0"]
                          [org.openvoxproject/kitchensink "3.5.7"]
