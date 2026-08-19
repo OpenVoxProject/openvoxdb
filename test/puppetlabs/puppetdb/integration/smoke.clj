@@ -14,6 +14,7 @@
     (testing "Agent run data can be queried"
       (are [query result] (= result (int/pql-query pdb query))
         "nodes[certname] {}" [{:certname "my-agent"}]
+        "nodes[certname] { report_environment = \"blah\" }" []
         "catalogs[certname, environment] {}" [{:certname "my-agent", :environment "production"}]
         "factsets[certname, environment] {}" [{:certname "my-agent", :environment "production"}]
         "reports[certname, environment] {}" [{:certname "my-agent", :environment "production"}]))

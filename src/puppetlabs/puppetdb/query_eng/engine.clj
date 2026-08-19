@@ -370,7 +370,7 @@
                  "report_environment" {:type :string
                                        :queryable? true
                                        :field :reports_environment.environment
-                                       :join-deps #{:reports_environment :reports_latest}}}
+                                       :join-deps #{:certnames :reports_environment :reports_latest}}}
 
    :relationships certname-relations
 
