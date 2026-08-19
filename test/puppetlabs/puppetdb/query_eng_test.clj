@@ -453,35 +453,40 @@
 (defn compiled-selects [q drop?]
   (-> (compiled-query q drop?)
       (get-in [:plan :selection])
-      (dissoc :from)))
+      (dissoc :from :select)))
+
+(defn compiled-projection-fields [q drop?]
+  (-> (compiled-query q drop?)
+      (get-in [:plan :selection :select])))
 
 (def normal-facts-joins
   {:left-join [[:environments :env] [:= :fs.environment_id :env.id]]})
 
 (def normal-nodes-joins
   {:left-join
-   [:catalogs
-    [:= :catalogs.certname :certnames.certname]
+   [:certnames
+    [:= :certnames_status.certname :certnames.certname]
+
+    :catalogs
+    [:= :certnames_status.certname :catalogs.certname]
 
     [:factsets :fs]
-    [:= :certnames.certname :fs.certname]
+    [:= :certnames_status.certname :fs.certname]
 
-    :reports
-    [:and
-     [:= :certnames.certname :reports.certname]
-     [:= :certnames.latest_report_id :reports.id]]
+    :reports_latest
+    [:= :certnames.certname :reports_latest.certname]
 
     [:environments :catalog_environment]
     [:= :catalog_environment.id :catalogs.environment_id]
 
     :report_statuses
-    [:= :reports.status_id :report_statuses.id]
+    [:= :reports_latest.status_id :report_statuses.id]
 
     [:environments :facts_environment]
     [:= :facts_environment.id :fs.environment_id]
 
     [:environments :reports_environment]
-    [:= :reports_environment.id :reports.environment_id]]})
+    [:= :reports_environment.id :reports_latest.environment_id]]})
 
 (def normal-inventory-joins
   {:left-join
@@ -509,10 +514,10 @@
     (when (= "by-request" (System/getenv "PDB_QUERY_OPTIMIZE_DROP_UNUSED_JOINS"))
       (let [q [nodes-query ["extract" [["function" "count" "report_timestamp"]] ["=" "node_state" "active"]]]]
         (is (= normal-nodes-joins (compiled-selects q nil)))
-        (is (= {:left-join [:reports
-                            [:and
-                             [:= :certnames.certname :reports.certname]
-                             [:= :certnames.latest_report_id :reports.id]]]}
+        (is (= {:left-join [:certnames
+                            [:= :certnames_status.certname :certnames.certname]
+                            :reports_latest
+                            [:= :certnames.certname :reports_latest.certname]]}
                (compiled-selects q :drop-joins)))))))
 
 (deftest joins-not-dropped-for-nodes-avg-query
@@ -545,12 +550,12 @@
                             ["=" "node_state" "active"]]
                            ["group_by" "cached_catalog_status" "latest_report_status" "latest_report_noop" "latest_report_noop_pending" "latest_report_corrective_change"]]]]
       (is (= normal-nodes-joins (compiled-selects q nil)))
-      (is (= {:left-join [:reports
-                          [:and
-                           [:= :certnames.certname :reports.certname]
-                           [:= :certnames.latest_report_id :reports.id]]
+      (is (= {:left-join [:certnames
+                          [:= :certnames_status.certname :certnames.certname]
+                          :reports_latest
+                          [:= :certnames.certname :reports_latest.certname]
                           :report_statuses
-                          [:= :reports.status_id :report_statuses.id]]}
+                          [:= :reports_latest.status_id :report_statuses.id]]}
              (compiled-selects q :drop-joins))))))
 
 (deftest factsets-not-dropped-from-nodes-for-facts-env
@@ -559,7 +564,7 @@
     (let [q [nodes-query ["extract" "facts_environment"]]]
       (is (= normal-nodes-joins (compiled-selects q nil)))
       (is (= {:left-join [[:factsets :fs]
-                          [:= :certnames.certname :fs.certname]
+                          [:= :certnames_status.certname :fs.certname]
 
                           [:environments :facts_environment]
                           [:= :facts_environment.id :fs.environment_id]]}
@@ -570,12 +575,12 @@
   (when (= "by-request" (System/getenv "PDB_QUERY_OPTIMIZE_DROP_UNUSED_JOINS"))
     (let [q [nodes-query ["extract" "latest_report_status"]]]
       (is (= normal-nodes-joins (compiled-selects q nil)))
-      (is (= {:left-join [:reports
-                          [:and
-                           [:= :certnames.certname :reports.certname]
-                           [:= :certnames.latest_report_id :reports.id]]
+      (is (= {:left-join [:certnames
+                          [:= :certnames_status.certname :certnames.certname]
+                          :reports_latest
+                          [:= :certnames.certname :reports_latest.certname]
                           :report_statuses
-                          [:= :reports.status_id :report_statuses.id]]}
+                          [:= :reports_latest.status_id :report_statuses.id]]}
              (compiled-selects q :drop-joins))))))
 
 (deftest catalogs-not-dropped-from-nodes-for-catalog-env
@@ -584,7 +589,7 @@
     (let [q [nodes-query ["extract" "catalog_environment"]]]
       (is (= normal-nodes-joins (compiled-selects q nil)))
       (is (= {:left-join [:catalogs
-                          [:= :catalogs.certname :certnames.certname]
+                          [:= :certnames_status.certname :catalogs.certname]
 
                           [:environments :catalog_environment]
                           [:= :catalog_environment.id :catalogs.environment_id]]}
@@ -595,29 +600,35 @@
   (when (= "by-request" (System/getenv "PDB_QUERY_OPTIMIZE_DROP_UNUSED_JOINS"))
     (let [q [nodes-query ["extract" "report_environment"]]]
       (is (= normal-nodes-joins (compiled-selects q nil)))
-      (is (= {:left-join [:reports
-                          [:and
-                           [:= :certnames.certname :reports.certname]
-                           [:= :certnames.latest_report_id :reports.id]]
+      (is (= {:left-join [:reports_latest
+                          [:= :certnames.certname :reports_latest.certname]
                           [:environments :reports_environment]
-                          [:= :reports_environment.id :reports.environment_id]]}
+                          [:= :reports_environment.id :reports_latest.environment_id]]}
              (compiled-selects q :drop-joins))))))
 
-(deftest joins-dropped-for-extract-deps-operator-field-clause
+(deftest joins-and-select-validated-for-extract-deps-operator-field-clause
   (when (= "by-request" (System/getenv "PDB_QUERY_OPTIMIZE_DROP_UNUSED_JOINS"))
     (let [q [facts-query ["extract" "certname" ["=" "certname" "host1"]]]]
+      (is (= [:certname :environment_id :key :value]
+             (compiled-projection-fields q nil)))
+      (is (= [:certname :environment_id :key :value]
+             (compiled-projection-fields q :drop-joins)))
       (is (= normal-facts-joins (compiled-selects q nil)))
       (is (= {:left-join []} (compiled-selects q :drop-joins))))))
 
-(deftest joins-dropped-for-extract-deps-jsonb-type-equal-clause
+(deftest joins-and-select-validated-for-extract-deps-jsonb-type-equal-clause
   ;; This also involves the extract-where-deps clauses-clause
   (when (= "by-request" (System/getenv "PDB_QUERY_OPTIMIZE_DROP_UNUSED_JOINS"))
     (let [q [facts-query ["extract" "name"
                           ["and" ["=" "name" "kernel"] ["=" "value" "Linux"]]]]]
+      (is (= [:certname :environment_id :key :value]
+             (compiled-projection-fields q nil)))
+      (is (= [:certname :environment_id :key :value]
+             (compiled-projection-fields q :drop-joins)))
       (is (= (assoc normal-facts-joins
-                    :selection-params ["kernel" "kernel" "kernel"])
+                    :selection-params ["kernel" "kernel" "kernel" "kernel"])
              (compiled-selects q nil)))
-      (is (= {:left-join [] :selection-params ["kernel" "kernel" "kernel"]}
+      (is (= {:left-join [] :selection-params ["kernel" "kernel" "kernel" "kernel"]}
              (compiled-selects q :drop-joins))))))
 
 (deftest joins-dropped-for-extract-deps-subquery-clause
