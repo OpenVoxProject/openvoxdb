@@ -600,7 +600,23 @@
   (when (= "by-request" (System/getenv "PDB_QUERY_OPTIMIZE_DROP_UNUSED_JOINS"))
     (let [q [nodes-query ["extract" "report_environment"]]]
       (is (= normal-nodes-joins (compiled-selects q nil)))
-      (is (= {:left-join [:reports_latest
+      (is (= {:left-join [:certnames
+                          [:= :certnames_status.certname :certnames.certname]
+                          :reports_latest
+                          [:= :certnames.certname :reports_latest.certname]
+                          [:environments :reports_environment]
+                          [:= :reports_environment.id :reports_latest.environment_id]]}
+             (compiled-selects q :drop-joins))))))
+
+(deftest reports-not-dropped-from-nodes-for-report-env-filter-when-extracting-certname
+  ;; Filtering on report_environment requires certnames because reports_latest
+  ;; is joined via certnames.certname.
+  (when (= "by-request" (System/getenv "PDB_QUERY_OPTIMIZE_DROP_UNUSED_JOINS"))
+    (let [q [nodes-query ["extract" "certname" ["=" "report_environment" "DEV"]]]]
+      (is (= normal-nodes-joins (compiled-selects q nil)))
+      (is (= {:left-join [:certnames
+                          [:= :certnames_status.certname :certnames.certname]
+                          :reports_latest
                           [:= :certnames.certname :reports_latest.certname]
                           [:environments :reports_environment]
                           [:= :reports_environment.id :reports_latest.environment_id]]}
