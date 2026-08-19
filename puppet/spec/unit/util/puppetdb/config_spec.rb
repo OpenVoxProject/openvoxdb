@@ -26,6 +26,8 @@ describe Puppet::Util::Puppetdb::Config do
         config.server_urls.should == [URI("https://puppetdb:8081")]
         config.submit_only_server_urls.should == []
         config.min_successful_submissions.should == 1
+        config.fact_names_blocklist.should == []
+        config.fact_names_blocklist_regex.should == []
       end
 
     end
@@ -328,6 +330,35 @@ CONF
         config = described_class.load
         config.server_urls.should == [URI("https://foo.com"), URI("https://bar.com")]
         config.verify_client_certificate.should == false
+      end
+
+      it "should read fact name blocklists" do
+        write_config <<CONF
+[main]
+fact_names_blocklist = secret, networking.interfaces.eth0.mac
+fact_names_blocklist_regex = ^cloud\\., (^|\\.)password$
+CONF
+
+        config = described_class.load
+        config.fact_names_blocklist.should == [
+          'secret',
+          'networking.interfaces.eth0.mac'
+        ]
+        config.fact_names_blocklist_regex.should == [
+          '^cloud\\.',
+          '(^|\\.)password$'
+        ]
+      end
+
+      it "should reject an invalid fact name blocklist regular expression" do
+        write_config <<CONF
+[main]
+fact_names_blocklist_regex = [unterminated
+CONF
+
+        expect do
+          described_class.load
+        end.to raise_error(RegexpError, /unterminated/)
       end
 
     end
