@@ -18,7 +18,9 @@ module Puppet::Util::Puppetdb
         :submit_only_server_urls     => "",
         :command_broadcast           => false,
         :sticky_read_failover        => false,
-        :verify_client_certificate   => true
+        :verify_client_certificate   => true,
+        :fact_names_blocklist        => "",
+        :fact_names_blocklist_regex  => ""
       }
 
       config_file ||= File.join(Puppet[:confdir], "puppetdb.conf")
@@ -71,7 +73,9 @@ module Puppet::Util::Puppetdb
            :submit_only_server_urls,
            :command_broadcast,
            :sticky_read_failover,
-           :verify_client_certificate].include?(k))
+           :verify_client_certificate,
+           :fact_names_blocklist,
+           :fact_names_blocklist_regex].include?(k))
       end
 
       parsed_urls = config_hash[:server_urls].split(",").map {|s| s.strip}
@@ -87,6 +91,14 @@ module Puppet::Util::Puppetdb
       config_hash[:command_broadcast] = Puppet::Util::Puppetdb.to_bool(config_hash[:command_broadcast])
       config_hash[:sticky_read_failover] = Puppet::Util::Puppetdb.to_bool(config_hash[:sticky_read_failover])
       config_hash[:verify_client_certificate] = Puppet::Util::Puppetdb.to_bool(config_hash[:verify_client_certificate])
+
+      config_hash[:fact_names_blocklist] = config_hash[:fact_names_blocklist].split(",").map {|s| s.strip}
+      config_hash[:fact_names_blocklist_regex] = config_hash[:fact_names_blocklist_regex].split(",").map {|s| s.strip}
+
+      # Validate regular expressions while loading configuration rather than
+      # waiting for the first fact submission. This makes a typo fail at startup
+      # with the offending expression instead of breaking every agent command.
+      config_hash[:fact_names_blocklist_regex].each {|pattern| Regexp.new(pattern)}
 
       if config_hash[:soft_write_failure] and config_hash[:min_successful_submissions] > 1
         raise "soft_write_failure cannot be enabled when min_successful_submissions is greater than 1"
@@ -158,6 +170,14 @@ module Puppet::Util::Puppetdb
 
     def verify_client_certificate
       config[:verify_client_certificate]
+    end
+
+    def fact_names_blocklist
+      config[:fact_names_blocklist]
+    end
+
+    def fact_names_blocklist_regex
+      config[:fact_names_blocklist_regex]
     end
 
     # @!group Private instance methods

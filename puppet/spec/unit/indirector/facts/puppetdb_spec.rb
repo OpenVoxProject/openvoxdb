@@ -107,6 +107,55 @@ describe Puppet::Node::Facts::Puppetdb do
       end.returns responseok
       save
     end
+
+    it "should block exact and regular-expression paths in structured facts" do
+      Puppet::Util::Puppetdb.config.stubs(:fact_names_blocklist).returns [
+        'secret',
+        'networking.interfaces.eth0.mac'
+      ]
+      Puppet::Util::Puppetdb.config.stubs(:fact_names_blocklist_regex).returns [
+        '(^|\\.)password$'
+      ]
+
+      facts.values['secret'] = 'top-level secret'
+      facts.values['networking'] = {
+        'interfaces' => {
+          'eth0' => {'ip' => '192.0.2.10', 'mac' => '00:11:22:33:44:55'},
+          'eth1' => {'ip' => '192.0.2.11', 'mac' => '00:11:22:33:44:66'}
+        }
+      }
+      facts.values['accounts'] = [
+        {'name' => 'alice', 'password' => 'alice-secret'},
+        {'name' => 'bob', 'password' => 'bob-secret'}
+      ]
+
+      sent_payload = nil
+      http.expects(:post).with do |uri, body, headers|
+        sent_payload = body
+      end.returns responseok
+
+      save
+
+      submitted_facts = JSON.parse(sent_payload)['values']
+      submitted_facts.should_not have_key('secret')
+      submitted_facts['networking']['interfaces']['eth0'].should == {
+        'ip' => '192.0.2.10'
+      }
+      submitted_facts['networking']['interfaces']['eth1'].should == {
+        'ip' => '192.0.2.11',
+        'mac' => '00:11:22:33:44:66'
+      }
+      submitted_facts['accounts'].should == [
+        {'name' => 'alice'},
+        {'name' => 'bob'}
+      ]
+
+      # Filtering must not alter the Puppet-owned facts object, including any
+      # nested hashes or arrays shared by the shallow copy made in #save.
+      facts.values['secret'].should == 'top-level secret'
+      facts.values['networking']['interfaces']['eth0']['mac'].should == '00:11:22:33:44:55'
+      facts.values['accounts'][0]['password'].should == 'alice-secret'
+    end
   end
 
   describe "#get_trusted_info" do
