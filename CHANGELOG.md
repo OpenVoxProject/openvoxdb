@@ -2,7 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
-## [9.0.0-beta1](https://github.com/openvoxproject/openvoxdb/tree/9.0.0-beta1) (2026-07-14)
+## [9.0.0-rc1](https://github.com/openvoxproject/openvoxdb/tree/9.0.0-rc1) (2026-09-04)
+
+[Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/9.0.0-beta1...9.0.0-rc1)
+
+**Breaking changes:**
+
+- Rebrand PuppetDB -\> OpenVoxDB in docs and comments [\#452](https://github.com/OpenVoxProject/openvoxdb/pull/452) ([silug](https://github.com/silug))
+- Depend on openvox-agent \>=9.0.0~beta1 [\#416](https://github.com/OpenVoxProject/openvoxdb/pull/416) ([Sharpie](https://github.com/Sharpie))
+
+**Fixed bugs:**
+
+- \[Bug\]: 500 internal server error on PQL query `nodes[certname] { report_environment = "blah" }` [\#500](https://github.com/OpenVoxProject/openvoxdb/issues/500)
+- Fix report\_environment join deps for certname extract [\#501](https://github.com/OpenVoxProject/openvoxdb/pull/501) ([corporate-gadfly](https://github.com/corporate-gadfly))
+
+**Merged pull requests:**
+
+- leiningen: version bump 2.11.2-\>2.12.0 [\#490](https://github.com/OpenVoxProject/openvoxdb/pull/490) ([corporate-gadfly](https://github.com/corporate-gadfly))
+- fix: match pre-release tarballs by base version on upload [\#459](https://github.com/OpenVoxProject/openvoxdb/pull/459) ([slauger](https://github.com/slauger))
+- prep for clj-kondo bump to 2026.07.24 [\#437](https://github.com/OpenVoxProject/openvoxdb/pull/437) ([corporate-gadfly](https://github.com/corporate-gadfly))
+- Clarify descriptions of FIPS build workflow inputs [\#431](https://github.com/OpenVoxProject/openvoxdb/pull/431) ([Sharpie](https://github.com/Sharpie))
+- CI: Update to Ruby 4.0 [\#326](https://github.com/OpenVoxProject/openvoxdb/pull/326) ([bastelfreak](https://github.com/bastelfreak))
+
+## [9.0.0-beta1](https://github.com/openvoxproject/openvoxdb/tree/9.0.0-beta1) (2026-07-15)
 
 [Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/8.13.0...9.0.0-beta1)
 
