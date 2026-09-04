@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.16.0](https://github.com/openvoxproject/openvoxdb/tree/8.16.0) (2026-09-04)
+
+[Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/8.15.0...8.16.0)
+
+**Fixed bugs:**
+
+- \[Bug\]: 500 internal server error on PQL query `nodes[certname] { report_environment = "blah" }` [\#500](https://github.com/OpenVoxProject/openvoxdb/issues/500)
+
+**Merged pull requests:**
+
+- \[Backport 8.x\] Fix report\_environment join deps for certname extract [\#504](https://github.com/OpenVoxProject/openvoxdb/pull/504) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+- \[Backport 8.x\] fix engine tests [\#503](https://github.com/OpenVoxProject/openvoxdb/pull/503) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+- \[Backport 8.x\] reduce total footprint by 2000 \(upper/lower bound\) [\#451](https://github.com/OpenVoxProject/openvoxdb/pull/451) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+- \[Backport 8.x\] reduce average footprint by 20 \(upper and lower bound\) [\#450](https://github.com/OpenVoxProject/openvoxdb/pull/450) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+- \[Backport 8.x\] prep for clj-kondo bump to 2026.07.24 [\#440](https://github.com/OpenVoxProject/openvoxdb/pull/440) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+
 ## [8.15.0](https://github.com/openvoxproject/openvoxdb/tree/8.15.0) (2026-07-22)
 
 [Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/8.14.1...8.15.0)
@@ -13,6 +29,7 @@ All notable changes to this project will be documented in this file.
 
 **Merged pull requests:**
 
+- Release 8.15.0 [\#427](https://github.com/OpenVoxProject/openvoxdb/pull/427) ([Sharpie](https://github.com/Sharpie))
 - \[Backport 8.x\] Manage logback dependency [\#384](https://github.com/OpenVoxProject/openvoxdb/pull/384) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
 - Backport random util fips fixes to 8.x [\#367](https://github.com/OpenVoxProject/openvoxdb/pull/367) ([jpartlow](https://github.com/jpartlow))
 - \[Backport 8.x\] Downgrade logstash-logback-encoder 9.0-\>8.1 [\#361](https://github.com/OpenVoxProject/openvoxdb/pull/361) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
