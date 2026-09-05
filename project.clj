@@ -205,7 +205,7 @@
                          [org.openvoxproject/trapperkeeper-webserver "12.1.1"]
                          [org.openvoxproject/trapperkeeper-webserver "12.1.1" :classifier "test"]
                          [org.postgresql/postgresql "42.7.13"]
-                         [org.yaml/snakeyaml "2.6"]
+                         [org.yaml/snakeyaml "2.7"]
                          [prismatic/schema "1.4.2"]
                          [riddley "0.2.2"]
                          [ring/ring-codec "1.3.0"]
