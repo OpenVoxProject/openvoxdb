@@ -350,6 +350,24 @@ CONF
         ]
       end
 
+      it "should ignore empty fact name blocklist entries" do
+        write_config <<CONF
+[main]
+fact_names_blocklist = , secret,, networking.interfaces.eth0.mac,
+fact_names_blocklist_regex = , ^cloud\\.,, (^|\\.)password$,
+CONF
+
+        config = described_class.load
+        config.fact_names_blocklist.should == [
+          'secret',
+          'networking.interfaces.eth0.mac'
+        ]
+        config.fact_names_blocklist_regex.should == [
+          '^cloud\\.',
+          '(^|\\.)password$'
+        ]
+      end
+
       it "should reject an invalid fact name blocklist regular expression" do
         write_config <<CONF
 [main]

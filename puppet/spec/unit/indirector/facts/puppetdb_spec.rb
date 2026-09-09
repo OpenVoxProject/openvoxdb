@@ -98,6 +98,48 @@ describe Puppet::Node::Facts::Puppetdb do
       message['package_inventory'].should == [fact_tuple]
     end
 
+    it "should apply the blocklist before extracting package inventory" do
+      fact_tuple = ['openssl', '1.0.2g-1ubuntu4.6', 'apt']
+      inventory_fact_value = { 'packages' => [fact_tuple] }
+      Puppet::Util::Puppetdb.config.stubs(:fact_names_blocklist).returns [
+        '_puppet_inventory_1.packages'
+      ]
+
+      facts.values['_puppet_inventory_1'] = inventory_fact_value
+
+      sent_payload = nil
+      http.expects(:post).with do |uri, body, headers|
+        sent_payload = body
+      end.returns responseok
+      save
+      message = JSON.parse(sent_payload)
+
+      message['values'].should_not have_key('_puppet_inventory_1')
+      message.should_not have_key('package_inventory')
+
+      # Filtering must not alter the package inventory in the original facts.
+      facts.values['_puppet_inventory_1'].should == inventory_fact_value
+    end
+
+    it "should omit package inventory when its complete fact is blocklisted" do
+      fact_tuple = ['openssl', '1.0.2g-1ubuntu4.6', 'apt']
+      Puppet::Util::Puppetdb.config.stubs(:fact_names_blocklist).returns [
+        '_puppet_inventory_1'
+      ]
+
+      facts.values['_puppet_inventory_1'] = { 'packages' => [fact_tuple] }
+
+      sent_payload = nil
+      http.expects(:post).with do |uri, body, headers|
+        sent_payload = body
+      end.returns responseok
+      save
+      message = JSON.parse(sent_payload)
+
+      message['values'].should_not have_key('_puppet_inventory_1')
+      message.should_not have_key('package_inventory')
+    end
+
     it "shouldn't crash with a malformed inventory fact" do
       facts.values['_puppet_inventory_1'] = ['foo', 'bar']
 

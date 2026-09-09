@@ -92,8 +92,8 @@ module Puppet::Util::Puppetdb
       config_hash[:sticky_read_failover] = Puppet::Util::Puppetdb.to_bool(config_hash[:sticky_read_failover])
       config_hash[:verify_client_certificate] = Puppet::Util::Puppetdb.to_bool(config_hash[:verify_client_certificate])
 
-      config_hash[:fact_names_blocklist] = config_hash[:fact_names_blocklist].split(",").map {|s| s.strip}
-      config_hash[:fact_names_blocklist_regex] = config_hash[:fact_names_blocklist_regex].split(",").map {|s| s.strip}
+      config_hash[:fact_names_blocklist] = config_hash[:fact_names_blocklist].split(",").map {|s| s.strip}.reject(&:empty?)
+      config_hash[:fact_names_blocklist_regex] = config_hash[:fact_names_blocklist_regex].split(",").map {|s| s.strip}.reject(&:empty?)
 
       # Validate regular expressions while loading configuration rather than
       # waiting for the first fact submission. This makes a typo fail at startup

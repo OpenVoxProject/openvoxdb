@@ -70,15 +70,19 @@ class Puppet::Node::Facts::Puppetdb < Puppet::Indirector::REST
           facts.values = facts.values.dup
           facts.values[:trusted] = get_trusted_info(request.node)
 
-          inventory = facts.values['_puppet_inventory_1']
-          package_inventory = inventory['packages'] if inventory.respond_to?(:keys)
-          facts.values.delete('_puppet_inventory_1')
-
+          # Filter the completed facts hash, including trusted data, before
+          # extracting package inventory. Since filter_facts rebuilds nested
+          # containers, values shared with Puppet's original facts stay intact.
           blocked_paths = Puppet::Util::Puppetdb.config.fact_names_blocklist
           blocked_path_regexps = Puppet::Util::Puppetdb.config.fact_names_blocklist_regex.map do |pattern|
             Regexp.new(pattern)
           end
           facts.values = filter_facts(facts.values, blocked_paths, blocked_path_regexps)
+
+          # Extract and remove inventory from the filtered copy in one step so
+          # blocklisting it, or its packages child, cannot bypass filtering.
+          inventory = facts.values.delete('_puppet_inventory_1')
+          package_inventory = inventory['packages'] if inventory.respond_to?(:keys)
 
           payload_value = {
             "certname" => facts.name,
@@ -91,7 +95,7 @@ class Puppet::Node::Facts::Puppetdb < Puppet::Indirector::REST
             "producer" => Puppet[:node_name_value]
           }
 
-          if inventory
+          if package_inventory
             payload_value['package_inventory'] = package_inventory
           end
 
