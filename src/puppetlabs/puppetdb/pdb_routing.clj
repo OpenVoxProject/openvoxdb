@@ -103,8 +103,12 @@
         augmented-globals #(-> (shared-globals)
                                (assoc :url-prefix query-prefix
                                       :warn-experimental true))
-        cert-allowlist (get-in config [:puppetdb :certificate-allowlist])]
+        cert-allowlist (get-in config [:puppetdb :certificate-allowlist])
+        allow-unauthenticated-cleartext? (get-in config [:puppetdb :allow-unauthenticated-cleartext])]
     (set-url-prefix query-prefix)
+
+    (when allow-unauthenticated-cleartext?
+      (log/warn (trs "allow-unauthenticated-cleartext is enabled, so requests arriving on the cleartext HTTP port will not be authenticated. Only enable this when that port is restricted to trusted clients.")))
 
     (log/info (trs "Starting OpenVoxDB, entering maintenance mode"))
     (add-ring-handler
@@ -117,7 +121,7 @@
                                    query
                                    clean
                                    delete-node))
-         (mid/wrap-cert-authn cert-allowlist)
+         (mid/wrap-cert-authn cert-allowlist allow-unauthenticated-cleartext?)
          mid/wrap-with-puppetdb-middleware))
 
     (enable-maint-mode)
