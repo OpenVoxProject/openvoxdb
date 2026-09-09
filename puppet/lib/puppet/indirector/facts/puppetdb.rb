@@ -70,14 +70,20 @@ class Puppet::Node::Facts::Puppetdb < Puppet::Indirector::REST
           facts.values = facts.values.dup
           facts.values[:trusted] = get_trusted_info(request.node)
 
-          # Filter the completed facts hash, including trusted data, before
-          # extracting package inventory. Since filter_facts rebuilds nested
-          # containers, values shared with Puppet's original facts stay intact.
+          # Read the blocklists after adding trusted data so it can be filtered
+          # too. Filtering must happen before package inventory is extracted.
           blocked_paths = Puppet::Util::Puppetdb.config.fact_names_blocklist
-          blocked_path_regexps = Puppet::Util::Puppetdb.config.fact_names_blocklist_regex.map do |pattern|
-            Regexp.new(pattern)
+          blocked_path_patterns = Puppet::Util::Puppetdb.config.fact_names_blocklist_regex
+
+          # Preserve the usual shallow-copy path when filtering is disabled.
+          # When enabled, filter_facts rebuilds nested containers so values
+          # shared with Puppet's original facts stay intact.
+          unless blocked_paths.empty? && blocked_path_patterns.empty?
+            blocked_path_regexps = blocked_path_patterns.map do |pattern|
+              Regexp.new(pattern)
+            end
+            facts.values = filter_facts(facts.values, blocked_paths, blocked_path_regexps)
           end
-          facts.values = filter_facts(facts.values, blocked_paths, blocked_path_regexps)
 
           # Extract and remove inventory from the filtered copy in one step so
           # blocklisting it, or its packages child, cannot bypass filtering.

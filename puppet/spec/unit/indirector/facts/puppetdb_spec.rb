@@ -78,6 +78,17 @@ describe Puppet::Node::Facts::Puppetdb do
       message['values']['something'].should == 100
     end
 
+    it "should not rebuild structured facts when both blocklists are empty" do
+      Puppet::Util::Puppetdb.config.stubs(:fact_names_blocklist).returns []
+      Puppet::Util::Puppetdb.config.stubs(:fact_names_blocklist_regex).returns []
+      subject.expects(:filter_facts).never
+
+      facts.values['structured'] = {'nested' => ['value']}
+
+      http.expects(:post).returns responseok
+      save
+    end
+
     it "should transform the package inventory fact when submitting" do
       fact_tuple = ['openssl', '1.0.2g-1ubuntu4.6', 'apt']
       inventory_fact_value = { 'packages' => [fact_tuple] }
