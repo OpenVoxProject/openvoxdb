@@ -96,6 +96,42 @@
 
        :else (handler request)))))
 
+(defn- build-submitter-authorizer
+  "Returns a predicate that is true for a certname permitted to submit commands
+  on behalf of other nodes. When allowlist is nil no restriction applies and
+  every submitter is permitted."
+  [allowlist]
+  (if allowlist
+    (let [trusted? (set (kitchensink/lines allowlist))]
+      (fn [submitter] (boolean (trusted? submitter))))
+    (constantly true)))
+
+(defn- wrap-with-submitter-authorization
+  "Rejects a command whose certname parameter names a node other than the
+  submitter, unless the submitter appears in the trusted submitter allowlist.
+  OpenVox Server submits commands for the agents it compiles catalogs for, so
+  its certname belongs in that allowlist.
+
+  Requests that did not authenticate with a certificate carry no certname to
+  compare against and are not restricted here; whether such a request is
+  accepted at all is decided by the certificate authentication middleware.
+  This middleware should ingest the request after parameter validation."
+  [handler submits-for-other-nodes?]
+  (fn authorize-submitter
+    [{:keys [params ssl-client-cn] :as request}]
+    (let [certname (params "certname")]
+      (if (or (nil? ssl-client-cn)
+              (= certname ssl-client-cn)
+              (submits-for-other-nodes? ssl-client-cn))
+        (handler request)
+        (do
+          (log/warn (trs "{0} rejected: not a trusted submitter, so it may only submit commands for itself, not for {1}"
+                         ssl-client-cn certname))
+          (http/denied-response
+           (tru "The client certificate name {0} may only submit commands for itself, not for {1}. Is it listed in OpenVoxDB''s trusted-submitter-allowlist file?"
+                ssl-client-cn certname)
+           HttpURLConnection/HTTP_FORBIDDEN))))))
+
 (defmacro with-chan
   "Bind chan-sym to init-chan in the scope of the body, calling async/close! in
   a finally block.
@@ -315,11 +351,14 @@
 ;; return functions that accept a ring request map
 
 (defn command-app
-  [get-shared-globals enqueue-fn reject-large-commands? max-command-size]
+  [get-shared-globals enqueue-fn reject-large-commands? max-command-size
+   trusted-submitter-allowlist]
   (-> (routes enqueue-fn
               (when reject-large-commands? max-command-size))
       mid/make-pdb-handler
       add-received-param ;; must be (temporally) after wrap-with-request-params-validation
+      (wrap-with-submitter-authorization
+       (build-submitter-authorizer trusted-submitter-allowlist))
       wrap-with-request-params-validation
       wrap-with-request-normalization
       rmc/wrap-accepts-json
