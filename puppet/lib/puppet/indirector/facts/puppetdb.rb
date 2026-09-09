@@ -16,6 +16,49 @@ class Puppet::Node::Facts::Puppetdb < Puppet::Indirector::REST
     trusted.to_h
   end
 
+  # Return a copy of +value+ with every configured fact path removed. Paths use
+  # dot notation, so "networking.interfaces.eth0.mac" addresses a key nested
+  # inside a structured fact. Array indexes become path components while we
+  # descend (for example, "disks.0.serial"), which also lets regular expressions
+  # select identically named keys from every element of an array.
+  #
+  # Hashes and arrays are rebuilt instead of edited in place. The facts object is
+  # only shallow-copied by #save, and mutating a nested value here would otherwise
+  # also mutate the facts object owned by Puppet and visible to other terminuses.
+  def filter_facts(value, blocked_paths, blocked_path_regexps, path = [])
+    case value
+    when Hash
+      value.each_with_object({}) do |(key, nested_value), filtered|
+        nested_path = path + [key.to_s]
+        full_path = nested_path.join('.')
+        blocked = blocked_paths.include?(full_path) ||
+                  blocked_path_regexps.any? { |regexp| regexp.match(full_path) }
+
+        next if blocked
+
+        filtered[key] = filter_facts(
+          nested_value,
+          blocked_paths,
+          blocked_path_regexps,
+          nested_path
+        )
+      end
+    when Array
+      value.map.with_index do |nested_value, index|
+        # Array elements are retained to avoid changing the meaning of indexes.
+        # Their indexes are still included in paths for hashes below them.
+        filter_facts(
+          nested_value,
+          blocked_paths,
+          blocked_path_regexps,
+          path + [index.to_s]
+        )
+      end
+    else
+      value
+    end
+  end
+
   def save(request)
     profile("facts#save", [:puppetdb, :facts, :save, request.key]) do
       current_time = Time.now
@@ -27,9 +70,25 @@ class Puppet::Node::Facts::Puppetdb < Puppet::Indirector::REST
           facts.values = facts.values.dup
           facts.values[:trusted] = get_trusted_info(request.node)
 
-          inventory = facts.values['_puppet_inventory_1']
+          # Read the blocklists after adding trusted data so it can be filtered
+          # too. Filtering must happen before package inventory is extracted.
+          blocked_paths = Puppet::Util::Puppetdb.config.fact_names_blocklist
+          blocked_path_patterns = Puppet::Util::Puppetdb.config.fact_names_blocklist_regex
+
+          # Preserve the usual shallow-copy path when filtering is disabled.
+          # When enabled, filter_facts rebuilds nested containers so values
+          # shared with Puppet's original facts stay intact.
+          unless blocked_paths.empty? && blocked_path_patterns.empty?
+            blocked_path_regexps = blocked_path_patterns.map do |pattern|
+              Regexp.new(pattern)
+            end
+            facts.values = filter_facts(facts.values, blocked_paths, blocked_path_regexps)
+          end
+
+          # Extract and remove inventory from the filtered copy in one step so
+          # blocklisting it, or its packages child, cannot bypass filtering.
+          inventory = facts.values.delete('_puppet_inventory_1')
           package_inventory = inventory['packages'] if inventory.respond_to?(:keys)
-          facts.values.delete('_puppet_inventory_1')
 
           payload_value = {
             "certname" => facts.name,
@@ -42,7 +101,7 @@ class Puppet::Node::Facts::Puppetdb < Puppet::Indirector::REST
             "producer" => Puppet[:node_name_value]
           }
 
-          if inventory
+          if package_inventory
             payload_value['package_inventory'] = package_inventory
           end
 

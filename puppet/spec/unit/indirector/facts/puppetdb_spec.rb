@@ -78,6 +78,17 @@ describe Puppet::Node::Facts::Puppetdb do
       message['values']['something'].should == 100
     end
 
+    it "should not rebuild structured facts when both blocklists are empty" do
+      Puppet::Util::Puppetdb.config.stubs(:fact_names_blocklist).returns []
+      Puppet::Util::Puppetdb.config.stubs(:fact_names_blocklist_regex).returns []
+      subject.expects(:filter_facts).never
+
+      facts.values['structured'] = {'nested' => ['value']}
+
+      http.expects(:post).returns responseok
+      save
+    end
+
     it "should transform the package inventory fact when submitting" do
       fact_tuple = ['openssl', '1.0.2g-1ubuntu4.6', 'apt']
       inventory_fact_value = { 'packages' => [fact_tuple] }
@@ -98,6 +109,48 @@ describe Puppet::Node::Facts::Puppetdb do
       message['package_inventory'].should == [fact_tuple]
     end
 
+    it "should apply the blocklist before extracting package inventory" do
+      fact_tuple = ['openssl', '1.0.2g-1ubuntu4.6', 'apt']
+      inventory_fact_value = { 'packages' => [fact_tuple] }
+      Puppet::Util::Puppetdb.config.stubs(:fact_names_blocklist).returns [
+        '_puppet_inventory_1.packages'
+      ]
+
+      facts.values['_puppet_inventory_1'] = inventory_fact_value
+
+      sent_payload = nil
+      http.expects(:post).with do |uri, body, headers|
+        sent_payload = body
+      end.returns responseok
+      save
+      message = JSON.parse(sent_payload)
+
+      message['values'].should_not have_key('_puppet_inventory_1')
+      message.should_not have_key('package_inventory')
+
+      # Filtering must not alter the package inventory in the original facts.
+      facts.values['_puppet_inventory_1'].should == inventory_fact_value
+    end
+
+    it "should omit package inventory when its complete fact is blocklisted" do
+      fact_tuple = ['openssl', '1.0.2g-1ubuntu4.6', 'apt']
+      Puppet::Util::Puppetdb.config.stubs(:fact_names_blocklist).returns [
+        '_puppet_inventory_1'
+      ]
+
+      facts.values['_puppet_inventory_1'] = { 'packages' => [fact_tuple] }
+
+      sent_payload = nil
+      http.expects(:post).with do |uri, body, headers|
+        sent_payload = body
+      end.returns responseok
+      save
+      message = JSON.parse(sent_payload)
+
+      message['values'].should_not have_key('_puppet_inventory_1')
+      message.should_not have_key('package_inventory')
+    end
+
     it "shouldn't crash with a malformed inventory fact" do
       facts.values['_puppet_inventory_1'] = ['foo', 'bar']
 
@@ -106,6 +159,55 @@ describe Puppet::Node::Facts::Puppetdb do
         sent_payload = body
       end.returns responseok
       save
+    end
+
+    it "should block exact and regular-expression paths in structured facts" do
+      Puppet::Util::Puppetdb.config.stubs(:fact_names_blocklist).returns [
+        'secret',
+        'networking.interfaces.eth0.mac'
+      ]
+      Puppet::Util::Puppetdb.config.stubs(:fact_names_blocklist_regex).returns [
+        '(^|\\.)password$'
+      ]
+
+      facts.values['secret'] = 'top-level secret'
+      facts.values['networking'] = {
+        'interfaces' => {
+          'eth0' => {'ip' => '192.0.2.10', 'mac' => '00:11:22:33:44:55'},
+          'eth1' => {'ip' => '192.0.2.11', 'mac' => '00:11:22:33:44:66'}
+        }
+      }
+      facts.values['accounts'] = [
+        {'name' => 'alice', 'password' => 'alice-secret'},
+        {'name' => 'bob', 'password' => 'bob-secret'}
+      ]
+
+      sent_payload = nil
+      http.expects(:post).with do |uri, body, headers|
+        sent_payload = body
+      end.returns responseok
+
+      save
+
+      submitted_facts = JSON.parse(sent_payload)['values']
+      submitted_facts.should_not have_key('secret')
+      submitted_facts['networking']['interfaces']['eth0'].should == {
+        'ip' => '192.0.2.10'
+      }
+      submitted_facts['networking']['interfaces']['eth1'].should == {
+        'ip' => '192.0.2.11',
+        'mac' => '00:11:22:33:44:66'
+      }
+      submitted_facts['accounts'].should == [
+        {'name' => 'alice'},
+        {'name' => 'bob'}
+      ]
+
+      # Filtering must not alter the Puppet-owned facts object, including any
+      # nested hashes or arrays shared by the shallow copy made in #save.
+      facts.values['secret'].should == 'top-level secret'
+      facts.values['networking']['interfaces']['eth0']['mac'].should == '00:11:22:33:44:55'
+      facts.values['accounts'][0]['password'].should == 'alice-secret'
     end
   end
 
