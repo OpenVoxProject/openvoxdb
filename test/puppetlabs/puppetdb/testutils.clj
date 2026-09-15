@@ -410,22 +410,25 @@
 
 (defn test-command-app
   "A fixture to build a Command app and make it available as
-  *command-app* within tests."
-  [q command-chan]
-  (wrap-with-puppetdb-middleware
-   (command-app
-    (fn [] {})
-    (fn [command version certname producer-ts stream compression callback]
-      (let [maybe-send-cmd-event! (constantly true)]
-        (dispatch/do-enqueue-command
-         q
-         command-chan
-         (Semaphore. 100)
-         (queue/create-command-req command version certname producer-ts compression callback stream)
-         maybe-send-cmd-event!)))
+  *command-app* within tests.  Restricts which certnames may submit commands
+  for other nodes when given the path to a trusted submitter allowlist."
+  ([q command-chan] (test-command-app q command-chan nil))
+  ([q command-chan trusted-submitter-allowlist]
+   (wrap-with-puppetdb-middleware
+    (command-app
+     (fn [] {})
+     (fn [command version certname producer-ts stream compression callback]
+       (let [maybe-send-cmd-event! (constantly true)]
+         (dispatch/do-enqueue-command
+          q
+          command-chan
+          (Semaphore. 100)
+          (queue/create-command-req command version certname producer-ts compression callback stream)
+          maybe-send-cmd-event!)))
 
-    false
-    nil)))
+     false
+     nil
+     trusted-submitter-allowlist))))
 
 (def default-timeout-ms
   (* 1000 60 5))

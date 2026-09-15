@@ -10,8 +10,10 @@
              :refer [get-request post-request
                      content-type uuid-in-response?
                      assert-success!
+                     temp-file
                      test-command-app
                      dotestseq]]
+            [puppetlabs.ssl-utils.core :refer [get-cn-from-x509-certificate]]
             [puppetlabs.kitchensink.core :as kitchensink]
             [puppetlabs.puppetdb.http :as http]
             [puppetlabs.stockpile.queue :as stock]
@@ -122,6 +124,54 @@
                                              "command" "deactivate node"}
                                             payload))]
            (assert-success! response)))))))
+
+(deftest submitter-authorization
+  (let [allowlist (doto (.getAbsolutePath (temp-file "trusted-submitters"))
+                    (spit "puppetserver.example"))
+        payload (form-command "replace facts"
+                             (get min-supported-commands "replace facts")
+                             {:foo 1})
+        request (fn [submitter certname]
+                  (cond-> (post-request* "/v1"
+                                         {"version" (str (get min-supported-commands
+                                                              "replace facts"))
+                                          "certname" certname
+                                          "command" "replace facts"}
+                                         payload)
+                    submitter (assoc :ssl-client-cert {:cn submitter})))]
+    (with-redefs [get-cn-from-x509-certificate :cn]
+      (testing "with a trusted submitter allowlist"
+        (tqueue/with-stockpile q
+          (let [app (test-command-app q (async/chan 4) allowlist)]
+            (testing "an allowlisted submitter may submit for any certname"
+              (assert-success! (app (request "puppetserver.example" "agent.example"))))
+
+            (testing "any other submitter may only submit for itself"
+              (assert-success! (app (request "agent.example" "agent.example")))
+              (let [response (app (request "agent.example" "other.example"))]
+                (is (= HttpURLConnection/HTTP_FORBIDDEN (:status response)))
+                (is (re-find #"may only submit commands for itself"
+                             (:body response)))))
+
+            (testing "a request that presented no certificate is not restricted"
+              (assert-success! (app (request nil "other.example"))))
+
+            (testing "the certname is also checked for commands posted without
+                      query parameters, where it comes from the payload"
+              (let [response (app (-> (post-request*
+                                       "/v1" nil
+                                       (json/generate-string
+                                        {"command" "replace facts"
+                                         "version" (get min-supported-commands
+                                                        "replace facts")
+                                         "payload" {"certname" "other.example"}}))
+                                      (assoc :ssl-client-cert {:cn "agent.example"})))]
+                (is (= HttpURLConnection/HTTP_FORBIDDEN (:status response))))))))
+
+      (testing "without a trusted submitter allowlist any submitter may submit for any certname"
+        (tqueue/with-stockpile q
+          (let [app (test-command-app q (async/chan 4))]
+            (assert-success! (app (request "agent.example" "other.example")))))))))
 
 (def endpoint-error-specs
   [{:title "should 400 when missing payload"

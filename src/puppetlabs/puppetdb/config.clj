@@ -204,6 +204,7 @@
   (all-optional
    {:certificate-whitelist s/Str
     :certificate-allowlist s/Str
+    :trusted-submitter-allowlist s/Str
     :add-agent-report-filter (pls/defaulted-maybe String "true")
     :log-queries (pls/defaulted-maybe String "false")
     :query-timeout-default (pls/defaulted-maybe String "600")
@@ -212,6 +213,7 @@
 (def puppetdb-config-out
   "Schema for validating the parsed/processed [puppetdb] block"
   {(s/optional-key :certificate-allowlist) s/Str
+   (s/optional-key :trusted-submitter-allowlist) s/Str
    :add-agent-report-filter Boolean
    :log-queries Boolean
    :query-timeout-default s/Num
@@ -714,6 +716,10 @@
 (defn max-command-size
   [config]
   (get-in config [:command-processing :max-command-size]))
+
+(defn trusted-submitter-allowlist
+  [config]
+  (get-in config [:puppetdb :trusted-submitter-allowlist]))
 
 (defn stockpile-dir [config]
   (str (io/file (get-in config [:global :vardir]) "stockpile")))
