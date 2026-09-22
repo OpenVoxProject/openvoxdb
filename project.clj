@@ -103,7 +103,7 @@
 ;;
 ;;       See: https://github.com/FasterXML/jackson/wiki/Jackson-Releases
 (def jackson-version "2.21.7")
-(def slf4j-version "2.0.19")
+(def slf4j-version "2.0.20")
 
 ;; If you modify the version manually, run release_scripts/sync_ezbake_dep.rb to keep
 ;; the ezbake dependency in sync.
