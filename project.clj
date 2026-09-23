@@ -103,6 +103,7 @@
 ;;
 ;;       See: https://github.com/FasterXML/jackson/wiki/Jackson-Releases
 (def jackson-version "2.21.7")
+(def jackson-annotations-version (re-find #"^\d+\.\d+" jackson-version))
 (def slf4j-version "2.0.20")
 
 ;; If you modify the version manually, run release_scripts/sync_ezbake_dep.rb to keep
@@ -151,9 +152,7 @@
                          [com.fasterxml.jackson.dataformat/jackson-dataformat-cbor ~jackson-version]
                          [com.fasterxml.jackson.dataformat/jackson-dataformat-smile ~jackson-version]
                          [com.fasterxml.jackson.module/jackson-module-afterburner ~jackson-version]
-                         ;; For some reason, this version is 2.20 without a .1. Update this back to
-                         ;; ~jackson-version when they match again.
-                         [com.fasterxml.jackson.core/jackson-annotations "2.22"]
+                         [com.fasterxml.jackson.core/jackson-annotations ~jackson-annotations-version]
                          [com.gfredericks/test.chuck "0.2.15"]
                          [com.github.seancorfield/honeysql "2.7.1479"]
                          [com.github.seancorfield/next.jdbc "1.3.1118"]
