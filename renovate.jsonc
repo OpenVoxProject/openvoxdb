@@ -22,7 +22,7 @@
     // Version 9.0 of the logstash encoder moved to Jackson 3.x.
     // Pin to 8.1 so that we stay with Jackson 2.x.
     {
-      "groupName": "jackson updates",
+      "groupName": "logback updates",
       "allowedVersions": "<9.0",
       "matchPackageNames": [
         "/net.logstash.logback:logstash-logback-encoder/"
