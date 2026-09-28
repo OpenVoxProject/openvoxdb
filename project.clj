@@ -326,7 +326,10 @@
                     :lein-ezbake {:vars {:java-args ~(str
                                                         "-Xmx192m "
                                                         "-Djdk.tls.ephemeralDHKeySize=2048 "
-                                                        "-Djava.security.properties==/opt/puppetlabs/server/data/puppetdb/java.security.fips")}
+                                                        "-Djava.security.properties==/opt/puppetlabs/server/data/puppetdb/java.security.fips")
+                                         ;; The BouncyCastle FIPS libraries are certified for Java 8, 11, 17, and 21, see
+                                         ;; https://www.bouncycastle.org/download/bouncy-castle-java-fips/
+                                         :java-versions "21"}
                                          :classpath-jars [{:artifact org.bouncycastle/bc-fips
                                                            :install {:path "/opt/puppetlabs/server/data/puppetdb/jars"
                                                                      :mode "0644"}}
@@ -380,7 +383,7 @@
                                       ;; via the release_scripts/sync_ezbake_dep.rb script.
                                       [org.openvoxproject/puppetdb "9.1.0-SNAPSHOT"]]
               :name "puppetdb"
-              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "4.1.0")]]}
+              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "4.2.0")]]}
     :ezbake-fips {:dependencies ^:replace [[org.bouncycastle/bcpkix-fips]
                                            [org.bouncycastle/bc-fips]
                                            [org.bouncycastle/bctls-fips]
@@ -390,7 +393,7 @@
                                            [org.openvoxproject/puppetdb "9.1.0-SNAPSHOT"]]
               :name "puppetdb"
               :uberjar-exclusions [#"^org/bouncycastle/.*"]
-              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "4.1.0")]]}
+              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "4.2.0")]]}
     :testutils {:source-paths ^:replace ["test"]
                 :resource-paths ^:replace []
                 ;; Something else may need adjustment, but
