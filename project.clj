@@ -295,7 +295,9 @@
                        :logrotate-enabled false
                        :replaces-pkgs [{:package "puppetdb" :version ""}]
                        :java-args ~(str "-Xmx192m "
-                                        "-Djdk.tls.ephemeralDHKeySize=2048")}
+                                        "-Djdk.tls.ephemeralDHKeySize=2048")
+                       ;; Java versions the packages run on, most preferred first
+                       :java-versions "25 21"}
                 :config-dir "ext/config/foss"}
 
   ;; Build a puppetdb-VER-test.jar containing test/ for projects like
