@@ -346,12 +346,7 @@
                     ;; this only ensures that we run with the proper profiles
                     ;; during testing. This JVM opt will be set in the puppet module
                     ;; that sets up the JVM classpaths during installation.
-                    :jvm-opts ~(let [{:keys [feature interim]} pdb-jvm-ver]
-                                  (conj pdb-jvm-opts
-                                        (case feature
-                                          17 "-Djava.security.properties==resources/ext/java.security.fips"
-                                          21 "-Djava.security.properties==resources/ext/java.security.fips"
-                                          (do))))}
+                    :jvm-opts ~(conj pdb-jvm-opts "-Djava.security.properties==resources/ext/java.security.fips")}
 
     :fips [:defaults :fips-settings]
 
