@@ -295,7 +295,9 @@
                        :logrotate-enabled false
                        :replaces-pkgs [{:package "puppetdb" :version ""}]
                        :java-args ~(str "-Xmx192m "
-                                        "-Djdk.tls.ephemeralDHKeySize=2048")}
+                                        "-Djdk.tls.ephemeralDHKeySize=2048")
+                       ;; Java versions the packages run on, most preferred first
+                       :java-versions "25 21"}
                 :config-dir "ext/config/foss"}
 
   ;; Build a puppetdb-VER-test.jar containing test/ for projects like
@@ -326,7 +328,10 @@
                     :lein-ezbake {:vars {:java-args ~(str
                                                         "-Xmx192m "
                                                         "-Djdk.tls.ephemeralDHKeySize=2048 "
-                                                        "-Djava.security.properties==/opt/puppetlabs/server/data/puppetdb/java.security.fips")}
+                                                        "-Djava.security.properties==/opt/puppetlabs/server/data/puppetdb/java.security.fips")
+                                         ;; The BouncyCastle FIPS libraries are certified for Java 8, 11, 17, and 21, see
+                                         ;; https://www.bouncycastle.org/download/bouncy-castle-java-fips/
+                                         :java-versions "21"}
                                          :classpath-jars [{:artifact org.bouncycastle/bc-fips
                                                            :install {:path "/opt/puppetlabs/server/data/puppetdb/jars"
                                                                      :mode "0644"}}
@@ -341,12 +346,7 @@
                     ;; this only ensures that we run with the proper profiles
                     ;; during testing. This JVM opt will be set in the puppet module
                     ;; that sets up the JVM classpaths during installation.
-                    :jvm-opts ~(let [{:keys [feature interim]} pdb-jvm-ver]
-                                  (conj pdb-jvm-opts
-                                        (case feature
-                                          17 "-Djava.security.properties==resources/ext/java.security.fips"
-                                          21 "-Djava.security.properties==resources/ext/java.security.fips"
-                                          (do))))}
+                    :jvm-opts ~(conj pdb-jvm-opts "-Djava.security.properties==resources/ext/java.security.fips")}
 
     :fips [:defaults :fips-settings]
 
@@ -380,7 +380,7 @@
                                       ;; via the release_scripts/sync_ezbake_dep.rb script.
                                       [org.openvoxproject/puppetdb "9.1.0-SNAPSHOT"]]
               :name "puppetdb"
-              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "4.1.0")]]}
+              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "4.2.0")]]}
     :ezbake-fips {:dependencies ^:replace [[org.bouncycastle/bcpkix-fips]
                                            [org.bouncycastle/bc-fips]
                                            [org.bouncycastle/bctls-fips]
@@ -390,7 +390,7 @@
                                            [org.openvoxproject/puppetdb "9.1.0-SNAPSHOT"]]
               :name "puppetdb"
               :uberjar-exclusions [#"^org/bouncycastle/.*"]
-              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "4.1.0")]]}
+              :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "4.2.0")]]}
     :testutils {:source-paths ^:replace ["test"]
                 :resource-paths ^:replace []
                 ;; Something else may need adjustment, but
