@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [9.0.0-rc2](https://github.com/openvoxproject/openvoxdb/tree/9.0.0-rc2) (2026-09-29)
+
+[Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/9.0.0-rc1...9.0.0-rc2)
+
+**Fixed bugs:**
+
+- \[Bug\]: .tar.gz tarball for openvoxdb 8.16.0 / 9.0.0-rc1 is lacking files in the uberjar [\#522](https://github.com/OpenVoxProject/openvoxdb/issues/522)
+- Update vox:build task to re-name FIPS tarballs [\#526](https://github.com/OpenVoxProject/openvoxdb/pull/526) ([Sharpie](https://github.com/Sharpie))
+
+**Closed issues:**
+
+- \[Bug\]: openvoxdb 9 requires jre-25-headless but starts /usr/bin/java \(alternatives\), unlike openvox-server 9 which pins jre-25 [\#519](https://github.com/OpenVoxProject/openvoxdb/issues/519)
+
+**Merged pull requests:**
+
+- Use ezbake 4.2.0, declare supported Java versions, remove cruft [\#554](https://github.com/OpenVoxProject/openvoxdb/pull/554) ([nmburgan](https://github.com/nmburgan))
+- Change groupName from 'jackson updates' to 'logback updates' [\#542](https://github.com/OpenVoxProject/openvoxdb/pull/542) ([corporate-gadfly](https://github.com/corporate-gadfly))
+- fix: folder structure [\#535](https://github.com/OpenVoxProject/openvoxdb/pull/535) ([marcusdots](https://github.com/marcusdots))
+- development assistance [\#534](https://github.com/OpenVoxProject/openvoxdb/pull/534) ([marcusdots](https://github.com/marcusdots))
+
 ## [9.0.0-rc1](https://github.com/openvoxproject/openvoxdb/tree/9.0.0-rc1) (2026-09-09)
 
 [Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/9.0.0-beta1...9.0.0-rc1)
