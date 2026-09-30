@@ -15,8 +15,7 @@ on:
         options:
           - main
           - '8.x'
-          - mpo
-        default: 'mpo'
+        default: main
 
 permissions: {}
 
