@@ -46,6 +46,9 @@ group :test do
   # syslog is a dependency of puppet/openvox, but missing in their gemspec
   gem 'syslog'
   gem 'puppet-pson', '~> 1.1'
+  # openvox passes JSON options positionally, which json 3 rejects. Drop the
+  # pin once OpenVoxProject/openvox#654 is fixed.
+  gem 'json', '< 3'
 
   gem 'mocha', '~> 3.1'
 end
