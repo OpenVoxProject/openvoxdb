@@ -13,7 +13,7 @@ puppet_ref = if File.exist?(gemfile_home + '/ext/test-conf/openvox-ref-requested
             end
 
 def location_for(place)
-  if place =~ /^(git[:@][^#]*)#(.*)/
+  if place =~ /^((?:git[:@]|https:)[^#]*)#(.*)/
     [{ git: $1, branch: $2, require: false }]
   elsif place =~ /^file:\/\/(.*)/
     ['>= 0', { path: File.expand_path($1), require: false }]
@@ -24,7 +24,6 @@ end
 
 gem 'openfact'
 gem 'rake'
-gem 'packaging', '~> 1.0', github: 'OpenVoxProject/packaging'
 
 group :test do
   # Add test-unit for ruby 2.2+ support (has been removed from stdlib)
@@ -53,6 +52,10 @@ end
 
 group :development do
   gem 'httparty'
+end
+
+group :packaging do
+  gem 'vanagon', *location_for(ENV['VANAGON_LOCATION'] || 'https://github.com/openvoxproject/vanagon#main')
 end
 
 # This is a workaround for a bug in bundler, where it likes to look at ruby
