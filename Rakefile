@@ -82,6 +82,7 @@ namespace :package do
 end
 
 namespace :release do
+  task 'prepare' => ['changelog']
   task :reconcile, [:release_version, :previous_version] do |t, versions|
     require 'httparty'
 
