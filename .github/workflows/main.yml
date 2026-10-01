@@ -117,6 +117,9 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       pull-requests: write
+    outputs:
+      artifact-id: ${{ steps.upload.outputs.artifact-id }}
+      smoke-targets: ${{ steps.smoke-targets.outputs.targets }}
     steps:
       - name: checkout repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -153,6 +156,11 @@ jobs:
           key: docker-ezbake-${{ hashFiles('Dockerfile') }}
       - name: build it
         run: bundle exec rake vox:build
+      - name: list the smoke test targets
+        id: smoke-targets
+        run: |
+          targets=$(bundle exec rake vox:smoke:targets)
+          echo "targets=${targets}" >> "$GITHUB_OUTPUT"
       - name: get version
         id: version
         run: |
@@ -186,6 +194,108 @@ jobs:
             The rpm/deb packages and the JAR file for openvoxdb are available in a zip archive:
             ${{ steps.upload.outputs.artifact-url }}
 
+  build-fips:
+    name: build openvoxdb FIPS packages
+    runs-on: ubuntu-24.04
+    outputs:
+      artifact-id: ${{ steps.upload.outputs.artifact-id }}
+      smoke-targets: ${{ steps.smoke-targets.outputs.targets }}
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+          fetch-depth: 0 # So we fetch all history and tags and can build non-tagged versions
+      - name: setup java
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: 'temurin'
+          java-version: 25
+      - name: setup ruby
+        uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1.327.0
+        with:
+          ruby-version: '4.0'
+          bundler-cache: true
+      - id: docker-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: /tmp/ezbake-builder.tar
+          key: docker-ezbake-${{ hashFiles('Dockerfile') }}
+      - name: load or build docker image
+        # The build job saves the image to the cache
+        run: |
+          if [[ -f /tmp/ezbake-builder.tar ]]; then
+            docker load -i /tmp/ezbake-builder.tar
+          else
+            docker build -t ezbake-builder .
+          fi
+      - name: build it
+        run: bundle exec rake vox:build
+        env:
+          # The same FIPS-only build as the release workflow
+          DEB_PLATFORMS: ''
+          RPM_PLATFORMS: redhatfips-8,redhatfips-9
+      - name: list the smoke test targets
+        id: smoke-targets
+        run: |
+          targets=$(bundle exec rake vox:smoke:targets)
+          echo "targets=${targets}" >> "$GITHUB_OUTPUT"
+      - name: Upload build artifacts
+        id: upload
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: openvoxdb-fips
+          path: output/
+          retention-days: 1
+          overwrite: true
+
+  smoke-matrix:
+    name: smoke test matrix
+    needs:
+      - build
+      - build-fips
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.join.outputs.matrix }}
+    steps:
+      - name: join the targets of both builds
+        id: join
+        env:
+          BUILD_TARGETS: ${{ needs.build.outputs.smoke-targets }}
+          FIPS_TARGETS: ${{ needs.build-fips.outputs.smoke-targets }}
+        run: |
+          matrix=$(jq --compact-output --null-input '{target: ((env.BUILD_TARGETS | fromjson) + (env.FIPS_TARGETS | fromjson))}')
+          echo "matrix=${matrix}" >> "$GITHUB_OUTPUT"
+
+  smoke:
+    name: smoke test ${{ matrix.target }}
+    needs:
+      - build
+      - build-fips
+      - smoke-matrix
+    runs-on: ${{ endsWith(matrix.target, '-aarch64') && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.smoke-matrix.outputs.matrix) }}
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: setup ruby
+        uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1.327.0
+        with:
+          ruby-version: '4.0' # the same Ruby as the build job, so both share the bundler cache
+          bundler-cache: true
+      - name: download the packages from the build job
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          artifact-ids: ${{ startsWith(matrix.target, 'redhatfips') && needs.build-fips.outputs.artifact-id || needs.build.outputs.artifact-id }}
+          path: output
+      - name: smoke test
+        run: bundle exec rake "vox:smoke[${{ matrix.target }}]"
+        timeout-minutes: 20
+
   termini-rspec:
     name: openvoxdb-termini RSpec
     runs-on: ubuntu-24.04
@@ -207,6 +317,8 @@ jobs:
     needs:
       - o
       - build
+      - build-fips
+      - smoke
       - termini-rspec
     runs-on: ubuntu-24.04
     name: Test suite
