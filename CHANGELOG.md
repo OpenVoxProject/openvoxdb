@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [9.1.0](https://github.com/openvoxproject/openvoxdb/tree/9.1.0) (2026-10-01)
+
+[Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/9.0.0-rc2...9.1.0)
+
+**Implemented enhancements:**
+
+- add rake task vox:version:bump:full for Github-release-action [\#558](https://github.com/OpenVoxProject/openvoxdb/pull/558) ([marcusdots](https://github.com/marcusdots))
+
 ## [9.0.0-rc2](https://github.com/openvoxproject/openvoxdb/tree/9.0.0-rc2) (2026-09-29)
 
 [Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/9.0.0-rc1...9.0.0-rc2)
@@ -17,6 +25,7 @@ All notable changes to this project will be documented in this file.
 
 **Merged pull requests:**
 
+- Set version to 9.0.0-rc2 [\#557](https://github.com/OpenVoxProject/openvoxdb/pull/557) ([nmburgan](https://github.com/nmburgan))
 - Use ezbake 4.2.0, declare supported Java versions, remove cruft [\#554](https://github.com/OpenVoxProject/openvoxdb/pull/554) ([nmburgan](https://github.com/nmburgan))
 - Change groupName from 'jackson updates' to 'logback updates' [\#542](https://github.com/OpenVoxProject/openvoxdb/pull/542) ([corporate-gadfly](https://github.com/corporate-gadfly))
 - fix: folder structure [\#535](https://github.com/OpenVoxProject/openvoxdb/pull/535) ([marcusdots](https://github.com/marcusdots))
