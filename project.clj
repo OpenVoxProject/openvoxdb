@@ -108,7 +108,7 @@
 
 ;; If you modify the version manually, run release_scripts/sync_ezbake_dep.rb to keep
 ;; the ezbake dependency in sync.
-(defproject org.openvoxproject/puppetdb "8.17.0-SNAPSHOT"
+(defproject org.openvoxproject/puppetdb "8.17.1-SNAPSHOT"
   :description "OpenVox-integrated catalog and fact storage"
 
   :license {:name "Apache License, Version 2.0"
@@ -378,7 +378,7 @@
                                       ;;
                                       ;; Do not modify this line. It is managed by the release process
                                       ;; via the release_scripts/sync_ezbake_dep.rb script.
-                                      [org.openvoxproject/puppetdb "8.17.0-SNAPSHOT"]]
+                                      [org.openvoxproject/puppetdb "8.17.1-SNAPSHOT"]]
               :name "puppetdb"
               :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.7.9")]]}
     :ezbake-fips {:dependencies ^:replace [[org.bouncycastle/bcpkix-fips]
@@ -387,7 +387,7 @@
                                            [org.clojure/clojure]
                                            ;; Do not modify this line. It is managed by the release process
                                            ;; via the release_scripts/sync_ezbake_dep.rb script.
-                                           [org.openvoxproject/puppetdb "8.17.0-SNAPSHOT"]]
+                                           [org.openvoxproject/puppetdb "8.17.1-SNAPSHOT"]]
               :name "puppetdb"
               :uberjar-exclusions [#"^org/bouncycastle/.*"]
               :plugins [[org.openvoxproject/lein-ezbake ~(or (System/getenv "EZBAKE_VERSION") "2.7.9")]]}
