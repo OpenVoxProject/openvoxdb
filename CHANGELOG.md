@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.16.1](https://github.com/openvoxproject/openvoxdb/tree/8.16.1) (2026-10-01)
+
+[Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/8.16.0...8.16.1)
+
+**Fixed bugs:**
+
+- \[Bug\]: .tar.gz tarball for openvoxdb 8.16.0 / 9.0.0-rc1 is lacking files in the uberjar [\#522](https://github.com/OpenVoxProject/openvoxdb/issues/522)
+
+**Closed issues:**
+
+- \[Bug\]: openvoxdb 9 requires jre-25-headless but starts /usr/bin/java \(alternatives\), unlike openvox-server 9 which pins jre-25 [\#519](https://github.com/OpenVoxProject/openvoxdb/issues/519)
+
 ## [8.16.0](https://github.com/openvoxproject/openvoxdb/tree/8.16.0) (2026-09-08)
 
 [Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/8.15.0...8.16.0)
@@ -12,6 +24,7 @@ All notable changes to this project will be documented in this file.
 
 **Merged pull requests:**
 
+-  Release 8.16.0 [\#515](https://github.com/OpenVoxProject/openvoxdb/pull/515) ([bastelfreak](https://github.com/bastelfreak))
 - \[Backport 8.x\] Fix report\_environment join deps for certname extract [\#504](https://github.com/OpenVoxProject/openvoxdb/pull/504) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
 - \[Backport 8.x\] fix engine tests [\#503](https://github.com/OpenVoxProject/openvoxdb/pull/503) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
 - \[Backport 8.x\] reduce total footprint by 2000 \(upper/lower bound\) [\#451](https://github.com/OpenVoxProject/openvoxdb/pull/451) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
