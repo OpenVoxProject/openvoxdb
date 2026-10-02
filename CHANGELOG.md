@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [9.0.0](https://github.com/openvoxproject/openvoxdb/tree/9.0.0) (2026-10-02)
+
+[Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/9.0.0-rc2...9.0.0)
+
+**Implemented enhancements:**
+
+- add rake task vox:version:bump:full for Github-release-action [\#558](https://github.com/OpenVoxProject/openvoxdb/pull/558) ([marcusdots](https://github.com/marcusdots))
+
+**Merged pull requests:**
+
+- Smoke testing for PRs or local tests [\#563](https://github.com/OpenVoxProject/openvoxdb/pull/563) ([nmburgan](https://github.com/nmburgan))
+
 ## [9.0.0-rc2](https://github.com/openvoxproject/openvoxdb/tree/9.0.0-rc2) (2026-09-29)
 
 [Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/9.0.0-rc1...9.0.0-rc2)
