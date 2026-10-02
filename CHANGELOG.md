@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.17.0](https://github.com/openvoxproject/openvoxdb/tree/8.17.0) (2026-10-02)
+
+[Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/8.16.0...8.17.0)
+
+**Fixed bugs:**
+
+- \[Bug\]: .tar.gz tarball for openvoxdb 8.16.0 / 9.0.0-rc1 is lacking files in the uberjar [\#522](https://github.com/OpenVoxProject/openvoxdb/issues/522)
+
 ## [8.16.0](https://github.com/openvoxproject/openvoxdb/tree/8.16.0) (2026-09-08)
 
 [Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/8.15.0...8.16.0)
