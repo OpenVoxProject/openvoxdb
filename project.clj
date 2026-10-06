@@ -175,9 +175,10 @@
                          [net.logstash.logback/logstash-logback-encoder "8.1"]
                          [org.apache.commons/commons-lang3 "3.21.0"]
                          [org.bouncycastle/bcpkix-jdk18on "1.86"]
-                         [org.bouncycastle/bcpkix-fips "1.0.8"]
-                         [org.bouncycastle/bc-fips "1.0.2.6"]
-                         [org.bouncycastle/bctls-fips "1.0.19"]
+                         [org.bouncycastle/bcpkix-fips "2.1.13"]
+                         [org.bouncycastle/bc-fips "2.1.3"]
+                         [org.bouncycastle/bctls-fips "2.1.25"]
+                         [org.bouncycastle/bcutil-fips "2.1.8"]
                          [org.flatland/ordered "1.15.12"]
                          [org.slf4j/slf4j-api ~slf4j-version]
                          [org.slf4j/jul-to-slf4j ~slf4j-version]
@@ -323,7 +324,8 @@
 
     :fips-settings {:dependencies [[org.bouncycastle/bcpkix-fips]
                                     [org.bouncycastle/bc-fips]
-                                    [org.bouncycastle/bctls-fips]]
+                                    [org.bouncycastle/bctls-fips]
+                                    [org.bouncycastle/bcutil-fips]]
 
                     :lein-ezbake {:vars {:java-args ~(str
                                                         "-Xmx192m "
@@ -339,6 +341,9 @@
                                                            :install {:path "/opt/puppetlabs/server/data/puppetdb/jars"
                                                                      :mode "0644"}}
                                                           {:artifact org.bouncycastle/bctls-fips
+                                                           :install {:path "/opt/puppetlabs/server/data/puppetdb/jars"
+                                                                     :mode "0644"}}
+                                                          {:artifact org.bouncycastle/bcutil-fips
                                                            :install {:path "/opt/puppetlabs/server/data/puppetdb/jars"
                                                                      :mode "0644"}}]
                                           :project-files [{:file "resources/ext/java.security.fips"
@@ -384,6 +389,7 @@
     :ezbake-fips {:dependencies ^:replace [[org.bouncycastle/bcpkix-fips]
                                            [org.bouncycastle/bc-fips]
                                            [org.bouncycastle/bctls-fips]
+                                           [org.bouncycastle/bcutil-fips]
                                            [org.clojure/clojure]
                                            ;; Do not modify this line. It is managed by the release process
                                            ;; via the release_scripts/sync_ezbake_dep.rb script.
