@@ -105,7 +105,7 @@ jobs:
           PDB_QUERY_OPTIMIZE_DROP_UNUSED_JOINS: ${{ matrix.drop-joins }}
           NO_ACCEPTANCE: true
         run: ci/bin/prep-and-run-in github ${{ matrix.flavor }}
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: "${{ steps.computed.outputs.pdb-job-id }}.zip"
           path: |
@@ -168,7 +168,7 @@ jobs:
           echo "describe=${DESCRIBE//-/.}" >> $GITHUB_OUTPUT
       - name: Upload build artifacts
         id: upload
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: openvoxdb-${{ steps.version.outputs.describe }}.zip
           path: output/
@@ -242,7 +242,7 @@ jobs:
           echo "targets=${targets}" >> "$GITHUB_OUTPUT"
       - name: Upload build artifacts
         id: upload
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: openvoxdb-fips
           path: output/
