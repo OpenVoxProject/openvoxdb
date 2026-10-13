@@ -159,7 +159,7 @@
                          [com.rpl/specter "1.1.6"]
                          [com.taoensso/nippy "3.9.0" :exclusions [org.tukaani/xz]]
                          [com.zaxxer/HikariCP "7.1.0"]
-                         [commons-codec "1.22.1"]
+                         [commons-codec "1.23.0"]
                          [commons-io "2.22.0"]
                          [compojure "1.7.2"]
                          [ch.qos.logback/logback-classic ~logback-version]
