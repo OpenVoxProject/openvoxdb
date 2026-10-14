@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [9.1.0](https://github.com/openvoxproject/openvoxdb/tree/9.1.0) (2026-10-14)
+
+[Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/9.0.0...9.1.0)
+
+**Fixed bugs:**
+
+- CI: Move acceptance tests postgresql 17-\>18 [\#580](https://github.com/OpenVoxProject/openvoxdb/pull/580) ([bastelfreak](https://github.com/bastelfreak))
+
+**Merged pull requests:**
+
+- Revert "Pin json below 3 until openvox supports it" [\#591](https://github.com/OpenVoxProject/openvoxdb/pull/591) ([bastelfreak](https://github.com/bastelfreak))
+- Depend on openvox-agent \>=9.1.0 [\#590](https://github.com/OpenVoxProject/openvoxdb/pull/590) ([Sharpie](https://github.com/Sharpie))
+- Bump ezbake to 4.2.1 [\#577](https://github.com/OpenVoxProject/openvoxdb/pull/577) ([nmburgan](https://github.com/nmburgan))
+- Move the FIPS build to BouncyCastle FIPS 2.1 [\#566](https://github.com/OpenVoxProject/openvoxdb/pull/566) ([nmburgan](https://github.com/nmburgan))
+
 ## [9.0.0](https://github.com/openvoxproject/openvoxdb/tree/9.0.0) (2026-10-02)
 
 [Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/9.0.0-rc2...9.0.0)
