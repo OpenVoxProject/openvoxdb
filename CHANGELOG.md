@@ -12,9 +12,11 @@ All notable changes to this project will be documented in this file.
 
 **Merged pull requests:**
 
+- Adopt the shared Clojure release flow [\#592](https://github.com/OpenVoxProject/openvoxdb/pull/592) ([nmburgan](https://github.com/nmburgan))
 - Revert "Pin json below 3 until openvox supports it" [\#591](https://github.com/OpenVoxProject/openvoxdb/pull/591) ([bastelfreak](https://github.com/bastelfreak))
 - Depend on openvox-agent \>=9.1.0 [\#590](https://github.com/OpenVoxProject/openvoxdb/pull/590) ([Sharpie](https://github.com/Sharpie))
 - Bump ezbake to 4.2.1 [\#577](https://github.com/OpenVoxProject/openvoxdb/pull/577) ([nmburgan](https://github.com/nmburgan))
+- Build redhatfips-10 packages in PR testing [\#576](https://github.com/OpenVoxProject/openvoxdb/pull/576) ([nmburgan](https://github.com/nmburgan))
 - Move the FIPS build to BouncyCastle FIPS 2.1 [\#566](https://github.com/OpenVoxProject/openvoxdb/pull/566) ([nmburgan](https://github.com/nmburgan))
 
 ## [9.0.0](https://github.com/openvoxproject/openvoxdb/tree/9.0.0) (2026-10-02)
