@@ -273,7 +273,6 @@
                                      :sign-releases false}]]
 
   :plugins [[lein-cloverage "1.2.4"]
-            [lein-shell "0.5.0"]
             [org.openvoxproject/i18n ~i18n-version]]
 
   :lein-release {:scm        :git
@@ -430,23 +429,6 @@
                        ;; the default service lists from each dependency must
                        ;; be combined to create a working configuration.
                        "META-INF/jolokia/services-default" [slurp str spit]}
-
-  ;; We define our own release tasks here, rather than the default that 'lein release' does,
-  ;; so that we can keep the necessary org.openvoxproject/puppetdb ezbake dependency in sync.
-  ;; This also makes it always bump the minor version rather than patch, since we rarely end up
-  ;; releasing patch versions.
-  :release-tasks [["vcs" "assert-committed"]
-                  ["change" "version" "leiningen.release/bump-version" "release"]
-                  ["shell" "ruby" "release_scripts/sync_ezbake_dep.rb"]
-                  ["vcs" "commit"]
-                  ["vcs" "tag"]
-                  ["deploy"]
-                  ["change" "version" "leiningen.release/bump-version" ":minor"]
-                  ["shell" "ruby" "release_scripts/sync_ezbake_dep.rb"]
-                  ["vcs" "commit"]
-                  ["vcs" "push"]]
-
-
 
   :eastwood {:config-files ["eastwood.clj"]
              ;; local-shadows-var is too distruptive, particularly

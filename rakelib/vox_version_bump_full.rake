@@ -9,11 +9,11 @@ def vox_set_version(version)
   abort("Couldn't find literal [org.openvoxproject/puppetdb "..."]] in #{file}") unless data.match?(re)
 
   data.sub!(
-    %r{\(defproject org.openvoxproject/puppetdb ".*-SNAPSHOT"},
-    "(defproject org.openvoxproject/puppetdb \"#{version}-SNAPSHOT\""
+    %r{\(defproject org.openvoxproject/puppetdb "[^"]+"},
+    "(defproject org.openvoxproject/puppetdb \"#{version}\""
   )
 
-  data.gsub!(re, %,[org.openvoxproject/puppetdb "#{version}-SNAPSHOT"],)
+  data.gsub!(re, %,[org.openvoxproject/puppetdb "#{version}"],)
 
   File.write(file, data)
 end
