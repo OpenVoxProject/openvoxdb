@@ -48,7 +48,7 @@ group :test do
   gem 'puppet-pson', '~> 1.1'
   # openvox passes JSON options positionally, which json 3 rejects. Drop the
   # pin once OpenVoxProject/openvox#654 is fixed.
-  gem 'json', '< 3'
+  gem 'json', '< 4'
 
   gem 'mocha', '~> 3.1'
 end
