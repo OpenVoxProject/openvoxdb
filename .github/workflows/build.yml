@@ -43,6 +43,27 @@ on:
         description: 'The version specified in project.clj in the given ezbake-ref. Will default to the version found in project.clj in this repo if not specified.'
         type: string
         required: false
+  workflow_call:
+    inputs:
+      ref:
+        type: string
+        required: true
+      branch:
+        type: string
+        default: 'main'
+      deb_platform_list:
+        type: string
+        required: false
+      rpm_platform_list:
+        type: string
+        required: false
+      ezbake-ref:
+        type: string
+        default: 'main'
+      ezbake-ver:
+        type: string
+        required: false
+
 jobs:
   build:
     uses: 'openvoxproject/shared-actions/.github/workflows/build_ezbake.yml@main'
