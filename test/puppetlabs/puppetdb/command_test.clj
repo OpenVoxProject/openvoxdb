@@ -1202,6 +1202,78 @@
       (let [result (query-to-vec "SELECT certname,environment_id FROM factsets")]
         (is (= result [(with-env {:certname certname})]))))))
 
+(deftest replace-facts-bound-to-submitter
+  (let [certname "foo.example.com"
+        values {"a" "1" "b" "2" "c" "3"}
+        facts {:certname certname
+               :environment "DEV"
+               :values values
+               :producer nil
+               :producer_timestamp (to-timestamp (now))}
+        ;; The submitted certname is the one the command endpoint binds to
+        ;; the submitter's certificate; the payload certname is the one
+        ;; that actually gets stored.
+        req (fn [submitted version payload]
+              (queue/create-command-req "replace facts" version submitted
+                                        (time/to-string (now)) "" identity
+                                        (tqueue/coerce-to-stream payload)))
+        bound (assoc blocklist-config :enforce-submitter-binding? true)]
+
+    (testing "a payload naming another node is discarded"
+      (with-redefs [blocklist-config bound]
+        (with-message-handler {:keys [handle-message dlo delay-pool q]}
+          (let [discards (discard-count)]
+            (handle-message
+             (queue/store-command q (req "submitter.example.com" 5 facts)))
+            (is (= (inc discards) (discard-count))))
+          (is (empty? (query-to-vec "SELECT * FROM factsets")))
+          (is (= 0 (task-count delay-pool)))
+          (is (= 2 (count (fs/list-dir (:path dlo))))))))
+
+    (testing "a payload naming another node is stored while unbound, since binding is opt-in"
+      (with-message-handler {:keys [handle-message dlo delay-pool q]}
+        (handle-message
+         (queue/store-command q (req "submitter.example.com" 5 facts)))
+        (is (= [{:certname certname :facts values}]
+               (query-factsets :certname :facts)))
+        (is (= 0 (task-count delay-pool)))
+        (is (empty? (fs/list-dir (:path dlo))))))
+
+    (testing "an agreeing payload is stored"
+      (with-redefs [blocklist-config bound]
+        (with-message-handler {:keys [handle-message dlo q]}
+          (handle-message (queue/store-command q (req certname 5 facts)))
+          (is (= [{:certname certname :facts values}]
+                 (query-factsets :certname :facts)))
+          (is (empty? (fs/list-dir (:path dlo)))))))
+
+    (testing "an agreeing payload is stored when the queue cannot record the certname verbatim"
+      (let [certname "host_0"]
+        (with-redefs [blocklist-config bound]
+          (with-message-handler {:keys [handle-message dlo q]}
+            (handle-message
+             (queue/store-command q (req certname 5 (assoc facts :certname certname))))
+            (is (= [{:certname certname :facts values}]
+                   (query-factsets :certname :facts)))
+            (is (empty? (fs/list-dir (:path dlo))))))))
+
+    (testing "an agreeing payload in an older wire format is stored"
+      ;; Those formats name the certname differently, so the check only
+      ;; works after the payload has been normalized.
+      (doseq [[version payload] {2 {:name certname
+                                    :environment "DEV"
+                                    :values values}
+                                 3 {:name certname
+                                    :environment "DEV"
+                                    :values values
+                                    :producer-timestamp (to-timestamp (now))}}]
+        (with-redefs [blocklist-config bound]
+          (with-message-handler {:keys [handle-message dlo q]}
+            (handle-message (queue/store-command q (req certname version payload)))
+            (is (= [{:certname certname :facts values}]
+                   (query-factsets :certname :facts)))
+            (is (empty? (fs/list-dir (:path dlo))))))))))
+
 (deftest replace-facts-bad-payload
   (dotestseq [_version fact-versions]
     (testing "should discard the message"
