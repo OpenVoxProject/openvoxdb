@@ -60,6 +60,27 @@ describe Puppet::Node::Facts::Puppetdb do
       save
     end
 
+    it "should replace trusted data that is already in the facts" do
+      # Facts read back from OpenVoxDB carry a "trusted" fact of their own
+      facts.values['trusted'] = {"certname" => "stale"}
+      trusted_data = {"foo" => "foobar", "certname" => "testing_posting"}
+      subject.stubs(:get_trusted_info).returns trusted_data
+
+      sent_payload = nil
+      http.expects(:post).with do |uri, body, headers|
+        sent_payload = body
+      end.returns responseok
+
+      save
+
+      # Count the keys in the raw body: json 2 writes a duplicate key and
+      # parsing keeps only the last one, which would hide it
+      sent_payload.scan('"trusted":').size.should == 1
+      JSON.parse(sent_payload)['values']['trusted'].should == trusted_data
+
+      # We shouldn't modify the original instance
+      facts.values['trusted'].should == {"certname" => "stale"}
+    end
 
     it "should retain integer type when submitting" do
       facts.values['something'] = 100
