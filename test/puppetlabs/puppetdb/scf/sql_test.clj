@@ -65,7 +65,7 @@
 
           (check-diff (:index-diff schema-diff))
           (check-diff (:table-diff schema-diff))
-          (check-diff (:constaint-diff schema-diff))))
+          (check-diff (:constraint-diff schema-diff))))
 
         (testing "reports and resource events were deleted"
           (is (empty?  (get-all-reports)))
