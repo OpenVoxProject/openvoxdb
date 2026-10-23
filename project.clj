@@ -154,7 +154,7 @@
                          [com.fasterxml.jackson.module/jackson-module-afterburner ~jackson-version]
                          [com.fasterxml.jackson.core/jackson-annotations ~jackson-annotations-version]
                          [com.gfredericks/test.chuck "0.2.15"]
-                         [com.github.seancorfield/honeysql "2.7.1479"]
+                         [com.github.seancorfield/honeysql "2.8.85"]
                          [com.github.seancorfield/next.jdbc "1.4.72"]
                          [com.rpl/specter "1.1.6"]
                          [com.taoensso/nippy "3.9.0" :exclusions [org.tukaani/xz]]
