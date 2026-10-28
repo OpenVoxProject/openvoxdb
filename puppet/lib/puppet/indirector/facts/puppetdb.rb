@@ -68,7 +68,10 @@ class Puppet::Node::Facts::Puppetdb < Puppet::Indirector::REST
                           [:puppetdb, :facts, :encode]) do
           facts = request.instance.dup
           facts.values = facts.values.dup
-          facts.values[:trusted] = get_trusted_info(request.node)
+          # A string key, so it replaces any "trusted" fact already present
+          # (facts read back from OpenVoxDB have one) rather than adding a
+          # second key that json 3 refuses to generate.
+          facts.values['trusted'] = get_trusted_info(request.node)
 
           # Read the blocklists after adding trusted data so it can be filtered
           # too. Filtering must happen before package inventory is extracted.
