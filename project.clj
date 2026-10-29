@@ -105,6 +105,7 @@
 (def jackson-version "2.21.8")
 (def jackson-annotations-version (re-find #"^\d+\.\d+" jackson-version))
 (def slf4j-version "2.0.20")
+(def ring-version "1.15.6")
 
 ;; If you modify the version manually, run release_scripts/sync_ezbake_dep.rb to keep
 ;; the ezbake dependency in sync.
@@ -208,7 +209,8 @@
                          [prismatic/schema "1.4.2"]
                          [riddley "0.2.2"]
                          [ring/ring-codec "1.3.0"]
-                         [ring/ring-core "1.15.6"]
+                         [ring/ring-core ~ring-version]
+                         [org.ring-clojure/ring-jakarta-servlet ~ring-version]
                          [ring/ring-mock "0.6.2"]
                          [robert/hooke "1.3.0"]
                          [timofreiberg/bultitude "0.3.1"]
