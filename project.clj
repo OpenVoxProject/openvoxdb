@@ -179,7 +179,7 @@
                          [org.bouncycastle/bcpkix-fips "1.0.13"]
                          [org.bouncycastle/bc-fips "1.0.2.7"]
                          [org.bouncycastle/bctls-fips "1.0.25"]
-                         [org.flatland/ordered "1.15.12"]
+                         [org.flatland/ordered "1.16.13"]
                          [org.slf4j/slf4j-api ~slf4j-version]
                          [org.slf4j/jul-to-slf4j ~slf4j-version]
                          [org.slf4j/log4j-over-slf4j ~slf4j-version]
