@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.17.1](https://github.com/openvoxproject/openvoxdb/tree/8.17.1) (2026-10-29)
+
+[Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/8.17.0...8.17.1)
+
+**Implemented enhancements:**
+
+- Depend on openvox-agent \>=8.31.0 [\#589](https://github.com/OpenVoxProject/openvoxdb/pull/589) ([Sharpie](https://github.com/Sharpie))
+
+**Security fixes:**
+
+- Update dependency org.openvoxproject:trapperkeeper-webserver to v12.1.2 \(8.x\) [\#621](https://github.com/OpenVoxProject/openvoxdb/pull/621) ([renovate[bot]](https://github.com/apps/renovate))
+- Update jackson updates to v2.21.8 \(8.x\) [\#599](https://github.com/OpenVoxProject/openvoxdb/pull/599) ([renovate[bot]](https://github.com/apps/renovate))
+
+**Merged pull requests:**
+
+- \[Backport 8.x\] Adopt the shared Clojure release flow [\#628](https://github.com/OpenVoxProject/openvoxdb/pull/628) ([Sharpie](https://github.com/Sharpie))
+- require openvox-agent 8.31.2 [\#624](https://github.com/OpenVoxProject/openvoxdb/pull/624) ([bastelfreak](https://github.com/bastelfreak))
+- \[Backport 8.x\] Add ring-jakarta-servlet to managed-dependencies [\#623](https://github.com/OpenVoxProject/openvoxdb/pull/623) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+- \[Backport 8.x\] fix typo in key [\#610](https://github.com/OpenVoxProject/openvoxdb/pull/610) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+
 ## [8.17.0](https://github.com/openvoxproject/openvoxdb/tree/8.17.0) (2026-10-07)
 
 [Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/8.16.0...8.17.0)
