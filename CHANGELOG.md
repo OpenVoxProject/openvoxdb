@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [9.1.1](https://github.com/openvoxproject/openvoxdb/tree/9.1.1) (2026-10-29)
+
+[Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/9.1.0...9.1.1)
+
+**Security fixes:**
+
+- Update dependency org.openvoxproject:trapperkeeper-webserver to v12.1.2 \(main\) [\#620](https://github.com/OpenVoxProject/openvoxdb/pull/620) ([renovate[bot]](https://github.com/apps/renovate))
+- Update jackson updates to v2.21.8 \(main\) [\#598](https://github.com/OpenVoxProject/openvoxdb/pull/598) ([renovate[bot]](https://github.com/apps/renovate))
+
+**Merged pull requests:**
+
+- require openvox-agent 9.2.1 [\#625](https://github.com/OpenVoxProject/openvoxdb/pull/625) ([bastelfreak](https://github.com/bastelfreak))
+- Add ring-jakarta-servlet to managed-dependencies [\#622](https://github.com/OpenVoxProject/openvoxdb/pull/622) ([Sharpie](https://github.com/Sharpie))
+- fix typo in key [\#609](https://github.com/OpenVoxProject/openvoxdb/pull/609) ([corporate-gadfly](https://github.com/corporate-gadfly))
+
 ## [9.1.0](https://github.com/openvoxproject/openvoxdb/tree/9.1.0) (2026-10-14)
 
 [Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/9.0.0...9.1.0)
