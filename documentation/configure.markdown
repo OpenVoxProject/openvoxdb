@@ -238,15 +238,40 @@ Note that this maximum does not apply to queries with
 ### `certificate-allowlist`
 
 Optional. This describes the path to a file that contains a list of
-certificate names, one per line. Incoming HTTPS requests will have
+certificate names, one per line. Incoming requests will have
 their certificates validated against this list of names and only those
 with an **exact** matching entry will be allowed through. (For an OpenVox
 Server, this compares against the value of the `certname` setting,
 rather than the `dns_alt_names` setting.)
 
-If not supplied, OpenVoxDB uses standard HTTPS without any additional
-authorization. All HTTPS clients must still supply valid, verifiable
-SSL client certificates.
+The allowlist applies to every request that is subject to certificate
+authentication, including requests that arrive on the cleartext HTTP port. A
+cleartext client cannot present a certificate, so it can never satisfy the
+allowlist; see [`allow-unauthenticated-cleartext`](#allow-unauthenticated-cleartext)
+for the exemptions that apply to that port.
+
+If not supplied, OpenVoxDB requires every client to present a certificate
+signed by its CA, but does not restrict which certnames may connect.
+
+### `allow-unauthenticated-cleartext`
+
+Optional, defaults to `false`. Requests that arrive on the cleartext HTTP port
+(`[jetty] port`) cannot present a client certificate, so they cannot be
+authenticated. By default they are accepted only when they come from a loopback
+address, which is what the shipped configuration expects: the cleartext port is
+bound to `localhost` and is there for local administration and for the
+performance dashboard.
+
+Set this to `true` if you terminate authentication somewhere else, for example
+when OpenVoxDB sits behind a reverse proxy running on another host, and you have
+restricted the cleartext port to that proxy. Every cleartext request is then
+accepted without authentication, and OpenVoxDB logs a warning at startup saying
+so. Anything that can reach the port can read the whole database, submit
+commands for any node, and delete node data, so do not enable this on a port
+that untrusted clients can reach.
+
+Requests on the HTTPS port are always authenticated, regardless of this
+setting.
 
 ### `log-queries`
 Optional. Setting this to `true` will enable debug level logging of the internal
