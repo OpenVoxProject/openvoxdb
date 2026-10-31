@@ -188,8 +188,9 @@ module Vox
       Dir.glob("output/**/*i386*").each { |f| FileUtils.rm_rf(f) }
       Dir.glob("output/puppetdb-*.tar.gz").each { |f| FileUtils.mv(f, f.sub('puppetdb', 'openvoxdb')) }
       # If this is a FIPS-only build, we don't want the upload task to overwrite the existing tarball on S3.
-      # This tarball should be basically identical, but we want to keep both for clarity.
-      Dir.glob('output/openvox-server-*.tar.gz').each { |f| FileUtils.mv(f, f.sub('.tar.gz','-fips_build.tar.gz'))} if @fips_only_build
+      # The FIPS uberjar is incomplete as it must be combined with the FIPS BouncyCastle JARs in order to
+      # produce a functioning application.
+      Dir.glob('output/openvoxdb-*.tar.gz').each { |f| FileUtils.mv(f, f.sub('.tar.gz','-fips_build.tar.gz'))} if @fips_only_build
     end
   end
 end
