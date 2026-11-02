@@ -180,7 +180,7 @@
                          [org.bouncycastle/bc-fips "2.1.3"]
                          [org.bouncycastle/bctls-fips "2.1.25"]
                          [org.bouncycastle/bcutil-fips "2.1.8"]
-                         [org.flatland/ordered "1.15.12"]
+                         [org.flatland/ordered "1.16.13"]
                          [org.slf4j/slf4j-api ~slf4j-version]
                          [org.slf4j/jul-to-slf4j ~slf4j-version]
                          [org.slf4j/log4j-over-slf4j ~slf4j-version]
