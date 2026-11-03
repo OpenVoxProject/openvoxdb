@@ -2,7 +2,6 @@
   (:require [cheshire.core :as json]
             [clojure.java.io :as io]
             [clojure.test :refer :all]
-            [flatland.ordered.map :as omap]
             [puppetlabs.puppetdb.scf.storage :as scf-store]
             [puppetlabs.puppetdb.cli.services :as cli-svc]
             [puppetlabs.puppetdb.examples :refer [catalogs]]
@@ -53,7 +52,7 @@
 (def reference-time "2014-10-28T20:26:21.727Z")
 
 (def common-subquery-tests
-  (omap/ordered-map
+  (hash-map
    ["and"
     ["=" "name" "ipaddress"]
     ["in" "certname" ["extract" "certname" ["select_resources"
@@ -211,10 +210,10 @@
      {:certname "foo" :environment "DEV" :name "osfamily" :value "Debian"}}))
 
 (def versioned-subqueries
-  (omap/ordered-map
+  (hash-map
    "/v4/facts"
    (merge common-subquery-tests
-          (omap/ordered-map
+          (hash-map
            ;; vectored fact-contents subquery
            ["in" ["name" "certname"]
             ["extract" ["name" "certname"]
@@ -223,8 +222,8 @@
            #{{:value 12, :name "uptime_seconds", :environment "DEV", :certname "bar"}}))))
 
 (def versioned-invalid-subqueries
-  (omap/ordered-map
-   "/v4/facts" (omap/ordered-map
+  (hash-map
+   "/v4/facts" (hash-map
                 ;; Extract using invalid fields should throw an error
                 ["in" "certname" ["extract" "nothing" ["select_resources"
                                                         ["=" "type" "Class"]]]]
@@ -244,8 +243,8 @@
                 "Can't match on unknown 'facts' fields 'nothing' and 'nothing2' for 'in'. Acceptable fields are 'certname', 'environment', 'name', and 'value'")))
 
 (def versioned-invalid-queries
-  (omap/ordered-map
-   "/v4/facts" (omap/ordered-map
+  (hash-map
+   "/v4/facts" (hash-map
                  ;; comparison applied to a string should throw an error
                  ["<" "value" "100"]
                  #"Argument \"100\" and operator \"<\" have incompatible types."
@@ -288,8 +287,8 @@
           (is (= java.net.HttpURLConnection/HTTP_OK status)))))))
 
 (def pg-versioned-invalid-regexps
-  (omap/ordered-map
-    "/v4/facts" (omap/ordered-map
+  (hash-map
+    "/v4/facts" (hash-map
                   ["~" "certname" "*abc"]
                   #".*invalid regular expression: quantifier operand invalid"
 
@@ -308,7 +307,7 @@
         (are-error-response-headers headers)))))
 
 (def common-well-formed-tests
-  (omap/ordered-map
+  (hash-map
    ["=" "name" "domain"]
    [{:certname "foo1" :name "domain" :value "testing.com" :environment "DEV"}
     {:certname "foo2" :name "domain" :value "testing.com" :environment "DEV"}
@@ -419,7 +418,7 @@
   ;; The reason for the "common" split is historical.  These
   ;; non-common tests used to vary based on the endpoint version.
   (merge common-well-formed-tests
-         (omap/ordered-map
+         (hash-map
           nil
           [{:certname "foo1" :name "domain" :value "testing.com" :environment "DEV"}
            {:certname "foo1" :name "hostname" :value "foo1" :environment "DEV"}

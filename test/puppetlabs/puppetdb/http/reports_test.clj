@@ -2,7 +2,6 @@
   (:require [puppetlabs.puppetdb.query-eng :as qe]
             [puppetlabs.puppetdb.jdbc :as jdbc]
             [clojure.test :refer :all]
-            [flatland.ordered.map :as omap]
             [puppetlabs.puppetdb.cheshire :as json]
             [puppetlabs.puppetdb.examples.reports :refer [reports]]
             [puppetlabs.puppetdb.http :as http]
@@ -790,7 +789,7 @@
     #{{:certname "foo.local"}}))
 
 (def invalid-projection-queries
-  (omap/ordered-map
+  (hash-map
     ;; Top level extract using invalid fields should throw an error
     ["extract" "nothing" ["~" "certname" ".*"]]
     #"Can't extract unknown 'reports' field 'nothing'.*Acceptable fields are.*"
@@ -810,8 +809,8 @@
         (are-error-response-headers headers)))))
 
 (def pg-versioned-invalid-regexps
-  (omap/ordered-map
-    "/v4/reports" (omap/ordered-map
+  (hash-map
+    "/v4/reports" (hash-map
                   ["~" "certname" "*abc"]
                   #".*invalid regular expression: quantifier operand invalid"
 

@@ -3,7 +3,6 @@
    [cheshire.core :as json]
    [clojure.string :as str :refer [starts-with?]]
    [clojure.test :refer :all]
-   [flatland.ordered.map :as omap]
    [puppetlabs.kitchensink.core :refer [keyset]]
    [puppetlabs.puppetdb.query-eng :refer [munge-fn-hook]]
    [puppetlabs.puppetdb.testutils :refer [paged-results] :as tu]
@@ -620,7 +619,7 @@
     (is (= 400 (:status res)))))
 
 (def invalid-projection-queries
-  (omap/ordered-map
+  (hash-map
      ;; Top level extract using invalid fields should throw an error
      ["extract" "nothing" ["~" "certname" ".*"]]
      #"Can't extract unknown 'nodes' field 'nothing'.*Acceptable fields are.*"
@@ -639,8 +638,8 @@
       (are-error-response-headers headers))))
 
 (def pg-versioned-invalid-regexps
-  (omap/ordered-map
-    "/v4/nodes" (omap/ordered-map
+  (hash-map
+    "/v4/nodes" (hash-map
                   ["~" "certname" "*abc"]
                   #".*invalid regular expression: quantifier operand invalid"
 
