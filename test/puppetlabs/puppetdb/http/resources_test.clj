@@ -12,8 +12,7 @@
                      deftest-http-app
                      query-response
                      ordered-query-result
-                     vector-param]]
-            [flatland.ordered.map :as omap])
+                     vector-param]])
   (:import
    (java.net HttpURLConnection)))
 
@@ -380,8 +379,8 @@ to the result of the form supplied to this method."
       (is (is-response-equal (query-response method endpoint ["=" "type" "Notify"]) #{foo2 bar2})))))
 
 (def versioned-invalid-queries
-  (omap/ordered-map
-    "/v4/resources" (omap/ordered-map
+  (hash-map
+    "/v4/resources" (hash-map
                       ;; inequality operator with string
                       ["<" "line" "22"]
                       #"Argument \"22\" and operator \"<\" have incompatible types."

@@ -4,7 +4,6 @@
    [clojure.string :as str]
    [clojure.test :refer :all]
    [clojure.walk :refer [stringify-keys]]
-   [flatland.ordered.map :as omap]
    [puppetlabs.puppetdb.http :as http]
    [puppetlabs.puppetdb.jdbc :as jdbc]
    [puppetlabs.puppetdb.scf.storage :as scf-store]
@@ -70,7 +69,7 @@
         response2 (assoc inventory2 :timestamp (to-string timestamp))
         response3 (assoc inventory3 :timestamp (to-string timestamp))]
 
-    (omap/ordered-map
+    (hash-map
      nil
      #{response1 response2 response3}
 

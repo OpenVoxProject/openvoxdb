@@ -3,7 +3,6 @@
             [puppetlabs.puppetdb.scf.storage :as scf-store]
             [cheshire.core :as json]
             [puppetlabs.puppetdb.testutils.events :refer [expected-resource-events]]
-            [flatland.ordered.map :as omap]
             [puppetlabs.puppetdb.examples :refer [catalogs]]
             [clojure.set :as clj-set]
             [puppetlabs.puppetdb.testutils :refer [paged-results]]
@@ -347,9 +346,9 @@
       (is (= #{} response2)))))
 
 (def versioned-subqueries
-  (omap/ordered-map
+  (hash-map
    "/v4/events"
-   (omap/ordered-map
+   (hash-map
     ["and"
      ["=" "containing_class" "Foo"]
      ["in" "certname" ["extract" "certname" ["select_resources"
@@ -456,8 +455,8 @@
       (is-query-result method endpoint query results))))
 
 (def versioned-invalid-subqueries
-  (omap/ordered-map
-   "/v4/events" (omap/ordered-map
+  (hash-map
+   "/v4/events" (hash-map
                  ;; Extract using invalid fields should throw an error
                  ["in" "certname" ["extract" "nothing" ["select_resources"
                                                         ["=" "type" "Class"]]]]
@@ -490,8 +489,8 @@
         (are-error-response-headers headers)))))
 
 (def versioned-invalid-queries
-  (omap/ordered-map
-    "/v4/events" (omap/ordered-map
+  (hash-map
+    "/v4/events" (hash-map
 
                    ;; string values invalid on numeric fields
                    ["=" "line" "100"]
@@ -516,8 +515,8 @@
         (are-error-response-headers headers)))))
 
 (def pg-versioned-invalid-regexps
-  (omap/ordered-map
-   "/v4/events" (omap/ordered-map
+  (hash-map
+   "/v4/events" (hash-map
                  ["~" "certname" "*abc"]
                  #".*invalid regular expression: quantifier operand invalid"
 
