@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [9.2.0](https://github.com/openvoxproject/openvoxdb/tree/9.2.0) (2026-11-03)
+
+[Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/9.1.1...9.2.0)
+
+**Implemented enhancements:**
+
+- Remove dependency on flatland/ordered [\#637](https://github.com/OpenVoxProject/openvoxdb/pull/637) ([austb](https://github.com/austb))
+
+**Security fixes:**
+
+- Depend on openvox-agent \>=9.3.0 [\#644](https://github.com/OpenVoxProject/openvoxdb/pull/644) ([Sharpie](https://github.com/Sharpie))
+- Update dependency org.openvoxproject:trapperkeeper-authorization to v2.5.0 \(main\) [\#641](https://github.com/OpenVoxProject/openvoxdb/pull/641) ([renovate[bot]](https://github.com/apps/renovate))
+
 ## [9.1.1](https://github.com/openvoxproject/openvoxdb/tree/9.1.1) (2026-10-29)
 
 [Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/9.1.0...9.1.1)
