@@ -1,7 +1,6 @@
 (ns puppetlabs.puppetdb.http.packages-test
   (:require
    [clojure.test :refer :all]
-   [flatland.ordered.map :as omap]
    [puppetlabs.puppetdb.jdbc :as jdbc]
    [puppetlabs.puppetdb.testutils.db :refer [*db*]]
    [puppetlabs.puppetdb.testutils.http
@@ -16,7 +15,7 @@
    :provider provider})
 
 (def queries->results
-  (omap/ordered-map
+  (hash-map
    ["=" "certname" "node1"]
    #{(package-map "node1" "foo" "1.2.3" "apt")
      (package-map "node1" "bar" "2.3.4" "apt")

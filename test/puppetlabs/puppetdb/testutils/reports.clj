@@ -9,7 +9,6 @@
             [puppetlabs.puppetdb.utils :as utils]
             [puppetlabs.puppetdb.jdbc :as jdbc]
             [clojure.walk :refer [keywordize-keys]]
-            [flatland.ordered.map :as omap]
             [puppetlabs.puppetdb.time :as time]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -138,8 +137,8 @@
 (defn enumerated-resource-events-map
   [resource-events]
   (->> resource-events
-       kitchensink/enumerate
-       (into (omap/ordered-map))))
+       (map-indexed vector)
+       (into (sorted-map))))
 
 (defn munge-resource-events [resource-events]
   (->> resource-events

@@ -14,7 +14,7 @@
                      query-resource-events
                      raw-expected-resource-events
                      timestamps->str]]
-            [puppetlabs.puppetdb.testutils :refer [dotestseq select-values']]
+            [puppetlabs.puppetdb.testutils :refer [dotestseq]]
             [puppetlabs.puppetdb.time :refer [now to-timestamp]])
   (:import
    (clojure.lang ExceptionInfo)))
@@ -436,7 +436,7 @@
     (let [basic4        (store-example-report! (:basic4 reports) (now))
           events        (get-in reports [:basic4 :resource_events :data])
           event-count   (count events)
-          select-values #(select-values' (enumerated-resource-events-map events) %)
+          select-values #(mapv (vec events) %)
           version :v4]
       (testing "limit results"
         (doseq [[limit expected] [[1 1] [2 2] [100 event-count]]]
