@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.18.0](https://github.com/openvoxproject/openvoxdb/tree/8.18.0) (2026-11-03)
+
+[Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/8.17.1...8.18.0)
+
+**Fixed bugs:**
+
+- \[Backport 8.x\] Update vox:build task to re-name FIPS tarballs [\#630](https://github.com/OpenVoxProject/openvoxdb/pull/630) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+
+**Security fixes:**
+
+- Depend on openvox-agent \>=8.32.0 [\#643](https://github.com/OpenVoxProject/openvoxdb/pull/643) ([Sharpie](https://github.com/Sharpie))
+- Update dependency org.openvoxproject:trapperkeeper-authorization to v2.5.0 \(8.x\) [\#642](https://github.com/OpenVoxProject/openvoxdb/pull/642) ([renovate[bot]](https://github.com/apps/renovate))
+
+**Merged pull requests:**
+
+- CI: Update external actions [\#632](https://github.com/OpenVoxProject/openvoxdb/pull/632) ([bastelfreak](https://github.com/bastelfreak))
+
 ## [8.17.1](https://github.com/openvoxproject/openvoxdb/tree/8.17.1) (2026-10-29)
 
 [Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/8.17.0...8.17.1)
