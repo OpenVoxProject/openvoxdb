@@ -272,6 +272,18 @@
                       :callback identity
                       :compression compression})))
 
+(defn certname-matches-cmdref?
+  "True if certname is the certname the command described by cmdref was
+  submitted for.  A cmdref's :certname is really a certid, i.e. it may
+  be a sanitized and truncated proxy for the original certname (see
+  embeddable-certid), so certname is put through the same
+  transformation here rather than compared directly."
+  [cmdref certname]
+  (= (:certname cmdref)
+     (-> (serialize-metadata (:received cmdref) (assoc cmdref :certname certname) false)
+         parse-metadata
+         :certname)))
+
 (defn wrap-decompression-stream
   [file-extension command-stream]
   (condp = file-extension
