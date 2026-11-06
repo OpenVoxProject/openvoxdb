@@ -28,9 +28,15 @@ example,
     ssh -L 8080:localhost:8080 root@<puppetdb server>
 
 and then visit `http://localhost:8080` in the browser. If OpenVoxDB is running
-locally, or on a remote host that is listening for external cleartext
-connections from your machine, you can skip the ssh tunnel and visit either
-`http://localhost:8080` or `http://<puppetdb server>:8080` directly.
+locally you can skip the ssh tunnel and visit `http://localhost:8080` directly.
+
+Cleartext requests that do not come from a loopback address are rejected,
+because a cleartext client has no way to present a certificate and so cannot be
+authenticated. If OpenVoxDB is listening for external cleartext connections and
+you want to reach the dashboard at `http://<puppetdb server>:8080` without a
+tunnel, you have to set
+[`allow-unauthenticated-cleartext`](./configure.markdown#allow-unauthenticated-cleartext),
+which turns off authentication for that port entirely.
 
 OpenVoxDB uses this page to display a web-based dashboard with performance information and metrics, including its memory use, queue depth, command processing metrics, duplication rate, and query stats. It displays min/max/median of each metric over a configurable duration, as well as an animated SVG "sparkline" (a simple line chart that shows general variation). It also displays the current version of OpenVoxDB.
 

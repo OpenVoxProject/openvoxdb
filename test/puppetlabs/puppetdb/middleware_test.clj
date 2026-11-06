@@ -68,24 +68,71 @@
   {:scheme :https
    :ssl-client-cn hostname})
 
+(def ^:private ok-handler
+  (fn [_req] (-> (rr/response nil)
+                 (rr/status HttpURLConnection/HTTP_OK))))
+
+(defn- status-for [app req]
+  (:status (app req)))
+
 (deftest wrapping-authorization
   (testing "Should only allow authorized requests"
-    ;; Setup an app that only lets through odd numbers
     (let [wl (.getAbsolutePath (temp-file "allowlist-log-reject"))
           _ (spit wl "foobar")
-          handler     (fn [_req] (-> (rr/response nil)
-                                     (rr/status HttpURLConnection/HTTP_OK)))
-
-          message     "The client certificate name"
-          app (wrap-cert-authn handler wl)]
-      ;; Even numbers should trigger an unauthorized response
+          message "The client certificate name"
+          app (wrap-cert-authn ok-handler wl false)]
+      ;; A cn that isn't in the allowlist should trigger an unauthorized response
       (is (= HttpURLConnection/HTTP_FORBIDDEN
-             (:status (app (create-authorizing-request "baz")))))
+             (status-for app (create-authorizing-request "baz"))))
       ;; The failure reason should be shown to the user
       (is (.contains (:body (app (create-authorizing-request "baz"))) message))
-      ;; Odd numbers should get through fine
+      ;; A cn that is in the allowlist should get through fine
       (is (= HttpURLConnection/HTTP_OK
-             (:status (app (create-authorizing-request "foobar"))))))))
+             (status-for app (create-authorizing-request "foobar"))))))
+
+  (testing "Should reject an unauthenticated request when there is no allowlist"
+    (let [app (wrap-cert-authn ok-handler nil false)]
+      (is (= HttpURLConnection/HTTP_OK
+             (status-for app (create-authorizing-request "anybody"))))
+      (is (= HttpURLConnection/HTTP_FORBIDDEN
+             (status-for app {:scheme :https})))
+      (is (.contains (:body (app {:scheme :https}))
+                     "requires clients to present a certificate"))))
+
+  (testing "Should apply the allowlist to cleartext requests"
+    (let [wl (.getAbsolutePath (temp-file "allowlist-cleartext"))
+          _ (spit wl "foobar")
+          app (wrap-cert-authn ok-handler wl false)]
+      ;; A cleartext request from elsewhere can't satisfy the allowlist, even
+      ;; when it claims a cn that appears in it.
+      (is (= HttpURLConnection/HTTP_FORBIDDEN
+             (status-for app {:scheme :http :remote-addr "192.0.2.1"})))
+      (is (= HttpURLConnection/HTTP_FORBIDDEN
+             (status-for app {:scheme :http
+                              :remote-addr "192.0.2.1"
+                              :ssl-client-cn "foobar"})))))
+
+  (testing "Should exempt loopback cleartext requests"
+    (doseq [allowlist [nil (doto (.getAbsolutePath (temp-file "allowlist-loopback"))
+                             (spit "foobar"))]]
+      (let [app (wrap-cert-authn ok-handler allowlist false)]
+        (doseq [addr ["127.0.0.1" "127.0.1.1" "::1"]]
+          (is (= HttpURLConnection/HTTP_OK
+                 (status-for app {:scheme :http :remote-addr addr}))))
+        (is (= HttpURLConnection/HTTP_FORBIDDEN
+               (status-for app {:scheme :http :remote-addr "192.0.2.1"})))
+        ;; An https request from loopback is not exempt; the exemption exists
+        ;; because a cleartext client has no way to present a certificate.
+        (is (= HttpURLConnection/HTTP_FORBIDDEN
+               (status-for app {:scheme :https :remote-addr "127.0.0.1"}))))))
+
+  (testing "Should exempt all cleartext requests when configured to"
+    (let [app (wrap-cert-authn ok-handler nil true)]
+      (is (= HttpURLConnection/HTTP_OK
+             (status-for app {:scheme :http :remote-addr "192.0.2.1"})))
+      ;; Only cleartext is exempted
+      (is (= HttpURLConnection/HTTP_FORBIDDEN
+             (status-for app {:scheme :https :remote-addr "192.0.2.1"}))))))
 
 (deftest wrapping-cert-cn-extraction
   (with-redefs [get-cn-from-x509-certificate :cn]
@@ -158,7 +205,10 @@
         (is (nil? (authorizer-fn {:ssl-client-cn "foobar"})))
         (with-log-output logz
           (is (= 403 (:status (authorizer-fn {:ssl-client-cn "badguy"}))))
-          (is (= 1 (count (logs-matching #"^badguy rejected by certificate allowlist " @logz)))))))))
+          (is (= 1 (count (logs-matching #"^badguy rejected by certificate allowlist " @logz)))))
+        (testing "and reject a request with no client certificate"
+          (is (= 403 (:status (authorizer-fn {}))))
+          (is (= 403 (:status (authorizer-fn {:scheme :http})))))))))
 
 (deftest test-fail-when-payload-too-large
   (testing "max-command-size-fail disabled should allow commands of any size"
