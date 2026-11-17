@@ -23,7 +23,7 @@ on:
       deb_platform_list:
         description: >-
           A comma-separated list of deb-based platforms to build for, excluding
-          the architecture (e.g. ubuntu-24.04,debian-12). Do not include spaces.
+          the architecture (e.g. ubuntu-26.04,debian-12). Do not include spaces.
           If not provided, will use the default list of platforms chosen above.
         required: false
         type: string

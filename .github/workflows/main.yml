@@ -30,7 +30,7 @@ jobs:
           - int/openjdk25/pup-main/srv-main/pg-18/rich
 
 
-        os: [ubuntu-24.04]
+        os: [ubuntu-26.04]
         ruby: ['4.0']
 
         # Defaults for special-case influencing vars
@@ -41,26 +41,26 @@ jobs:
         include:
           # lint
           - flavor: lint/openjdk21
-            os: ubuntu-24.04
+            os: ubuntu-26.04
             ruby: '4.0'
 
           # unit
           # jdk 25
           - flavor: core+ext/openjdk25/pg-18
-            os: ubuntu-24.04
+            os: ubuntu-26.04
             ruby: '4.0'
           # jdk 21
           - flavor: core+ext/openjdk21/pg-18
-            os: ubuntu-24.04
+            os: ubuntu-26.04
             ruby: '4.0'
           # Extra tests
           - flavor: core+ext/openjdk21/pg-18
-            os: ubuntu-24.04
+            os: ubuntu-26.04
             ruby: '4.0'
             drop-joins: by-request
           # FIPS
           - flavor: core+ext/openjdk21/pg-18
-            os: ubuntu-24.04
+            os: ubuntu-26.04
             ruby: '4.0'
             lein-profile: fips
 
@@ -114,7 +114,7 @@ jobs:
 
   build:
     name: build openvoxdb
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       pull-requests: write
     outputs:
@@ -196,7 +196,7 @@ jobs:
 
   build-fips:
     name: build openvoxdb FIPS packages
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       artifact-id: ${{ steps.upload.outputs.artifact-id }}
       smoke-targets: ${{ steps.smoke-targets.outputs.targets }}
@@ -254,7 +254,7 @@ jobs:
     needs:
       - build
       - build-fips
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       matrix: ${{ steps.join.outputs.matrix }}
     steps:
@@ -273,7 +273,7 @@ jobs:
       - build
       - build-fips
       - smoke-matrix
-    runs-on: ${{ endsWith(matrix.target, '-aarch64') && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+    runs-on: ${{ endsWith(matrix.target, '-aarch64') && 'ubuntu-26.04-arm' || 'ubuntu-26.04' }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.smoke-matrix.outputs.matrix) }}
@@ -298,7 +298,7 @@ jobs:
 
   termini-rspec:
     name: openvoxdb-termini RSpec
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: checkout repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -320,7 +320,7 @@ jobs:
       - build-fips
       - smoke
       - termini-rspec
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     name: Test suite
     steps:
       - name: Decide whether the needed jobs succeeded or failed
