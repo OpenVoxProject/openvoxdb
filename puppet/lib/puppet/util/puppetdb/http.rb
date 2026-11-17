@@ -133,8 +133,8 @@ module Puppet::Util::Puppetdb
       end
     end
 
-    def self.raise_request_error(response, response_error, path_suffix)
-      server_url_strings = Puppet::Util::Puppetdb.config.server_urls.map {|server_url| server_url.to_s}.join(', ')
+    def self.raise_request_error(response, response_error, path_suffix, server_urls = Puppet::Util::Puppetdb.config.server_urls)
+      server_url_strings = server_urls.map {|server_url| server_url.to_s}.join(', ')
       if response_error == :notfound
         raise NotFoundError, "Failed to find '#{path_suffix}' on any of the following 'server_urls': #{server_url_strings}"
       else
@@ -191,7 +191,7 @@ module Puppet::Util::Puppetdb
       end
 
       if response.nil? or not(response_error.nil?)
-        raise_request_error(response, response_error, path_suffix)
+        raise_request_error(response, response_error, path_suffix, server_urls)
       end
 
       response
@@ -251,17 +251,21 @@ module Puppet::Util::Puppetdb
     # @param request_type [Symbol] :query or :command
     # @param http_callback [Proc] proc containing the code calling the action on the http connection
     # @return [Response] returns http response
-    def self.action(path_suffix, request_mode, &http_callback)
+    def self.action(path_suffix, request_mode, options = {}, &http_callback)
       config = Puppet::Util::Puppetdb.config
 
-      if config.verify_client_certificate
+      tls_overrides = options.select { |key, _| [:ssl_cert, :ssl_key, :ssl_ca, :ssl_crl].include?(key) }
+      if tls_overrides.empty? && config.verify_client_certificate
         ssl_context = nil
       else
         require 'puppet/ssl/ssl_provider'
 
-        # If we're not doing full client validation, we at least check the CA.
-        # This hands off settings to puppet.conf for the CA cert path, CRL and revocation checks
-        cert_provider = Puppet::X509::CertProvider.new
+        provider_options = {}
+        provider_options[:capath] = options[:ssl_ca] if options[:ssl_ca]
+        provider_options[:crlpath] = options[:ssl_crl] if options[:ssl_crl]
+        provider_options[:hostcert] = options[:ssl_cert] if options[:ssl_cert]
+        provider_options[:hostprivkey] = options[:ssl_key] if options[:ssl_key]
+        cert_provider = Puppet::X509::CertProvider.new(**provider_options)
         cacerts = cert_provider.load_cacerts(required: true)
 
         case Puppet[:certificate_revocation]
@@ -272,12 +276,19 @@ module Puppet::Util::Puppetdb
         end
 
         ssl_provider = Puppet::SSL::SSLProvider.new
-        ssl_context = ssl_provider.create_root_context(cacerts: cacerts, crls: crls, revocation: Puppet[:certificate_revocation])
+        if config.verify_client_certificate || options[:ssl_cert] || options[:ssl_key]
+          private_key = cert_provider.load_private_key(Puppet[:certname], required: true)
+          client_cert = cert_provider.load_client_cert(Puppet[:certname], required: true)
+          ssl_context = ssl_provider.create_context(cacerts: cacerts, crls: crls, private_key: private_key, client_cert: client_cert, revocation: Puppet[:certificate_revocation])
+        else
+          ssl_context = ssl_provider.create_root_context(cacerts: cacerts, crls: crls, revocation: Puppet[:certificate_revocation])
+        end
       end
 
       case request_mode
       when :query
-        self.failover_action(path_suffix, config.server_urls, config.sticky_read_failover, ssl_context, http_callback)
+        server_urls = options[:url] ? Puppet::Util::Puppetdb::Config.convert_and_validate_urls([options[:url]]) : config.server_urls
+        self.failover_action(path_suffix, server_urls, options[:url] ? false : config.sticky_read_failover, ssl_context, http_callback)
       when :command
         submit_server_urls = config.server_urls + config.submit_only_server_urls
         if config.command_broadcast
