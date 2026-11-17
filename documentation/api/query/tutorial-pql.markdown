@@ -104,6 +104,21 @@ to query PuppetDB from within a Puppet manifest. For example,
         message => "Your debian nodes are ${join($debian_nodes, ', ')}",
     }
 
+The function accepts an optional hash of connection overrides.
+Omitted keys use the configured defaults:
+
+```puppet
+$nodes = puppetdb_query($debian_nodes_query, {
+  'url'      => 'https://db.example.com:8081',
+  'ssl_cert' => '/etc/ssl/client.pem',
+  'ssl_key'  => '/etc/ssl/client-key.pem',
+  'ssl_ca'   => '/etc/ssl/ca.pem',
+})
+```
+
+Overrides apply only to that query.
+Certificate revocation checking still uses the Puppet `certificate_revocation` and `hostcrl` settings; the configured CRL must be appropriate for the selected CA.
+
 ## Resources Walkthrough
 
 ### Our first query
