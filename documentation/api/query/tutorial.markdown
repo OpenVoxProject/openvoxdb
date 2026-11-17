@@ -63,6 +63,19 @@ to query PuppetDB from within a Puppet manifest. For example,
         message => "Your debian nodes are ${join($debian_nodes, ', ')}",
     }
 
+An optional hash after the query can override:
+
+* the HTTPS OpenVoxDB URL (`url`),
+* client certificate path (`ssl_cert`),
+* private key path (`ssl_key`),
+* CA certificate path (`ssl_ca`),
+* and CRL path (`ssl_crl`)
+
+Omitted keys use the configured defaults.
+These overrides apply only to that query.
+Certificate revocation checking follows Puppet's `certificate_revocation` setting; `ssl_crl` overrides `hostcrl` from puppet.conf and must be appropriate for the selected CA.
+If revocation checking is disabled, the CRL is not loaded.
+
 ## Resources Walkthrough
 
 ### Our first query

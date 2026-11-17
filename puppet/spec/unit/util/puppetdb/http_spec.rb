@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'puppet/util/puppetdb/http'
+require 'puppet/ssl/ssl_provider'
 
 describe Puppet::Util::Puppetdb::Http do
 
@@ -51,6 +52,176 @@ describe Puppet::Util::Puppetdb::Http do
 
   describe "#action" do
     describe "for request_type=:query" do
+      it "uses the overridden URL without changing the configured URLs" do
+        Puppet::HTTP::Client.expects(:new).returns(http1)
+        http1.expects(:get).with do |uri, opts|
+          uri.to_s == 'https://other.example:8081/pdb/query/v4'
+        end.returns(responseok)
+
+        described_class.action('/pdb/query/v4', :query, :url => 'https://other.example:8081') do |http_instance, path|
+          http_instance.get(path, {})
+        end
+
+        expect(config.server_urls.map(&:to_s)).to eq(['https://server1:8080/foo', 'https://server2:8181/bar'])
+      end
+
+      it "rejects an insecure URL override" do
+        expect {
+          described_class.action('/pdb/query/v4', :query, :url => 'http://other.example:8081') {}
+        }.to raise_error(/must be https/)
+      end
+
+      it "reports the overridden URL when the request fails" do
+        Puppet::HTTP::Client.expects(:new).returns(http1)
+        http1.expects(:get).raises(Puppet::HTTP::HTTPError, 'Connection refused')
+
+        expect {
+          described_class.action('/pdb/query/v4', :query, :url => 'https://other.example:8081') do |http_instance, path|
+            http_instance.get(path, {})
+          end
+        }.to raise_error(Puppet::Error, /https:\/\/other\.example:8081/)
+      end
+
+      it "uses the overridden TLS paths for the client context" do
+        cert_provider = mock('certificate provider')
+        ssl_provider = mock('SSL provider')
+        ssl_context = stub('SSL context')
+        certname = Puppet[:certname]
+        options = { :ssl_cert => '/client.pem', :ssl_key => '/client-key.pem', :ssl_ca => '/ca.pem' }
+        Puppet::X509::CertProvider.expects(:new).with(capath: '/ca.pem', hostcert: '/client.pem', hostprivkey: '/client-key.pem').returns(cert_provider)
+        cert_provider.expects(:load_cacerts).with(required: true).returns([:ca])
+        cert_provider.expects(:load_private_key).with(Puppet[:certname], required: true).returns(:key)
+        cert_provider.expects(:load_client_cert).with(Puppet[:certname], required: true).returns(:cert)
+        Puppet.stubs(:[]).with(:certificate_revocation).returns(false)
+        Puppet.stubs(:[]).with(:certname).returns(certname)
+        Puppet::SSL::SSLProvider.expects(:new).returns(ssl_provider)
+        ssl_provider.expects(:create_context).with(cacerts: [:ca], crls: [], private_key: :key, client_cert: :cert, revocation: false).returns(ssl_context)
+        Puppet::HTTP::Client.expects(:new).returns(http1)
+        http1.expects(:get).with { |uri, opts| opts[:ssl_context] == ssl_context }.returns(responseok)
+
+        described_class.action('/pdb/query/v4', :query, options) do |http_instance, path, context|
+          http_instance.get(path, :ssl_context => context)
+        end
+      end
+
+      it "uses the overridden CRL with default certificate paths" do
+        cert_provider = mock('certificate provider')
+        ssl_provider = mock('SSL provider')
+        certname = Puppet[:certname]
+        Puppet::X509::CertProvider.expects(:new).with(crlpath: '/crl.pem').returns(cert_provider)
+        cert_provider.expects(:load_cacerts).with(required: true).returns([:ca])
+        cert_provider.expects(:load_crls).with(required: true).returns([:crl])
+        cert_provider.expects(:load_private_key).with(certname, required: true).returns(:key)
+        cert_provider.expects(:load_client_cert).with(certname, required: true).returns(:cert)
+        Puppet.stubs(:[]).with(:certificate_revocation).returns(:chain)
+        Puppet.stubs(:[]).with(:certname).returns(certname)
+        Puppet::SSL::SSLProvider.expects(:new).returns(ssl_provider)
+        ssl_provider.expects(:create_context).with(cacerts: [:ca], crls: [:crl], private_key: :key, client_cert: :cert, revocation: :chain).returns(:context)
+        Puppet::HTTP::Client.expects(:new).returns(http1)
+        http1.expects(:get).with { |uri, opts| opts[:ssl_context] == :context }.returns(responseok)
+
+        described_class.action('/pdb/query/v4', :query, :ssl_crl => '/crl.pem') do |http_instance, path, context|
+          http_instance.get(path, :ssl_context => context)
+        end
+      end
+
+      it "uses the overridden CRL for leaf revocation checking without a client certificate" do
+        config.stubs(:verify_client_certificate).returns(false)
+        cert_provider = mock('certificate provider')
+        ssl_provider = mock('SSL provider')
+        Puppet::X509::CertProvider.expects(:new).with(crlpath: '/crl.pem').returns(cert_provider)
+        cert_provider.expects(:load_cacerts).with(required: true).returns([:ca])
+        cert_provider.expects(:load_crls).with(required: true).returns([:crl])
+        Puppet.stubs(:[]).with(:certificate_revocation).returns(:leaf)
+        Puppet::SSL::SSLProvider.expects(:new).returns(ssl_provider)
+        ssl_provider.expects(:create_root_context).with(cacerts: [:ca], crls: [:crl], revocation: :leaf).returns(:context)
+        Puppet::HTTP::Client.expects(:new).returns(http1)
+        http1.expects(:get).with { |uri, opts| opts[:ssl_context] == :context }.returns(responseok)
+
+        described_class.action('/pdb/query/v4', :query, :ssl_crl => '/crl.pem') do |http_instance, path, context|
+          http_instance.get(path, :ssl_context => context)
+        end
+      end
+
+      it "does not load the overridden CRL when revocation checking is disabled" do
+        config.stubs(:verify_client_certificate).returns(false)
+        cert_provider = mock('certificate provider')
+        ssl_provider = mock('SSL provider')
+        Puppet::X509::CertProvider.expects(:new).with(crlpath: '/crl.pem').returns(cert_provider)
+        cert_provider.expects(:load_cacerts).with(required: true).returns([:ca])
+        cert_provider.expects(:load_crls).never
+        Puppet.stubs(:[]).with(:certificate_revocation).returns(false)
+        Puppet::SSL::SSLProvider.expects(:new).returns(ssl_provider)
+        ssl_provider.expects(:create_root_context).with(cacerts: [:ca], crls: [], revocation: false).returns(:context)
+        Puppet::HTTP::Client.expects(:new).returns(http1)
+        http1.expects(:get).with { |uri, opts| opts[:ssl_context] == :context }.returns(responseok)
+
+        described_class.action('/pdb/query/v4', :query, :ssl_crl => '/crl.pem') do |http_instance, path, context|
+          http_instance.get(path, :ssl_context => context)
+        end
+      end
+
+      it "uses default certificate paths for omitted TLS overrides" do
+        cert_provider = mock('certificate provider')
+        ssl_provider = mock('SSL provider')
+        certname = Puppet[:certname]
+        Puppet::X509::CertProvider.expects(:new).with(capath: '/ca.pem').returns(cert_provider)
+        cert_provider.expects(:load_cacerts).with(required: true).returns([:ca])
+        cert_provider.expects(:load_crls).with(required: true).returns([:crl])
+        cert_provider.expects(:load_private_key).with(Puppet[:certname], required: true).returns(:key)
+        cert_provider.expects(:load_client_cert).with(Puppet[:certname], required: true).returns(:cert)
+        Puppet.stubs(:[]).with(:certificate_revocation).returns(:chain)
+        Puppet.stubs(:[]).with(:certname).returns(certname)
+        Puppet::SSL::SSLProvider.expects(:new).returns(ssl_provider)
+        ssl_provider.expects(:create_context).with(cacerts: [:ca], crls: [:crl], private_key: :key,
+                                                   client_cert: :cert, revocation: :chain).returns(:context)
+        Puppet::HTTP::Client.expects(:new).returns(http1)
+        http1.expects(:get).with { |uri, opts| opts[:ssl_context] == :context }.returns(responseok)
+
+        described_class.action('/pdb/query/v4', :query, :ssl_ca => '/ca.pem') do |http_instance, path, context|
+          http_instance.get(path, :ssl_context => context)
+        end
+      end
+
+      it "uses a root-only context for a CA override when client certificates are disabled" do
+        config.stubs(:verify_client_certificate).returns(false)
+        cert_provider = mock('certificate provider')
+        ssl_provider = mock('SSL provider')
+        Puppet::X509::CertProvider.expects(:new).with(capath: '/ca.pem').returns(cert_provider)
+        cert_provider.expects(:load_cacerts).with(required: true).returns([:ca])
+        Puppet.stubs(:[]).with(:certificate_revocation).returns(false)
+        Puppet::SSL::SSLProvider.expects(:new).returns(ssl_provider)
+        ssl_provider.expects(:create_root_context).with(cacerts: [:ca], crls: [], revocation: false).returns(:context)
+        Puppet::HTTP::Client.expects(:new).returns(http1)
+        http1.expects(:get).with { |uri, opts| opts[:ssl_context] == :context }.returns(responseok)
+
+        described_class.action('/pdb/query/v4', :query, :ssl_ca => '/ca.pem') do |http_instance, path, context|
+          http_instance.get(path, :ssl_context => context)
+        end
+      end
+
+      it "uses explicit client credentials when client certificates are disabled" do
+        config.stubs(:verify_client_certificate).returns(false)
+        cert_provider = mock('certificate provider')
+        ssl_provider = mock('SSL provider')
+        certname = Puppet[:certname]
+        Puppet::X509::CertProvider.expects(:new).with(hostcert: '/client.pem', hostprivkey: '/key.pem').returns(cert_provider)
+        cert_provider.expects(:load_cacerts).with(required: true).returns([:ca])
+        cert_provider.expects(:load_private_key).with(certname, required: true).returns(:key)
+        cert_provider.expects(:load_client_cert).with(certname, required: true).returns(:cert)
+        Puppet.stubs(:[]).with(:certificate_revocation).returns(false)
+        Puppet.stubs(:[]).with(:certname).returns(certname)
+        Puppet::SSL::SSLProvider.expects(:new).returns(ssl_provider)
+        ssl_provider.expects(:create_context).with(cacerts: [:ca], crls: [], private_key: :key,
+                                                   client_cert: :cert, revocation: false).returns(:context)
+        Puppet::HTTP::Client.expects(:new).returns(http1)
+        http1.expects(:get).with { |uri, opts| opts[:ssl_context] == :context }.returns(responseok)
+
+        described_class.action('/pdb/query/v4', :query, :ssl_cert => '/client.pem', :ssl_key => '/key.pem') do |http_instance, path, context|
+          http_instance.get(path, :ssl_context => context)
+        end
+      end
+
       it "call the proc argument with a correct path" do
         Puppet::HTTP::Client.expects(:new).returns(http1)
         http1.expects(:get).with do |uri, opts|
