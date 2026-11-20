@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.18.1](https://github.com/openvoxproject/openvoxdb/tree/8.18.1) (2026-11-20)
+
+[Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/8.18.0...8.18.1)
+
+**Implemented enhancements:**
+
+- \[Backport 8.x\] puppetdb\_query: Add support for external openvoxdb instances [\#662](https://github.com/OpenVoxProject/openvoxdb/pull/662) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+- Backport flatland removal [\#646](https://github.com/OpenVoxProject/openvoxdb/pull/646) ([austb](https://github.com/austb))
+
+**Security fixes:**
+
+- \[Backport 8.x\] Verify that Fact data matches request certname [\#672](https://github.com/OpenVoxProject/openvoxdb/pull/672) ([Sharpie](https://github.com/Sharpie))
+
+**Merged pull requests:**
+
+- \[Backport 8.x\] Replace trusted data in facts instead of adding a second key [\#673](https://github.com/OpenVoxProject/openvoxdb/pull/673) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+- Depend on openvox-agent \>=8.33.0 [\#656](https://github.com/OpenVoxProject/openvoxdb/pull/656) ([rwaffen](https://github.com/rwaffen))
+
 ## [8.18.0](https://github.com/openvoxproject/openvoxdb/tree/8.18.0) (2026-11-03)
 
 [Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/8.17.1...8.18.0)
@@ -31,6 +49,10 @@ All notable changes to this project will be documented in this file.
 
 - Update dependency org.openvoxproject:trapperkeeper-webserver to v12.1.2 \(8.x\) [\#621](https://github.com/OpenVoxProject/openvoxdb/pull/621) ([renovate[bot]](https://github.com/apps/renovate))
 - Update jackson updates to v2.21.8 \(8.x\) [\#599](https://github.com/OpenVoxProject/openvoxdb/pull/599) ([renovate[bot]](https://github.com/apps/renovate))
+
+**Closed issues:**
+
+- \[Bug\]: Facts terminus can't save facts that already contain "trusted" under json 3 \("detected duplicate key"\) [\#596](https://github.com/OpenVoxProject/openvoxdb/issues/596)
 
 **Merged pull requests:**
 
