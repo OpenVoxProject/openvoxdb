@@ -204,6 +204,7 @@
   (all-optional
    {:certificate-whitelist s/Str
     :certificate-allowlist s/Str
+    :allow-unauthenticated-cleartext (pls/defaulted-maybe String "false")
     :add-agent-report-filter (pls/defaulted-maybe String "true")
     :log-queries (pls/defaulted-maybe String "false")
     :query-timeout-default (pls/defaulted-maybe String "600")
@@ -212,6 +213,7 @@
 (def puppetdb-config-out
   "Schema for validating the parsed/processed [puppetdb] block"
   {(s/optional-key :certificate-allowlist) s/Str
+   :allow-unauthenticated-cleartext Boolean
    :add-agent-report-filter Boolean
    :log-queries Boolean
    :query-timeout-default s/Num

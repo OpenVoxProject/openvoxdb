@@ -26,7 +26,7 @@
             [puppetlabs.puppetdb.command.constants :as const])
   (:import
    (clojure.lang ExceptionInfo)
-   (java.net HttpURLConnection)
+   (java.net HttpURLConnection InetAddress UnknownHostException)
    (java.sql SQLException)))
 
 (def handler-schema (s/=> s/Any {s/Any s/Any}))
@@ -41,30 +41,80 @@
     (log/debug (trs "Processing HTTP request to URI: ''{0}''" (:uri req)))
     (app req)))
 
+(defn- no-certificate-response []
+  (http/denied-response
+   (tru "OpenVoxDB requires clients to present a certificate signed by its CA, and this request presented none.")
+   HttpURLConnection/HTTP_FORBIDDEN))
+
+(defn- reject-unauthenticated-request
+  "Returns a ring response rejecting a request that did not present a client
+  certificate, or nil if it did."
+  [{:keys [ssl-client-cn]}]
+  (when-not ssl-client-cn
+    (log/warn (trs "Request without a client certificate rejected"))
+    (no-certificate-response)))
+
 (defn build-allowlist-authorizer
   "Build a function that will authorize requests based on the supplied
-  certificate allowlist (see `cn-whitelist->authorizer` for more
-  details). Returns :authorized if the request is allowed, otherwise a
-  string describing the reason not."
+  certificate allowlist, a file of certnames, one per line. Returns nil if the
+  request is allowed, otherwise a ring response describing the reason not.
+
+  The allowlist is checked for every request, whatever scheme it arrived over,
+  so a request that presented no client certificate can never satisfy it."
   [allowlist]
   {:pre  [(string? allowlist)]
    :post [(fn? %)]}
-  (let [allowed? (kitchensink/cn-whitelist->authorizer allowlist)]
+  (let [allowed? (set (kitchensink/lines allowlist))]
     (fn [{:keys [ssl-client-cn] :as req}]
-      (when-not (allowed? req)
-        (when ssl-client-cn
-          (log/warn (trs "{0} rejected by certificate allowlist {1}" ssl-client-cn allowlist)))
-        (http/denied-response (tru "The client certificate name {0} doesn't appear in the certificate allowlist. Is your master''s (or other OpenVoxDB client''s) certname listed in OpenVoxDB''s certificate-allowlist file?" ssl-client-cn)
-                              HttpURLConnection/HTTP_FORBIDDEN)))))
+      (or (reject-unauthenticated-request req)
+          (when-not (allowed? ssl-client-cn)
+            (log/warn (trs "{0} rejected by certificate allowlist {1}" ssl-client-cn allowlist))
+            (http/denied-response (tru "The client certificate name {0} doesn't appear in the certificate allowlist. Is your master''s (or other OpenVoxDB client''s) certname listed in OpenVoxDB''s certificate-allowlist file?" ssl-client-cn)
+                                  HttpURLConnection/HTTP_FORBIDDEN))))))
+
+(defn- loopback-request?
+  "True if req arrived from a loopback address."
+  [{:keys [remote-addr]}]
+  (boolean
+   (when remote-addr
+     ;; Jetty reports the peer address as a literal, so this does not
+     ;; perform a name lookup.
+     (try
+       (.isLoopbackAddress (InetAddress/getByName remote-addr))
+       (catch UnknownHostException _ false)))))
 
 (defn wrap-cert-authn
-  [app cert-allowlist]
-  (if-let [cert-authorize-fn (some-> cert-allowlist build-allowlist-authorizer)]
-    (fn [req]
-      (if-let [cert-auth-result (cert-authorize-fn req)]
-        cert-auth-result
-        (app req)))
-    app))
+  "Ring middleware that authenticates requests by client certificate. A
+  request must present a certificate signed by OpenVoxDB's CA, and when
+  cert-allowlist is the path to a certname allowlist, the certificate's CN
+  must appear in it.
+
+  Cleartext HTTP requests cannot present a certificate. They are allowed only
+  when they arrive from a loopback address, or from anywhere when
+  allow-unauthenticated-cleartext? is set."
+  [app cert-allowlist allow-unauthenticated-cleartext?]
+  (let [authorize (if cert-allowlist
+                    (build-allowlist-authorizer cert-allowlist)
+                    reject-unauthenticated-request)]
+    (fn [{:keys [remote-addr scheme] :as req}]
+      (let [cleartext? (= :http scheme)]
+        (cond
+          (and cleartext? (or allow-unauthenticated-cleartext?
+                              (loopback-request? req)))
+          (app req)
+
+          ;; A cleartext connection cannot present a client certificate, so it
+          ;; can never authenticate, whatever the request claims.
+          cleartext?
+          (do
+            (log/warn (trs "Cleartext request from {0} rejected because it cannot present a client certificate"
+                           remote-addr))
+            (no-certificate-response))
+
+          :else
+          (if-let [denied (authorize req)]
+            denied
+            (app req)))))))
 
 (defn wrap-with-certificate-cn
   "Ring middleware that will annotate the request with an
