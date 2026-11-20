@@ -3,7 +3,8 @@
    [clojure.string :as str]
    [clojure.test :refer :all]
    [puppetlabs.puppetdb.queue
-    :refer [cmdref->cmd
+    :refer [certname-matches-cmdref?
+            cmdref->cmd
             create-command-req
             create-or-open-stockpile
             encode-command-time
@@ -135,6 +136,31 @@
              (select-keys command [:command :version :certname :payload])))
       (is (time/before? start (-> (:received command)
                                   wire-datetime->instant))))))
+
+(deftest test-certname-matches-cmdref?
+  (tqueue/with-stockpile q
+    (let [store #(->> {:message "payload"}
+                      tqueue/coerce-to-stream
+                      (create-command-req "replace facts" 5 % nil "" identity)
+                      (store-command q))]
+      (testing "a certname the metadata records verbatim"
+        (let [cmdref (store "bender.myowncasino.moon")]
+          (is (certname-matches-cmdref? cmdref "bender.myowncasino.moon"))
+          (is (not (certname-matches-cmdref? cmdref "flexo.myowncasino.moon")))))
+
+      (testing "a certname the metadata cannot record verbatim"
+        ;; These are sanitized and/or truncated, and distinguished only by
+        ;; the appended hash, so a direct comparison against the cmdref
+        ;; would fail for the certname the command was really submitted for.
+        (doseq [cname ["foo_bar/baz" (apply str "trol" (repeat 1000 "lo"))]]
+          (let [cmdref (store cname)]
+            (is (not= cname (:certname cmdref)))
+            (is (certname-matches-cmdref? cmdref cname))
+            (is (not (certname-matches-cmdref? cmdref (str cname "x")))))))
+
+      (testing "an absent certname matches nothing"
+        (let [cmdref (store "bender.myowncasino.moon")]
+          (is (not (certname-matches-cmdref? cmdref nil))))))))
 
 (deftest test-sorted-command-buffer
   (testing "newer catalogs/facts cause older catalogs to be deleted"

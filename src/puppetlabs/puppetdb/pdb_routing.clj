@@ -39,7 +39,8 @@
      (wrap-with-context "/meta" (meta/build-app))
      (wrap-with-context "/cmd" (cmd/command-app get-shared-globals enqueue-command-fn
                                       (conf/reject-large-commands? defaulted-config)
-                                      (conf/max-command-size defaulted-config)))
+                                      (conf/max-command-size defaulted-config)
+                                      (conf/trusted-submitter-allowlist defaulted-config)))
      (wrap-with-context "/query" (server/build-app get-shared-globals))
      (wrap-with-context "/admin" (admin/build-app enqueue-command-fn query-fn db-cfg clean-fn
                                         delete-node-fn))]))

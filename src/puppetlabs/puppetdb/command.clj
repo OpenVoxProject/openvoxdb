@@ -527,6 +527,32 @@
     "configure expiration" (prep-configure-expiration cmd)
     "replace catalog inputs" (prep-replace-catalog-inputs cmd)))
 
+(defn check-payload-certname
+  "Throws a fatal error if the certname in cmd's payload is not the
+  certname cmd was submitted for.  Does nothing unless the operator has
+  opted into binding commands to their submitter.
+
+  The command endpoint binds the submitted certname to the submitter's
+  certificate, but the storage functions act on the certname in the
+  payload, so the two must agree for that binding to constrain what a
+  submitter can change.  Nothing else requires them to agree, since the
+  submitted certname otherwise only names the queue entry.
+
+  The payload must already have been normalized to the latest wire
+  format, because earlier formats either name the certname differently
+  or, for deactivate node, do not carry a map at all."
+  [{:keys [certname payload] :as cmd}
+   {:keys [enforce-submitter-binding?] :as _options-config}]
+  (when enforce-submitter-binding?
+    (let [payload-certname (:certname payload)]
+      (when-not (queue/certname-matches-cmdref? cmd payload-certname)
+        (throw
+         (fatality
+          (ex-info (trs "payload names {0} but the command was submitted for {1}"
+                        (pr-str payload-certname) (pr-str certname))
+                   {:puppetlabs.puppetdb/known-error? true}))))))
+  cmd)
+
 (defn supported-command? [{:keys [command version] :as _cmd}]
   (some-> (supported-command-versions command) (get version)))
 
@@ -875,6 +901,7 @@
                                           options-config maybe-send-cmd-event!))
           :else (-> cmd
                     (prep-command options-config)
+                    (check-payload-certname options-config)
                     (process-cmd cmdref q write-dbs broadcast-pool response-chan
                                  stats maybe-send-cmd-event!
                                  shutdown-for-ex options-config))))
@@ -1003,7 +1030,13 @@
       :database
       (select-keys [:facts-blocklist
                     :facts-blocklist-type
-                    :resource-events-ttl])))
+                    :resource-events-ttl])
+      ;; Setting the allowlist is how an operator opts into binding
+      ;; commands to their submitter, which the command endpoint can
+      ;; only enforce for the submitted certname (see
+      ;; check-payload-certname).
+      (assoc :enforce-submitter-binding?
+             (boolean (conf/trusted-submitter-allowlist config)))))
 
 (defn start-command-service
   [context config {:keys [dlo] :as globals} request-shutdown]
