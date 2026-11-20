@@ -16,6 +16,17 @@ class Puppet::Node::Facts::Puppetdb < Puppet::Indirector::REST
     trusted.to_h
   end
 
+  # The PuppetDB terminus inherits from Puppet's REST class as it uses
+  # logic for sending data to a remote REST API. However, as we are
+  # operating on data received from a client, we need to restore
+  # the validation the certname given in the URL and checked by auth
+  # rules matches the data payload payload.
+  def validate_key(request)
+    unless request.key == request.instance.name
+      raise Puppet::Indirector::ValidationError, _("Instance name %{name} does not match requested key %{key}") % { name: request.instance.name.inspect, key: request.key.inspect }
+    end
+  end
+
   # Return a copy of +value+ with every configured fact path removed. Paths use
   # dot notation, so "networking.interfaces.eth0.mac" addresses a key nested
   # inside a structured fact. Array indexes become path components while we
