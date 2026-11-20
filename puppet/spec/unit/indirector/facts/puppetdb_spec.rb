@@ -107,6 +107,50 @@ describe Puppet::Node::Facts::Puppetdb do
       end.returns responseok
       save
     end
+
+    # Facts uploaded to the Server API are authorized based on the certname
+    # given in the request URL. The terminus must refuse request data for
+    # a different node name before anything reaches OpenVoxDB.
+    context "request key validation" do
+      let(:url_key)      { 'agent-a' }
+      let(:other_node)   { Puppet::Node::Facts.new('agent-b', 'role' => 'web') }
+
+      before :each do
+        Puppet::Node::Facts.indirection.stubs(:cache?).returns(false)
+      end
+
+      it "should reject an instance whose name does not match the request key" do
+        request = Puppet::Node::Facts.indirection.request(:save, url_key, other_node, options)
+
+        expect { subject.validate_key(request) }.to raise_error(Puppet::Indirector::ValidationError)
+      end
+
+      it "should accept an instance whose name matches the request key" do
+        request = Puppet::Node::Facts.indirection.request(:save, facts.name, facts, options)
+
+        expect { subject.validate_key(request) }.not_to raise_error
+      end
+
+      it "should not submit a command when the request key does not match" do
+        http.expects(:post).never
+
+        expect {
+          Puppet::Node::Facts.indirection.save(other_node, url_key, options)
+        }.to raise_error(Puppet::Indirector::ValidationError)
+      end
+
+      it "should not save to the cache terminus when the request key does not match" do
+        cache = mock('facts cache terminus')
+        cache.expects(:save).never
+        Puppet::Node::Facts.indirection.stubs(:cache?).returns(true)
+        Puppet::Node::Facts.indirection.stubs(:cache).returns(cache)
+        http.expects(:post).never
+
+        expect {
+          Puppet::Node::Facts.indirection.save(other_node, url_key, options)
+        }.to raise_error(Puppet::Indirector::ValidationError)
+      end
+    end
   end
 
   describe "#get_trusted_info" do
