@@ -174,7 +174,7 @@
                          ;;       major versions we have to chase CVEs for.
                          [net.logstash.logback/logstash-logback-encoder "8.1"]
                          [org.apache.commons/commons-lang3 "3.22.0"]
-                         [org.bouncycastle/bcpkix-jdk18on "1.86"]
+                         [org.bouncycastle/bcpkix-jdk18on "1.87"]
                          [org.bouncycastle/bcpkix-fips "2.1.13"]
                          [org.bouncycastle/bc-fips "2.1.3"]
                          [org.bouncycastle/bctls-fips "2.1.25"]
