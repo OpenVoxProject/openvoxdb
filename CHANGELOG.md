@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [9.2.1](https://github.com/openvoxproject/openvoxdb/tree/9.2.1) (2026-11-20)
+
+[Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/9.2.0...9.2.1)
+
+**Implemented enhancements:**
+
+- puppetdb\_query: Add support for external openvoxdb instances [\#659](https://github.com/OpenVoxProject/openvoxdb/pull/659) ([bastelfreak](https://github.com/bastelfreak))
+
+**Fixed bugs:**
+
+- Replace trusted data in facts instead of adding a second key [\#597](https://github.com/OpenVoxProject/openvoxdb/pull/597) ([miharp](https://github.com/miharp))
+
+**Security fixes:**
+
+- Verify that Fact data matches request certname [\#669](https://github.com/OpenVoxProject/openvoxdb/pull/669) ([Sharpie](https://github.com/Sharpie))
+
+**Merged pull requests:**
+
+- Depend on openvox-agent \>=9.4.0 [\#655](https://github.com/OpenVoxProject/openvoxdb/pull/655) ([rwaffen](https://github.com/rwaffen))
+- Build FIPS packages during release [\#645](https://github.com/OpenVoxProject/openvoxdb/pull/645) ([Sharpie](https://github.com/Sharpie))
+
 ## [9.2.0](https://github.com/openvoxproject/openvoxdb/tree/9.2.0) (2026-11-03)
 
 [Full Changelog](https://github.com/openvoxproject/openvoxdb/compare/9.1.1...9.2.0)
@@ -23,6 +44,10 @@ All notable changes to this project will be documented in this file.
 
 - Update dependency org.openvoxproject:trapperkeeper-webserver to v12.1.2 \(main\) [\#620](https://github.com/OpenVoxProject/openvoxdb/pull/620) ([renovate[bot]](https://github.com/apps/renovate))
 - Update jackson updates to v2.21.8 \(main\) [\#598](https://github.com/OpenVoxProject/openvoxdb/pull/598) ([renovate[bot]](https://github.com/apps/renovate))
+
+**Closed issues:**
+
+- \[Bug\]: Facts terminus can't save facts that already contain "trusted" under json 3 \("detected duplicate key"\) [\#596](https://github.com/OpenVoxProject/openvoxdb/issues/596)
 
 **Merged pull requests:**
 
