@@ -189,7 +189,7 @@
                          [org.openvoxproject/kitchensink "3.5.8" :classifier "test"]
                          [org.openvoxproject/rbac-client "1.3.0"]
                          [org.openvoxproject/ring-middleware "2.2.1"]
-                         [org.openvoxproject/ssl-utils "3.7.1"]
+                         [org.openvoxproject/ssl-utils "3.7.2"]
                          [org.openvoxproject/stockpile "1.0.3"]
                          [org.openvoxproject/structured-logging "1.0.3"]
                          [org.openvoxproject/trapperkeeper "5.0.6"]
