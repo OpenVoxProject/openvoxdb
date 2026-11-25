@@ -1306,6 +1306,25 @@
 
     (is (= 4 (:c (first (query-to-vec "SELECT count(*) AS c FROM catalog_resources WHERE certname_id = (select id from certnames where certname = ?)" certname)))))))
 
+(deftest-db replace-catalog-with-many-resource-params
+  ;; 1100 new resources x 30 params = 99,000 bind parameters, more than the
+  ;; JDBC driver accepts in one statement.
+  (let [catalog (reduce (fn [cat i]
+                          (let [title (str "res-" i)]
+                            (assoc-in cat [:resources {:type "Param_test" :title title}]
+                                      {:type "Param_test" :title title :exported false
+                                       :file "/tmp/params.pp" :line i :tags #{"param_test"}
+                                       :parameters (into {} (for [p (range 30)]
+                                                              [(keyword (str "param" p)) (str "value" p)]))})))
+                        catalog
+                        (range 1100))]
+    (add-certname! certname)
+    (replace-catalog! catalog)
+    (is (= (* 1100 30)
+           (:c (first (query-to-vec "SELECT count(*) AS c FROM catalog_resources cr
+                                     INNER JOIN resource_params rp ON rp.resource = cr.resource
+                                     WHERE cr.type = 'Param_test'")))))))
+
 (deftest-db change-line-resource-metadata
   (add-certname! certname)
   (replace-catalog! catalog)

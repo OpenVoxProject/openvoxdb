@@ -537,17 +537,16 @@
                        (some-> params sutils/munge-jsonb-for-storage)])}
            *note-add-params-insert* hsql/format (nxt/execute! (jdbc/connection))))
 
-    (doseq [batch (partition-all 1000 new-params)]
-      ;; The batch might only have one item with params {}.
-      (when-let [rows (seq (for [[resource-hash params] batch
-                                 [k v] params]
-                             [(sutils/munge-hash-for-storage resource-hash)
-                              (name k)
-                              (sutils/db-serialize v)]))]
-        (->> {:insert-into :resource_params
-              :columns [:resource :name :value]
-              :values rows}
-             *note-add-params-insert* hsql/format (nxt/execute! (jdbc/connection)))))))
+    ;; Batch by row (3 bind params each) to stay under the 65,535 limit.
+    (doseq [rows (partition-all 10000 (for [[resource-hash params] new-params
+                                            [k v] params]
+                                        [(sutils/munge-hash-for-storage resource-hash)
+                                         (name k)
+                                         (sutils/db-serialize v)]))]
+      (->> {:insert-into :resource_params
+            :columns [:resource :name :value]
+            :values rows}
+           *note-add-params-insert* hsql/format (nxt/execute! (jdbc/connection))))))
 
 (def resource-ref?
   "Returns true of the map is a resource reference"
