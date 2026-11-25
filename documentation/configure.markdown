@@ -248,6 +248,43 @@ If not supplied, OpenVoxDB uses standard HTTPS without any additional
 authorization. All HTTPS clients must still supply valid, verifiable
 SSL client certificates.
 
+### `trusted-submitter-allowlist`
+
+Optional. This describes the path to a file that contains a list of certificate
+names, one per line, that are permitted to submit
+[commands](./api/command/v1/commands.markdown) on behalf of other nodes.
+
+Commands name the node they apply to in their `certname` parameter, and
+OpenVoxDB does not otherwise require that parameter to have anything to do with
+the certificate the command was submitted with. Any client allowed to submit
+commands can therefore replace the facts, catalog, or reports of any node in the
+fleet, or deactivate it.
+
+When this setting is supplied, a client whose certificate name does not appear in
+the file may only submit commands whose `certname` is its own certificate name,
+and is rejected with a 403 otherwise. OpenVox Server submits commands for every
+agent whose catalog it compiles, so its certname belongs in this file, as does
+the certname of anything else that submits on behalf of other nodes, such as an
+OpenVoxDB sync or migration tool.
+
+The `certname` parameter only names the queue entry, though. What actually gets
+stored is the certname inside the command's payload, so this setting also
+requires the two to agree. That comparison cannot happen when the command is
+submitted, because OpenVoxDB streams the payload to disk without reading it. A
+command whose payload names a different node is therefore accepted, queued, and
+then discarded when it is processed, with a fatal error naming both certnames.
+The discarded command is kept in the [dead letter
+office](./maintain_and_tune.markdown#clean-up-the-dead-letter-office).
+
+If not supplied, neither check applies: any client that reaches the command
+endpoint may submit commands for any certname, which is the behavior of earlier
+versions.
+
+Requests that were not authenticated with a certificate have no certificate name
+to compare against and are not restricted by this setting. Whether they are
+accepted at all is decided by
+[`certificate-allowlist`](#certificate-allowlist).
+
 ### `log-queries`
 Optional. Setting this to `true` will enable debug level logging of the internal
 AST and SQL that OpenVoxDB generates for all queries. This can be useful when
